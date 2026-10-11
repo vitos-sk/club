@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXT — «Круглый стол», 3 взрослые версии</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@200;300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500;1,700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0a0b;color:#ece9e2;font:15px/1.45 'Onest',system-ui,sans-serif;min-height:100dvh;padding-bottom:130px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* ---------- страница ---------- */
+.head{max-width:1280px;margin:0 auto;padding:34px 24px 6px}
+.head h1{font:800 32px/1.1 'Onest';letter-spacing:-.02em}
+.head p{color:#9a968c;margin-top:10px;max-width:820px}
+.vrow{max-width:1280px;margin:46px auto 0;padding:0 24px}
+.vrow .meta{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap;margin-bottom:22px}
+.vrow .txt{flex:1;min-width:300px}
+.vrow .n{font:700 12px 'Onest';color:#6e6a62;letter-spacing:.16em}
+.vrow h2{font:800 26px/1.2 'Onest';margin:3px 0 8px}
+.vrow p{color:#c9c5ba;font-size:14.5px;max-width:700px}
+.vrow p b{color:#ece9e2}
+.pickbtn{padding:13px 26px;border-radius:14px;border:1.5px solid #34343b;font-weight:700;font-size:15px;transition:.15s;white-space:nowrap}
+.pickbtn:hover{border-color:#8a8a95}
+.vrow.chosen .pickbtn{background:#4cc3ff;border-color:#4cc3ff;color:#04202c}
+.shots{display:flex;gap:26px;flex-wrap:wrap}
+.shot{width:304px}
+.shot .lb{margin-top:12px;font-size:12.5px;color:#7a766d;text-align:center;letter-spacing:.04em}
+.shot .ph{cursor:zoom-in}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#101012ee;backdrop-filter:blur(14px);border-top:1px solid #26262b;padding:14px 24px;z-index:80}
+.bar .in{max-width:1280px;margin:0 auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.bar .cur{font-weight:700;min-width:240px}
+.bar .cur small{display:block;font-weight:400;color:#6e6a62;font-size:12px}
+.bar input{flex:1;min-width:240px;background:#0a0a0b;border:1px solid #2a2a30;border-radius:12px;padding:12px 14px;color:inherit;font:inherit;outline:none}
+.bar input:focus{border-color:#4cc3ff}
+.bar .go{background:#4cc3ff;color:#04202c;font-weight:700;padding:12px 22px;border-radius:12px}
+.bar .go[disabled]{opacity:.4;pointer-events:none}
+.gtoast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(10px);background:#4cc3ff;color:#04202c;font-weight:600;padding:10px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:95}
+.gtoast.on{opacity:1;transform:translateX(-50%)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.86);z-index:90;display:none;align-items:center;justify-content:center;padding:20px;overflow:auto;cursor:zoom-out}
+.ov.on{display:flex}
+.ov .ph{zoom:1;cursor:default}
+
+/* ---------- каркас экрана ---------- */
+.ph{position:relative;width:380px;height:790px;border-radius:42px;overflow:hidden;box-shadow:0 0 0 7px #121214,0 20px 50px #0009;zoom:.8;background:var(--bg);color:var(--fg);font-family:var(--fb);line-height:1.4;isolation:isolate;flex:none}
+.ph *{box-sizing:border-box}
+.ph h1,.ph h2,.ph h3,.ph h4,.ph p,.ph ul{margin:0}
+.ph ul{list-style:none;padding:0}
+.stb{position:absolute;top:0;left:0;right:0;height:44px;display:flex;justify-content:space-between;align-items:center;padding:8px 28px 0;font-size:13px;font-weight:600;z-index:6}
+.stb i{display:flex;gap:5px;align-items:center;font-style:normal}
+.stb i s{display:block;width:16px;height:9px;border:1.5px solid currentColor;border-radius:3px;text-decoration:none;position:relative}
+.stb i s::after{content:"";position:absolute;inset:1.5px;right:5px;background:currentColor;border-radius:1px}
+.ct{position:absolute;top:44px;bottom:80px;left:0;right:0;overflow:hidden;padding:6px 22px 0}
+.tb{position:absolute;left:0;right:0;bottom:0;height:80px;display:grid;grid-template-columns:repeat(5,1fr);padding:8px 4px 20px;z-index:6}
+.tb div{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10.5px;font-weight:600}
+.qrc{display:block}
+
+/* =========================================================
+   ВЕРСИЯ 1 · «ВЕЧЕРНИЙ СТОЛ» — тёмный орех, латунь
+   ========================================================= */
+.W1{--bg:#0d0805;--fg:#efe3cc;--mut:#a08c6c;--br:#c9a45e;--br2:#e6c98a;--line:rgba(201,164,94,.28);--fb:'Onest',sans-serif;
+ background:radial-gradient(90% 50% at 50% 34%,#3d2514 0%,#1b1009 52%,#0a0604 100%)}
+.W1 .stb{color:#c9b58f}
+.W1 .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-top:10px}
+.W1 .hd .t{font:italic 600 34px/1 'Cormorant Garamond';color:#f3e7cf}
+.W1 .hd .s{font:600 10px 'Onest';letter-spacing:.22em;color:var(--mut);margin-top:8px}
+.W1 .hd .bt{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--br2)}
+.W1 .tbl{position:relative;height:410px;margin:0 -22px}
+.W1 .top{position:absolute;left:50%;top:50%;width:238px;height:238px;margin:-119px 0 0 -119px;border-radius:50%;background:radial-gradient(circle at 40% 33%,#8a5833,#5a3820 55%,#33200f);box-shadow:0 0 0 1px rgba(201,164,94,.55),0 0 0 9px #1b1009,0 0 0 10px rgba(201,164,94,.28),0 30px 60px rgba(0,0,0,.65),inset 0 0 50px rgba(0,0,0,.4)}
+.W1 .top::before{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 11px,rgba(0,0,0,.07) 11px 12px)}
+.W1 .top::after{content:"";position:absolute;inset:16px;border-radius:50%;border:1px solid rgba(230,201,138,.25)}
+.W1 .glow{position:absolute;left:50%;top:50%;width:330px;height:330px;margin:-165px 0 0 -165px;border-radius:50%;background:radial-gradient(circle,rgba(255,190,100,.28),transparent 62%)}
+.W1 .ctr{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;z-index:2}
+.W1 .ctr b{display:block;font:600 22px 'Cormorant Garamond';letter-spacing:.34em;color:var(--br2);padding-left:.34em}
+.W1 .ctr span{font:600 8px 'Onest';letter-spacing:.24em;color:#cdb68a}
+.W1 .pl{position:absolute;width:22px;height:22px;border-radius:50%;border:1px solid rgba(230,201,138,.4)}
+.W1 .st{position:absolute;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;display:grid;place-items:center;font:600 19px 'Cormorant Garamond';background:rgba(18,10,5,.92);border:1px solid rgba(201,164,94,.7);color:#f3e7cf}
+.W1 .st.me{width:56px;height:56px;margin:-28px 0 0 -28px;background:linear-gradient(135deg,#e6c98a,#b08a3e);color:#2a1a08;font-size:24px;border:0;box-shadow:0 0 28px rgba(230,201,138,.45)}
+.W1 .st.nw{border-color:#e6c98a;box-shadow:0 0 0 4px rgba(230,201,138,.15)}
+.W1 .st.em{border-style:dashed;border-color:rgba(201,164,94,.4);background:transparent;color:rgba(201,164,94,.6);font-size:20px}
+.W1 .st.yes::after{content:"";position:absolute;right:-1px;top:-1px;width:11px;height:11px;border-radius:50%;background:#7fb28a;border:2px solid #120a05}
+.W1 .st small{position:absolute;top:100%;margin-top:4px;left:50%;transform:translateX(-50%);white-space:nowrap;font:600 8.5px 'Onest';letter-spacing:.12em;color:#cdb68a;text-transform:uppercase}
+.W1 .rc{position:absolute;width:64px;height:40px;background:#e9dcc0;color:#2a1c0e;padding:6px 7px;border-radius:2px;font:600 9.5px/1.15 'Cormorant Garamond';font-size:11.5px;box-shadow:0 5px 10px rgba(0,0,0,.5);transform:rotate(var(--r))}
+.W1 .rc i{position:absolute;right:5px;top:5px;width:6px;height:6px;border-radius:50%;background:#a8372b}
+.W1 .ev{margin-top:2px;padding:16px 18px;border:1px solid var(--line);border-radius:6px;background:linear-gradient(135deg,rgba(201,164,94,.12),rgba(201,164,94,.03));display:flex;gap:16px;align-items:center}
+.W1 .ev .d{text-align:center;width:54px}
+.W1 .ev .d b{display:block;font:600 40px/1 'Cormorant Garamond';color:var(--br2)}
+.W1 .ev .d span{font:600 9px 'Onest';letter-spacing:.2em;color:var(--mut)}
+.W1 .ev .x{flex:1;font-size:13.5px;font-weight:600;line-height:1.3}
+.W1 .ev .x span{display:block;font-size:12px;color:var(--mut);font-weight:400;margin-top:3px}
+.W1 .ev .bn{padding:11px 18px;border:1px solid var(--br);color:var(--br2);font:600 12px 'Onest';letter-spacing:.14em;text-transform:uppercase;border-radius:3px}
+.W1 .tb{background:rgba(10,6,3,.96);border-top:1px solid var(--line);color:#7d6c52}
+.W1 .tb .on{color:var(--br2)}
+.W1 .h2{font:italic 600 36px/1.05 'Cormorant Garamond';color:#f3e7cf;padding-top:10px}
+.W1 .sb{font-size:13px;color:var(--mut);margin:6px 0 16px}
+.W1 .tabs2{display:flex;gap:22px;border-bottom:1px solid var(--line);margin-bottom:16px;font:600 11px 'Onest';letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.W1 .tabs2 div{padding:10px 0}
+.W1 .tabs2 .on{color:var(--br2);border-bottom:2px solid var(--br);margin-bottom:-1px}
+.W1 .cd{padding:16px 17px;border:1px solid var(--line);border-radius:4px;margin-bottom:12px;background:rgba(255,255,255,.02)}
+.W1 .cd.me{border-color:var(--br);background:linear-gradient(135deg,rgba(201,164,94,.14),rgba(201,164,94,.03))}
+.W1 .cd .k{font:600 9.5px 'Onest';letter-spacing:.2em;text-transform:uppercase;color:var(--mut);margin-bottom:8px;display:flex;justify-content:space-between}
+.W1 .cd .k b{color:#e0866a;font-weight:700}
+.W1 .cd h4{font:600 20px/1.2 'Cormorant Garamond'}
+.W1 .cd .m{font-size:12.5px;color:var(--mut);margin:8px 0 12px}
+.W1 .cd .b{display:block;text-align:center;padding:12px;border:1px solid var(--br);color:var(--br2);font:600 11.5px 'Onest';letter-spacing:.16em;text-transform:uppercase;border-radius:3px}
+.W1 .cd.me .b{background:var(--br);color:#241606}
+.W1 .big{text-align:center;padding-top:6px}
+.W1 .big .l{font:600 10px 'Onest';letter-spacing:.3em;color:var(--mut)}
+.W1 .big .n{font:600 118px/1 'Cormorant Garamond';color:var(--br2);letter-spacing:-.03em;margin-top:2px}
+.W1 .big .n small{font-size:30px;vertical-align:top;margin-right:6px;position:relative;top:18px;color:var(--br)}
+.W1 .big .nm{font:italic 600 26px 'Cormorant Garamond'}
+.W1 .big .sub{font-size:12.5px;color:var(--mut);margin-top:4px}
+.W1 .kc{display:flex;gap:16px;align-items:center;margin-top:16px;padding:14px;border:1px solid var(--br);border-radius:6px;background:linear-gradient(135deg,#1c1209,#0d0805)}
+.W1 .kc .q{background:#f3e7cf;padding:7px;border-radius:3px}
+.W1 .kc .q canvas{display:block;width:88px;height:88px}
+.W1 .kc .x{font-size:13px;line-height:1.35}.W1 .kc .x b{display:block;font:600 11px 'Onest';letter-spacing:.2em;color:var(--br2);margin-bottom:6px}
+.W1 .path{display:flex;margin:18px 0 4px}
+.W1 .path div{flex:1;text-align:center;font:600 10px 'Onest';letter-spacing:.1em;text-transform:uppercase;color:var(--mut);position:relative;padding-top:20px}
+.W1 .path div::before{content:"";position:absolute;left:-50%;right:50%;top:5px;height:1px;background:var(--line)}
+.W1 .path div:first-child::before{display:none}
+.W1 .path div i{position:absolute;left:50%;top:0;width:11px;height:11px;margin-left:-5.5px;border-radius:50%;border:1px solid var(--br);background:#0d0805}
+.W1 .path .d{color:var(--br2)}.W1 .path .d i{background:var(--br)}.W1 .path .d::before{background:var(--br)}
+.W1 .path .c{color:var(--br2)}.W1 .path .c::before{background:var(--br)}.W1 .path .c i{box-shadow:0 0 0 4px rgba(201,164,94,.25)}
+.W1 .bars{margin-top:14px}.W1 .bars div{margin-bottom:12px}.W1 .bars span{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px}.W1 .bars b{color:var(--br2);font-weight:600}
+.W1 .bars i{display:block;height:3px;background:rgba(201,164,94,.18)}.W1 .bars i u{display:block;height:100%;background:var(--br)}
+
+/* =========================================================
+   ВЕРСИЯ 2 · «СХЕМА КРУГА» — графит, медь, чертёж
+   ========================================================= */
+.W2{--bg:#101214;--fg:#e9ecef;--mut:#8a939c;--ac:#e0914f;--line:rgba(233,236,239,.14);--fb:'Onest',sans-serif;--mono:'IBM Plex Mono',monospace}
+.W2 .stb{color:#aab2ba}
+.W2 .mo{font:500 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+.W2 .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-top:10px}
+.W2 .hd .t{font:300 38px/1 'Onest';letter-spacing:-.03em;margin-top:8px}
+.W2 .hd .bt{display:flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid var(--line);border-radius:3px;font:500 11px var(--mono);letter-spacing:.1em;color:var(--ac)}
+.W2 svg.dg{display:block;margin:8px -22px 0;width:380px;height:370px}
+.W2 .dg text{font-family:var(--mono)}
+.W2 .kv{border-top:1px solid var(--line)}
+.W2 .kv div{display:flex;justify-content:space-between;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--line);font-size:14px}
+.W2 .kv span{font:500 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+.W2 .kv b{font-weight:500}
+.W2 .btn{display:block;text-align:center;padding:15px;margin-top:16px;background:var(--ac);color:#1b0f05;font:600 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;border-radius:3px}
+.W2 .tb{background:#0c0e10;border-top:1px solid var(--line);color:#5e676f;font:500 9.5px var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.W2 .tb .on{color:var(--ac)}
+.W2 .h2{font:300 40px/1.05 'Onest';letter-spacing:-.03em;padding-top:12px}
+.W2 .flt{display:flex;gap:6px;margin:16px 0 4px}
+.W2 .flt div{padding:7px 11px;border:1px solid var(--line);border-radius:3px;font:500 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.W2 .flt .on{border-color:var(--ac);color:var(--ac)}
+.W2 .rw{display:grid;grid-template-columns:54px 1fr;gap:12px;padding:15px 0;border-bottom:1px solid var(--line)}
+.W2 .rw.me{border-left:2px solid var(--ac);padding-left:12px;margin-left:-14px;grid-template-columns:54px 1fr;background:linear-gradient(90deg,rgba(224,145,79,.08),transparent)}
+.W2 .rw .id{font:500 11px var(--mono);color:var(--mut);padding-top:3px}
+.W2 .rw h4{font:500 16px/1.28 'Onest'}
+.W2 .rw .m{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font:500 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.W2 .rw .m b{color:var(--ac);font-weight:500}
+.W2 .rw .a{display:inline-block;margin-top:10px;font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ac);border-bottom:1px solid var(--ac);padding-bottom:2px}
+.W2 .nbig{display:flex;align-items:flex-end;justify-content:space-between;padding-top:12px}
+.W2 .nbig .n{font:200 132px/.85 'Onest';letter-spacing:-.06em}
+.W2 .nbig .r{text-align:right;font:500 10px var(--mono);letter-spacing:.14em;color:var(--mut);line-height:1.8;text-transform:uppercase}
+.W2 .nbig .r b{color:var(--ac);font-weight:500}
+.W2 .nmx{font:400 22px 'Onest';margin-top:14px}
+.W2 .cells{display:grid;grid-template-columns:1fr 1fr;margin-top:18px;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.W2 .cells div{padding:14px 14px 12px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.W2 .cells b{display:block;font:300 30px/1 'Onest';margin-top:8px;letter-spacing:-.02em}
+.W2 .cells small{font:500 10px var(--mono);color:var(--mut);letter-spacing:.06em}
+.W2 .seg{display:flex;gap:3px;margin-top:8px}
+.W2 .seg i{flex:1;height:8px;background:rgba(233,236,239,.12)}.W2 .seg i.f{background:var(--ac)}
+.W2 .qrb{display:flex;gap:16px;align-items:center;margin-top:18px;padding:14px;border:1px solid var(--line)}
+.W2 .qrb .q{background:#e9ecef;padding:6px}.W2 .qrb canvas{display:block;width:86px;height:86px}
+.W2 .qrb .x{font-size:13px;line-height:1.35}
+
+/* =========================================================
+   ВЕРСИЯ 3 · «ПЕРЕГОВОРНАЯ» — слоновая кость, чернила, бордо
+   ========================================================= */
+.W3{--bg:#f3eee3;--fg:#17140f;--mut:#756c5c;--ac:#7a1f2b;--line:#d5cbb6;--fb:'Onest',sans-serif;--sf:'Playfair Display',serif}
+.W3 .stb{color:#3a3328}
+.W3 .mast{display:flex;justify-content:space-between;align-items:center;border-bottom:3px double #17140f;padding:8px 0 8px;font:700 10px 'Onest';letter-spacing:.26em;text-transform:uppercase}
+.W3 .mast span:last-child{color:var(--ac)}
+.W3 .h1{font:italic 700 42px/1 var(--sf);letter-spacing:-.02em;margin-top:14px}
+.W3 .sub{font-size:13px;color:var(--mut);margin-top:6px}
+.W3 .tbl{position:relative;height:340px;margin:0 -22px}
+.W3 .top{position:absolute;left:50%;top:50%;width:196px;height:196px;margin:-98px 0 0 -98px;border-radius:50%;background:#17140f;display:grid;place-items:center;text-align:center;color:#f3eee3}
+.W3 .top::after{content:"";position:absolute;inset:9px;border-radius:50%;border:1px solid rgba(243,238,227,.3)}
+.W3 .top b{display:block;font:700 26px var(--sf);letter-spacing:.2em;padding-left:.2em}
+.W3 .top span{font:600 8.5px 'Onest';letter-spacing:.24em;color:#cbb98c}
+.W3 .top em{display:block;font:italic 500 11px var(--sf);margin-top:6px;color:#d9cfb7;font-style:italic}
+.W3 .st{position:absolute;width:42px;height:42px;margin:-21px 0 0 -21px;border-radius:50%;display:grid;place-items:center;font:700 16px var(--sf);background:var(--bg);border:1.5px solid #17140f;color:#17140f}
+.W3 .st.me{background:var(--ac);border-color:var(--ac);color:#fff;width:50px;height:50px;margin:-25px 0 0 -25px;font-size:19px}
+.W3 .st.nw{border-color:var(--ac);color:var(--ac);box-shadow:0 0 0 4px rgba(122,31,43,.12)}
+.W3 .st.em{border-style:dashed;border-color:#a89d86;color:#a89d86;font-weight:400}
+.W3 .st.yes::after{content:"";position:absolute;right:-2px;top:-2px;width:10px;height:10px;border-radius:50%;background:#2f6b47;border:2px solid var(--bg)}
+.W3 .st small{position:absolute;top:100%;margin-top:3px;left:50%;transform:translateX(-50%);white-space:nowrap;font:700 8.5px 'Onest';letter-spacing:.14em;text-transform:uppercase;color:var(--ac)}
+.W3 .ev{border-top:3px solid #17140f;padding-top:12px;display:flex;gap:16px;align-items:center}
+.W3 .ev .d{font:800 60px/.9 var(--sf);letter-spacing:-.04em}
+.W3 .ev .x{flex:1;font:italic 500 15px/1.3 var(--sf)}
+.W3 .ev .x span{display:block;font:500 12px 'Onest';font-style:normal;color:var(--mut);margin-top:4px}
+.W3 .btn{display:block;text-align:center;padding:14px;margin-top:14px;background:#17140f;color:#f3eee3;font:700 11.5px 'Onest';letter-spacing:.2em;text-transform:uppercase}
+.W3 .tb{background:var(--bg);border-top:3px double #17140f;color:#8d8372;font:700 9px 'Onest';letter-spacing:.14em;text-transform:uppercase}
+.W3 .tb .on{color:#17140f;box-shadow:inset 0 3px 0 var(--ac)}
+.W3 .tb svg{display:none}
+.W3 .lst{margin-top:16px}
+.W3 .it{padding:16px 0 18px;border-top:1px solid #17140f}
+.W3 .it.me{background:#ebe2d0;margin:0 -22px;padding:16px 22px 18px;border-top:3px solid var(--ac)}
+.W3 .it .k{font:700 9.5px 'Onest';letter-spacing:.22em;text-transform:uppercase;color:var(--ac);margin-bottom:8px}
+.W3 .it h4{font:800 23px/1.15 var(--sf);letter-spacing:-.01em}
+.W3 .it .by{font:500 12.5px 'Onest';color:var(--mut);margin:9px 0 11px}
+.W3 .it .a{font:700 11px 'Onest';letter-spacing:.18em;text-transform:uppercase;color:#17140f;border-bottom:2px solid var(--ac);padding-bottom:3px}
+.W3 .card3{margin-top:14px;background:#fffdf8;border:1px solid #17140f;box-shadow:6px 6px 0 #17140f;position:relative}
+.W3 .card3 .bn{background:var(--ac);color:#fff;padding:9px 16px;display:flex;justify-content:space-between;font:700 9.5px 'Onest';letter-spacing:.24em}
+.W3 .card3 .bd{padding:16px 16px 18px;display:flex;gap:14px;justify-content:space-between;align-items:flex-end}
+.W3 .card3 .n{font:800 78px/.9 var(--sf);letter-spacing:-.04em}
+.W3 .card3 .n small{font-size:22px;margin-right:3px;color:var(--ac)}
+.W3 .card3 .nm{font:italic 700 17px var(--sf);margin-top:8px}
+.W3 .card3 .st2{font:700 9px 'Onest';letter-spacing:.2em;color:var(--ac);margin-top:4px}
+.W3 .card3 .q{background:#fff;border:1px solid #17140f;padding:5px}.W3 .card3 canvas{display:block;width:84px;height:84px}
+.W3 .pth{display:flex;margin:22px 0 4px}
+.W3 .pth div{flex:1;font:700 9.5px 'Onest';letter-spacing:.14em;text-transform:uppercase;color:#a89d86;padding-top:10px;border-top:3px solid #d5cbb6}
+.W3 .pth .d{color:#17140f;border-color:#17140f}.W3 .pth .c{color:var(--ac);border-color:var(--ac)}
+.W3 .stt{margin-top:18px}
+.W3 .stt div{display:flex;justify-content:space-between;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+.W3 .stt span{font:700 9.5px 'Onest';letter-spacing:.2em;text-transform:uppercase;color:var(--mut)}
+.W3 .stt b{font:800 22px var(--sf)}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="i-table" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.6"/><circle cx="12" cy="3.6" r="1.5"/><circle cx="12" cy="20.4" r="1.5"/><circle cx="3.6" cy="12" r="1.5"/><circle cx="20.4" cy="12" r="1.5"/></symbol>
+ <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+ <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+ <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19a2 2 0 0 0 2 2h13"/></symbol>
+ <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+ <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h3M20 17v4"/></symbol>
+</svg>
+
+<div class="head">
+ <h1>«Круглый стол»: 3 взрослые версии</h1>
+ <p>Идея та же, что понравилась: клуб — это круг из 8–10 человек за одним столом, а твоё место и «новая связь месяца» всегда видны. Но без игрушечной подачи: убрал мультяшность, эмодзи-вид и «детские» формы. Ниже по три экрана на версию: <b style="color:#ece9e2">Стол</b> (главная), <b style="color:#ece9e2">Запросы</b> и <b style="color:#ece9e2">Профиль</b>. Это картинки, не интерактив. Нажми на любой экран, чтобы открыть его крупно.</p>
+</div>
+<div id="rows"></div>
+
+<div class="ov" id="ov"></div>
+<div class="bar"><div class="in">
+ <div class="cur" id="cur">Пока не выбрано<small>Нажми «Беру эту версию» у версии</small></div>
+ <input id="note" placeholder="Комментарий: что оставить, что поменять, что взять из другой версии">
+ <button class="go" id="go" disabled>Скопировать выбор</button>
+</div></div>
+<div class="gtoast" id="gt"></div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function drawQR(cv,seed,fg,bg){const N=25,c=cv.getContext('2d'),s=cv.width/N,r=rng(seed);c.fillStyle=bg;c.fillRect(0,0,cv.width,cv.height);
+ const fin=(x,y)=>{c.fillStyle=fg;c.fillRect(x*s,y*s,7*s,7*s);c.fillStyle=bg;c.fillRect((x+1)*s,(y+1)*s,5*s,5*s);c.fillStyle=fg;c.fillRect((x+2)*s,(y+2)*s,3*s,3*s)};
+ c.fillStyle=fg;for(let y=0;y<N;y++)for(let x=0;x<N;x++){const f=(x<8&&y<8)||(x>N-9&&y<8)||(x<8&&y>N-9);if(!f&&r()>.52)c.fillRect(x*s,y*s,s,s)}
+ fin(0,0);fin(N-7,0);fin(0,N-7)}
+const ic=n=>`<svg class="i"><use href="#i-${n}"/></svg>`;
+const TABS=[['table','Стол'],['chat','Запросы'],['cal','Встречи'],['book','Библиотека'],['user','Профиль']];
+const phone=(cls,tab,inner)=>`<div class="ph ${cls}"><div class="stb"><span>9:41</span><i>●●● <s></s></i></div><div class="ct">${inner}</div><div class="tb">${TABS.map(([i,l],k)=>`<div class="${k===tab?'on':''}">${ic(i)}${l}</div>`).join('')}</div></div>`;
+
+/* места за столом: 10 мест по кругу, ты — снизу */
+const SEATS=[9,3,4,21,12,7,26,15,18,0];
+const YES=new Set([12,3,4,21,9,15,18]);
+const pos=(i,cx,cy,rx,ry)=>{const a=(-90+36*i)*Math.PI/180;return [cx+Math.cos(a)*rx,cy+Math.sin(a)*ry]};
+const num=n=>String(n).padStart(2,'0');
+
+/* ---------- ВЕРСИЯ 1 ---------- */
+const W1_1=()=>{
+ let seats='',pls='';
+ SEATS.forEach((n,i)=>{const [x,y]=pos(i,190,205,158,170);const [px,py]=pos(i,190,205,100,100);
+  pls+=`<div class="pl" style="left:${px-11}px;top:${py-11}px"></div>`;
+  const cls=n===7?'me':n===0?'em':n===26?'nw':'';
+  seats+=`<div class="st ${cls} ${YES.has(n)?'yes':''}" style="left:${x}px;top:${y}px">${n===0?'+':num(n)}${n===7?'<small>вы</small>':n===26?'<small>новая связь</small>':''}</div>`});
+ const cards=[['Перевод письма · срочно',-54,-52,-3,1],['Steuerberater',52,-46,2,0],['Нужен логотип',0,60,-1,0]].map(([t,dx,dy,r,u])=>`<div class="rc" style="left:${190+dx-32}px;top:${205+dy-20}px;--r:${r}deg">${t.replace(' · срочно','')}${u?'<i></i>':''}</div>`).join('');
+ return phone('W1',0,`<div class="hd"><div><div class="t">Круглый стол</div><div class="s">КРУГ · ФРАЙБУРГ · 9 ИЗ 10 МЕСТ</div></div><div class="bt">${ic('qr')}</div></div>
+ <div class="tbl"><div class="glow"></div><div class="top"></div>${pls}<div class="ctr"><b>NEXT</b><span>КРУГ №3</span></div>${cards}${seats}</div>
+ <div class="ev"><div class="d"><b>23</b><span>ОКТ</span></div><div class="x">Вечер круга · честный разговор<span>Чт · 19:00 · 7 из 10 подтвердили</span></div><div class="bn">Буду</div></div>`);
+};
+const W1_2=()=>phone('W1',1,`<div class="h2">Запросы</div><div class="sb">Что лежит на столе вашего круга и в клубе</div>
+ <div class="tabs2"><div class="on">Нужна помощь</div><div>Могу помочь</div></div>
+ <div class="cd me"><div class="k"><span>Мой запрос · Бумаги</span><span><b>3 отклика</b></span></div><h4>Помощь с договором аренды: перевод и проверка</h4><div class="m">до 16 октября</div><div class="b">Выбрать помощника</div></div>
+ <div class="cd"><div class="k"><span>Бумаги</span><b>СРОЧНО</b></div><h4>Нужен перевод письма от Jobcenter на русский</h4><div class="m">№12 · до 14 октября · 2 отклика</div><div class="b">Откликнуться</div></div>
+ <div class="cd"><div class="k"><span>Бизнес</span></div><h4>Ищу Steuerberater во Фрайбурге для Gewerbe</h4><div class="m">№03 · до 20 октября · 4 отклика</div></div>`);
+const W1_3=()=>phone('W1',4,`<div class="big"><div class="l">УЧАСТНИК КЛУБА</div><div class="n"><small>№</small>07</div><div class="nm">Алексей М.</div><div class="sub">Основатель · Дизайн и digital · Фрайбург</div></div>
+ <div class="kc"><div class="q"><canvas class="qrc" width="200" height="200" data-fg="#241606" data-bg="#f3e7cf"></canvas></div><div class="x"><b>КЛЮЧ-КАРТА</b>Покажи этот код при встрече. Он меняется каждые 30 секунд.</div></div>
+ <div class="path"><div class="d"><i></i>Кандидат</div><div class="c"><i></i>Участник</div><div><i></i>Партнёр</div><div><i></i>Совет</div></div>
+ <div class="bars"><div><span>Пульс <b>74 / 100</b></span><i><u style="width:74%"></u></i></div><div><span>Движение <b>20 / 25</b></span><i><u style="width:80%"></u></i></div><div><span>Связи <b>21 / 30</b></span><i><u style="width:70%"></u></i></div><div><span>Помощь другим <b>33 / 45</b></span><i><u style="width:73%"></u></i></div></div>`);
+
+/* ---------- ВЕРСИЯ 2 ---------- */
+const W2_1=()=>{
+ const cx=190,cy=185,R=128;let s='';
+ for(let k=0;k<60;k++){const a=k/60*Math.PI*2,l=k%6?4:9;s+=`<line x1="${cx+Math.cos(a)*(R+22)}" y1="${cy+Math.sin(a)*(R+22)}" x2="${cx+Math.cos(a)*(R+22+l)}" y2="${cy+Math.sin(a)*(R+22+l)}" stroke="rgba(233,236,239,.22)" stroke-width="1"/>`}
+ s+=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="rgba(233,236,239,.28)"/><circle cx="${cx}" cy="${cy}" r="${R-26}" fill="none" stroke="rgba(233,236,239,.08)" stroke-dasharray="2 5"/>`;
+ const me=pos(5,cx,cy,R,R);
+ SEATS.forEach((n,i)=>{if(i===5||n===0)return;const p=pos(i,cx,cy,R,R);const m=n===26?0:[0,2,1,1,2,0,0,1,1,0][i];const nw=n===26;
+  s+=`<line x1="${me[0]}" y1="${me[1]}" x2="${p[0]}" y2="${p[1]}" stroke="${nw?'#e0914f':'rgba(233,236,239,.35)'}" stroke-width="${nw?1.2:.6+m*.5}" ${nw?'stroke-dasharray="4 4"':''}/>`});
+ SEATS.forEach((n,i)=>{const p=pos(i,cx,cy,R,R);
+  if(n===0){s+=`<circle cx="${p[0]}" cy="${p[1]}" r="15" fill="#101214" stroke="rgba(233,236,239,.3)" stroke-dasharray="3 3"/><text x="${p[0]}" y="${p[1]+3.5}" text-anchor="middle" font-size="12" fill="#8a939c">+</text>`;return}
+  const meI=n===7,nw=n===26;
+  s+=`<circle cx="${p[0]}" cy="${p[1]}" r="${meI?19:15}" fill="${meI?'#e0914f':'#101214'}" stroke="${meI?'#e0914f':nw?'#e0914f':'rgba(233,236,239,.7)'}" stroke-width="${meI?0:1}"/><text x="${p[0]}" y="${p[1]+3.6}" text-anchor="middle" font-size="10.5" font-weight="${meI?600:500}" fill="${meI?'#1b0f05':'#e9ecef'}">${num(n)}</text>`;
+  if(YES.has(n))s+=`<circle cx="${p[0]+11}" cy="${p[1]-11}" r="3.2" fill="#6fb487" stroke="#101214" stroke-width="1.5"/>`;
+  if(nw)s+=`<text x="${p[0]-28}" y="${p[1]+30}" font-size="8" fill="#e0914f" letter-spacing="1">НОВАЯ СВЯЗЬ</text>`;
+ });
+ s+=`<text x="${cx}" y="${cy-2}" text-anchor="middle" font-family="Onest" font-weight="200" font-size="62" fill="#e9ecef" letter-spacing="-2">9<tspan font-size="24" fill="#8a939c">/10</tspan></text><text x="${cx}" y="${cy+22}" text-anchor="middle" font-size="9" fill="#8a939c" letter-spacing="2">МЕСТ ЗАНЯТО</text>`;
+ return phone('W2',0,`<div class="hd"><div><div class="mo">NEXT / КРУГ 03</div><div class="t">Фрайбург</div></div><div class="bt">${ic('qr')}QR</div></div>
+ <svg class="dg" viewBox="0 0 380 370">${s}</svg>
+ <div class="kv"><div><span>Вечер круга</span><b>чт 23.10 · 19:00</b></div><div><span>Подтвердили</span><b>7 из 10</b></div><div><span>Новая связь месяца</span><b style="color:#e0914f">№26 · Дизайн</b></div></div>
+ <div class="btn">Подтвердить участие</div>`);
+};
+const W2_2=()=>phone('W2',1,`<div class="mo" style="padding-top:10px">NEXT / ЗАПРОСЫ</div><div class="h2" style="padding-top:6px">Запросы</div>
+ <div class="flt"><div class="on">Нужна помощь</div><div>Могу помочь</div><div>Все сферы</div></div>
+ <div class="rw me"><div class="id">МОЙ</div><div><h4>Помощь с договором аренды: перевод и проверка</h4><div class="m"><span>Бумаги</span><span>до 16.10</span><b>3 отклика</b></div><div class="a">Выбрать помощника</div></div></div>
+ <div class="rw"><div class="id">R-014</div><div><h4>Нужен перевод письма от Jobcenter на русский</h4><div class="m"><span>Бумаги</span><span>№12</span><span>до 14.10</span><b>Срочно</b></div><div class="a">Откликнуться</div></div></div>
+ <div class="rw"><div class="id">R-013</div><div><h4>Ищу Steuerberater во Фрайбурге для Gewerbe</h4><div class="m"><span>Бизнес</span><span>№03</span><span>до 20.10</span></div><div class="a">Откликнуться</div></div></div>
+ <div class="rw"><div class="id">R-011</div><div><h4>Нужен логотип для стартапа, оплата по клубным условиям</h4><div class="m"><span>Дизайн</span><span>№21</span><span>до 25.10</span></div></div></div>`);
+const W2_3=()=>phone('W2',4,`<div class="nbig"><div class="n">07</div><div class="r">Участник №<br><b>Основатель</b><br>Фрайбург</div></div><div class="nmx">Алексей М.</div>
+ <div class="cells"><div><small>ПУЛЬС</small><b>74<span style="font-size:14px;color:#8a939c">/100</span></b></div><div><small>СТАТУС</small><b style="font-size:22px;padding-top:6px">Участник</b></div><div><small>ВСТРЕЧИ · ОКТ</small><b>2<span style="font-size:14px;color:#8a939c">/4</span></b></div><div><small>СВЯЗИ</small><b>8</b></div></div>
+ <div class="mo" style="margin-top:20px">ДО СТАТУСА «ПАРТНЁР»</div><div class="seg">${Array.from({length:20},(_,i)=>`<i class="${i<15?'f':''}"></i>`).join('')}</div><div class="mo" style="margin-top:6px;font-size:9px">ПУЛЬС 74 ИЗ 80 · СЕРЬЁЗНАЯ ПОМОЩЬ 2 ИЗ 3</div>
+ <div class="qrb"><div class="q"><canvas class="qrc" width="200" height="200" data-fg="#101214" data-bg="#e9ecef"></canvas></div><div class="x"><span class="mo">КЛЮЧ-КАРТА</span><br>Показывай при встрече. Меняется каждые 30 секунд.</div></div>`);
+
+/* ---------- ВЕРСИЯ 3 ---------- */
+const W3_1=()=>{
+ let seats='';
+ SEATS.forEach((n,i)=>{const [x,y]=pos(i,190,170,140,140);
+  const cls=n===7?'me':n===0?'em':n===26?'nw':'';
+  seats+=`<div class="st ${cls} ${YES.has(n)?'yes':''}" style="left:${x}px;top:${y}px">${n===0?'+':num(n)}${n===7?'':n===26?'<small style="margin-top:4px">новая связь</small>':''}</div>`});
+ return phone('W3',0,`<div class="mast"><span>NEXT · ЗАКРЫТЫЙ КЛУБ</span><span>№07</span></div><div class="h1">Ваш круг</div><div class="sub">Фрайбург · девять из десяти мест занято</div>
+ <div class="tbl"><div class="top"><div><b>NEXT</b><span>КРУГ № 3</span><em>за одним столом</em></div></div>${seats}</div>
+ <div class="ev"><div class="d">23</div><div class="x">Вечер круга: честный разговор<span>Четверг, 19:00 · подтвердили 7 из 10</span></div></div>
+ <div class="btn">Подтвердить участие</div>`);
+};
+const W3_2=()=>phone('W3',1,`<div class="mast"><span>NEXT · ДОСКА</span><span>3 НОВЫХ ОТКЛИКА</span></div><div class="h1">Запросы</div><div class="sub">Попроси помощи или помоги другому. Выбираешь ты.</div>
+ <div class="lst"><div class="it me"><div class="k">Мой запрос · 3 отклика</div><h4>Помощь с договором аренды: перевод и проверка</h4><div class="by">до 16 октября · Бумаги</div><span class="a">Выбрать помощника →</span></div>
+ <div class="it"><div class="k">Срочно · Бумаги</div><h4>Нужен перевод письма от Jobcenter на русский</h4><div class="by">№12 · до 14 октября · 2 отклика</div><span class="a">Откликнуться →</span></div>
+ <div class="it"><div class="k">Бизнес</div><h4>Ищу Steuerberater во Фрайбурге для Gewerbe</h4><div class="by">№03 · до 20 октября · 4 отклика</div><span class="a">Откликнуться →</span></div></div>`);
+const W3_3=()=>phone('W3',4,`<div class="mast"><span>NEXT · ПРОФИЛЬ</span><span>УЧАСТНИК</span></div>
+ <div class="card3"><div class="bn"><span>КЛЮЧ-КАРТА КЛУБА</span><span>ОСНОВАТЕЛЬ</span></div><div class="bd"><div><div class="n"><small>№</small>07</div><div class="nm">Алексей М.</div><div class="st2">ФРАЙБУРГ · С 14.09.2026</div></div><div class="q"><canvas class="qrc" width="200" height="200" data-fg="#17140f" data-bg="#ffffff"></canvas></div></div></div>
+ <div class="pth"><div class="d">Кандидат</div><div class="c">Участник</div><div>Партнёр</div><div>Совет</div></div>
+ <div class="stt"><div><span>Пульс</span><b>74 <small style="font:500 12px Onest;color:#756c5c">из 100</small></b></div><div><span>Встречи в октябре</span><b>2 из 4</b></div><div><span>Подтверждённая помощь</span><b>2</b></div><div><span>Связей в клубе</span><b>8</b></div></div>`);
+
+/* ---------- сборка страницы ---------- */
+const V=[
+ {k:'W1',n:'1',name:'Вечерний стол',scr:[W1_1,W1_2,W1_3],lbs:['Стол (главная)','Запросы','Профиль и ключ-карта'],
+  txt:'<b>Что изменено, чтобы было серьёзнее.</b> Убрал свечи-мультяшки и цветные кружки. Теперь это тёмный орех, латунные линии и монограммы с номерами, как в частном клубе. Заголовки — изящный курсивный шрифт, подписи — строгие капители. Записки на столе — маленькие бумажные карточки.'},
+ {k:'W2',n:'2',name:'Схема круга',scr:[W2_1,W2_2,W2_3],lbs:['Стол (главная)','Запросы','Профиль и ключ-карта'],
+  txt:'<b>Самая строгая версия.</b> Круг показан как точная схема: тонкие линии, шкала по краю, твои связи — лучи к людям (толще — чаще встречались, пунктир — новая связь). Данные выглядят как документ: ID запросов, таблицы, сегментный индикатор. Цвета: графит и медь. Ощущение «закрытого совета директоров».'},
+ {k:'W3',n:'3',name:'Переговорная',scr:[W3_1,W3_2,W3_3],lbs:['Стол (главная)','Запросы','Профиль и ключ-карта'],
+  txt:'<b>Светлый деловой вариант.</b> Слоновая кость, чёрные чернила и бордовый акцент, как в деловой газете или на визитке. Стол — плоский чёрный круг без украшательств. Запросы читаются как заголовки в издании, профиль — как карточка члена клуба.'}
+];
+V.forEach(v=>{
+ const r=document.createElement('section');r.className='vrow';r.dataset.k=v.k;
+ r.innerHTML=`<div class="meta"><div class="txt"><div class="n">ВЕРСИЯ ${v.n}</div><h2>${v.name}</h2><p>${v.txt}</p></div><button class="pickbtn">Беру эту версию</button></div><div class="shots">${v.scr.map((f,i)=>`<div class="shot">${f()}<div class="lb">${v.lbs[i]}</div></div>`).join('')}</div>`;
+ $('#rows').appendChild(r);
+ $('.pickbtn',r).onclick=()=>choose(v.k);
+});
+$$('canvas.qrc').forEach((c,i)=>drawQR(c,4242+i,c.dataset.fg,c.dataset.bg));
+$$('.shot .ph').forEach(p=>p.addEventListener('click',()=>{const o=$('#ov');o.innerHTML='';const c=p.cloneNode(true);o.appendChild(c);$$('canvas.qrc',c).forEach((cv,i)=>{const src=$$('canvas.qrc',p)[i];cv.getContext('2d').drawImage(src,0,0)});o.classList.add('on')}));
+$('#ov').onclick=()=>$('#ov').classList.remove('on');
+
+let chosen=null;
+function choose(k){
+ chosen=chosen===k?null:k;
+ $$('.vrow').forEach(o=>{o.classList.toggle('chosen',o.dataset.k===chosen);$('.pickbtn',o).textContent=o.dataset.k===chosen?'✓ Выбрано':'Беру эту версию'});
+ const c=V.find(x=>x.k===chosen);
+ $('#cur').innerHTML=c?`Версия ${c.n}: «${c.name}»<small>Можно дописать комментарий и скопировать</small>`:'Пока не выбрано<small>Нажми «Беру эту версию» у версии</small>';
+ $('#go').disabled=!c;
+}
+function gtoast(m){const t=$('#gt');t.textContent=m;t.classList.add('on');clearTimeout(gtoast.t);gtoast.t=setTimeout(()=>t.classList.remove('on'),2200)}
+$('#go').onclick=async()=>{
+ const c=V.find(x=>x.k===chosen);if(!c)return;
+ const n=$('#note').value.trim();
+ const t=`ВЫБОР ВЕРСИИ «КРУГЛОГО СТОЛА»: версия ${c.n} — «${c.name}»`+(n?`\nКомментарий: ${n}`:'');
+ try{await navigator.clipboard.writeText(t);gtoast('Скопировано. Отправь мне в чат')}
+ catch(_){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');gtoast('Скопировано. Отправь мне в чат')}catch(__){gtoast(t)}a.remove()}
+};
+</script>
+</body>
+</html>

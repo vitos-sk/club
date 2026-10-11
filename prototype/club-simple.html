@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NEXT — простая версия</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e1f18;--pn:#163226;--pn2:#1d3c2d;--br:#c59a55;--br2:#e2c283;--fg:#f0e6cf;--mut:#8da193;--line:rgba(197,154,85,.32);--warn:#d98062;--ok:#6fbf8a;--pick:#4cc3ff;--serif:'Playfair Display',Georgia,serif}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#050606;color:var(--fg);font:15px/1.45 'Onest',system-ui,sans-serif;min-height:100dvh}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,textarea{font:inherit;color:inherit;outline:none}
+.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.i.s{width:16px;height:16px}
+
+/* ---------- сцена и панель выбора ---------- */
+.stage{display:flex;justify-content:center;align-items:flex-start;gap:36px;padding:24px}
+.tools{width:340px;position:sticky;top:24px;max-height:calc(100dvh - 48px);overflow:auto;background:#0d0d0f;border:1px solid #26262b;border-radius:20px;padding:18px;scrollbar-width:thin;color:#ece9e2}
+.tools h3{font:700 20px/1.2 var(--serif);margin-bottom:6px}
+.tools p.how{font-size:13px;color:#908c84;margin-bottom:14px}
+.tools .lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#5f5c56;margin:16px 0 8px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#09090a;padding:4px;border-radius:12px;border:1px solid #26262b}
+.modes button{padding:9px 6px;border-radius:9px;font-size:13px;color:#908c84;font-weight:500}
+.modes button.on{background:rgba(197,154,85,.14);color:var(--br2)}
+.modes button.on.pk{background:rgba(76,195,255,.14);color:var(--pick)}
+.scrs{display:grid;gap:6px}
+.scrs button{display:flex;align-items:center;gap:10px;text-align:left;padding:9px 11px;border-radius:10px;border:1px solid #26262b;font-size:13.5px;color:#908c84}
+.scrs button.on{border-color:var(--br);color:#ece9e2;background:rgba(197,154,85,.1)}
+.scrs button b{font:700 13px var(--serif);color:var(--br);width:14px}
+.selitem{border:1px solid #26262b;border-radius:12px;padding:10px;margin-bottom:8px;background:#09090a}
+.selitem .p{font-size:12.5px;line-height:1.35}
+.selitem .t{font-size:12px;color:#908c84;margin-top:3px}
+.selitem .vs{display:flex;gap:4px;margin-top:8px}
+.selitem .vs button{flex:1;padding:5px 2px;border-radius:7px;font-size:12px;border:1px solid #26262b;color:#908c84}
+.selitem .vs button.on[data-v="Оставить"]{border-color:#6fbf8a;color:#6fbf8a;background:rgba(111,191,138,.1)}
+.selitem .vs button.on[data-v="Изменить"]{border-color:var(--br);color:var(--br2);background:rgba(197,154,85,.12)}
+.selitem .vs button.on[data-v="Убрать"]{border-color:#d98062;color:#d98062;background:rgba(217,128,98,.1)}
+.selitem input{width:100%;margin-top:7px;background:#121214;border:1px solid #26262b;border-radius:8px;padding:7px 9px;font-size:12.5px}
+.selitem .x{float:right;color:#5f5c56;font-size:18px;line-height:1;padding:0 2px}
+.empty{font-size:13px;color:#5f5c56;padding:10px 0}
+.tools textarea{width:100%;min-height:54px;background:#09090a;border:1px solid #26262b;border-radius:10px;padding:9px 11px;font-size:13px;resize:vertical}
+.tbtn{display:block;width:100%;padding:12px;border-radius:12px;font-weight:600;font-size:14px;text-align:center;margin-top:10px}
+.tbtn.main{background:var(--pick);color:#04202c}
+.tbtn.sec{border:1px solid #26262b;color:#908c84}
+.fab{display:none;position:fixed;right:14px;bottom:88px;z-index:90;align-items:center;gap:8px;padding:11px 15px;border-radius:30px;background:var(--pick);color:#04202c;font-weight:700;font-size:13px;box-shadow:0 8px 24px #000a}
+.tclose{display:none;float:right;color:#908c84;font-size:22px}
+
+/* ---------- телефон ---------- */
+.phone{position:relative;width:390px;height:min(844px,calc(100dvh - 48px));background:var(--bg);border:1px solid #2f2f36;border-radius:42px;overflow:hidden;box-shadow:0 30px 80px #000c,0 0 0 8px #0c0c0e;flex:none;isolation:isolate}
+.phone::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 22px,rgba(255,255,255,.012) 22px 23px);pointer-events:none;z-index:0}
+.screen{position:absolute;top:0;bottom:74px;left:0;right:0;overflow-y:auto;padding:26px 18px 34px;display:none;overscroll-behavior:contain;scrollbar-width:none;z-index:1}
+.screen::-webkit-scrollbar{display:none}
+.screen.on{display:block;animation:in .28s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+@keyframes fade{from{opacity:0}}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@keyframes glow{50%{box-shadow:0 0 0 1px var(--br),0 0 34px rgba(197,154,85,.34)}}
+
+h1.t{font:500 32px/1.1 var(--serif)}
+.lead{color:var(--mut);font-size:14.5px;margin:7px 0 18px}
+.eb{font-size:12.5px;color:var(--mut);font-weight:600}
+h3.rt{font:500 19px var(--serif);margin:26px 0 12px;display:flex;align-items:center;gap:12px}
+h3.rt::after{content:"";flex:1;height:1px;background:var(--line);order:1}
+h3.rt small{font:600 12.5px 'Onest';color:var(--mut);order:2}
+.chipx{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:20px;background:rgba(197,154,85,.13);color:var(--br2);font-size:12px;font-weight:700;margin-top:8px}
+.card{background:var(--pn);border:1px solid var(--line);border-radius:8px;padding:15px;margin-bottom:12px;outline:1px solid rgba(197,154,85,.14);outline-offset:-5px}
+.card.hl{border-color:var(--br)}
+.card .tg{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:7px}
+.card .tg b{color:var(--br2)}
+.card h4{font:500 18px/1.25 var(--serif)}
+.card .mt{font-size:13px;color:var(--mut);margin:7px 0 12px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:6px;background:var(--br2);color:#2a1d08;font-weight:800;font-size:15px;text-align:center;transition:.15s}
+.btn:active{transform:scale(.985)}
+.btn.o{background:transparent;color:var(--br2);border:1px solid var(--br)}
+.btn.on{background:#2e6a45;color:#fff;border-color:#2e6a45}
+.btn.dis,.btn[disabled]{opacity:.45;pointer-events:none}
+.btn.sm{width:auto;display:inline-flex;padding:9px 14px;font-size:13px}
+.sgm{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--pn);border-radius:10px;margin:0 0 18px;border:1px solid var(--line)}
+.sgm button{padding:11px 4px;border-radius:7px;font-weight:700;font-size:14px;color:var(--mut)}
+.sgm .on{background:var(--br);color:#241606}
+.chips{display:flex;gap:7px;overflow-x:auto;margin:0 -18px 14px;padding:0 18px 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chp{flex:none;padding:8px 14px;border-radius:20px;border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--mut)}
+.chp.on{background:var(--br);border-color:var(--br);color:#241606}
+.li{display:flex;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.li:last-child{border:0}
+.li .ic{width:42px;height:42px;border-radius:8px;background:var(--pn2);border:1px solid var(--line);display:grid;place-items:center;flex:none;font:700 13px 'Onest';color:var(--br2)}
+.li .tx{flex:1;font-size:14.5px;font-weight:600;line-height:1.3}
+.li .tx span{display:block;font-size:12.5px;color:var(--mut);font-weight:400;margin-top:2px}
+.fld{width:100%;background:#0b1812;border:1px solid var(--line);border-radius:6px;padding:12px 13px;font-size:15px}
+.fld:focus{border-color:var(--br2)}
+textarea.fld{min-height:86px;resize:none}
+.hint{font-size:13px;color:var(--mut);margin-top:8px}
+.bar3{margin:13px 0}.bar3 .l{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px;font-weight:600}
+.bar3 .t{height:6px;border-radius:6px;background:rgba(197,154,85,.18)}.bar3 .t i{display:block;height:100%;background:var(--br);border-radius:6px;transition:width .6s}
+.setrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px 0;border-bottom:1px solid var(--line)}
+.setrow:last-child{border:0}
+.setrow div{flex:1}.setrow b{display:block;font-size:15px}.setrow span{font-size:12.5px;color:var(--mut)}
+
+/* ведущая карточка «Следующий шаг» */
+.guide{position:relative;border:1px solid var(--br);border-radius:10px;padding:20px 18px 18px;background:linear-gradient(160deg,#1f4130,#163226);animation:glow 3.4s ease-in-out infinite;margin-top:4px}
+.guide .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font:700 11px 'Onest';letter-spacing:.16em;color:var(--br2)}
+.guide .dots{display:flex;gap:5px}.guide .dots i{width:16px;height:4px;border-radius:3px;background:rgba(197,154,85,.25)}.guide .dots i.f{background:var(--br2)}
+.guide h2{font:500 28px/1.12 var(--serif);margin-bottom:8px}
+.guide p{font-size:14.5px;color:#cfd8c9;margin-bottom:18px}
+.guide .why{display:block;margin:14px auto 0;font-size:13px;color:var(--mut);text-decoration:underline;text-underline-offset:3px}
+.guide.waitc{animation:none}
+.steps{padding:0}
+.stp{display:flex;gap:14px;align-items:center;padding:12px 2px;border-bottom:1px solid var(--line)}
+.stp:last-child{border:0}
+.stp .n{width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(197,154,85,.4);display:grid;place-items:center;font:700 12px 'Onest';color:var(--mut);flex:none}
+.stp .n .i{width:14px;height:14px;stroke-width:3}
+.stp.d .n{background:var(--br);border-color:var(--br);color:#241606}
+.stp.c .n{border-color:var(--br2);color:var(--br2);box-shadow:0 0 0 4px rgba(226,194,131,.14)}
+.stp .tx{flex:1;font-size:14.5px;font-weight:600}
+.stp.d .tx{opacity:.5;text-decoration:line-through}
+.stp:not(.d):not(.c) .tx{color:var(--mut);font-weight:500}
+.stp .st{font-size:12px;color:var(--mut)}
+.ev{display:flex;gap:14px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
+.ev:last-child{border:0}
+.ev .d{width:52px;text-align:center;flex:none}
+.ev .d b{display:block;font:500 26px/1 var(--serif);color:var(--br2)}
+.ev .d span{font-size:10px;letter-spacing:.14em;color:var(--mut);font-weight:700}
+.ev .x{flex:1;font-size:14.5px;font-weight:600;line-height:1.3}.ev .x span{display:block;font-size:12.5px;color:var(--mut);font-weight:400;margin-top:2px}
+
+/* записки */
+.board{background:#2a1d12;border:6px solid #4a3220;border-radius:10px;padding:16px 12px 4px;box-shadow:inset 0 0 40px #0009;background-image:radial-gradient(circle at 20% 10%,rgba(255,255,255,.04),transparent 40%)}
+.note{position:relative;background:#f3e9d2;color:#2a2118;border-radius:3px;padding:18px 14px 14px;margin-bottom:18px;box-shadow:0 6px 14px #0007;transform:rotate(var(--r,0deg))}
+.note::before{content:"";position:absolute;top:-6px;left:50%;margin-left:-7px;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff8a7a,#a8261a);box-shadow:0 3px 4px #0006}
+.note .tg{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#8a6a2c}
+.note .u{color:#b3361f}
+.note h4{font:700 16px/1.25 'Onest';margin:5px 0}
+.note .mt{font:500 19px/1 'Caveat';color:#5b4b30;margin-bottom:10px}
+.note .nb{padding:10px 15px;border-radius:4px;background:#2a1d08;color:var(--br2);font-weight:700;font-size:13.5px;margin-right:6px}
+.note .nb.gold{background:var(--br2);color:#2a1d08}
+.note .nb[disabled]{opacity:.55;pointer-events:none}
+.note.mine{background:#f6e3a8}
+.note.on .nb:first-of-type:not(.gold){background:#2e6a45;color:#fff}
+.note.cl{background:#e0d8c4;opacity:.75}
+.note.blank{background:transparent;border:2px dashed rgba(226,194,131,.55);color:var(--fg);box-shadow:none}
+.note.blank .tg{color:var(--br2)}.note.blank .mt{color:var(--mut)}
+.note.blank::before{background:radial-gradient(circle at 35% 30%,#e2c283,#8a6a2c)}
+.lockbox{display:flex;gap:10px;align-items:center;border:1px dashed var(--line);border-radius:6px;padding:12px;color:var(--mut);font-size:13px;margin:14px 0 0}
+.qrw{background:#f3e9d2;padding:14px;border-radius:6px;width:max-content;margin:6px auto 4px}
+.qrw canvas{display:block;width:190px;height:190px;image-rendering:pixelated}
+.qrb2{height:4px;border-radius:4px;background:rgba(197,154,85,.2);margin:12px auto 6px;width:218px;overflow:hidden}
+.qrb2 i{display:block;height:100%;background:var(--br2);transition:width 1s linear}
+.big{font:500 64px/1 var(--serif);color:var(--br2);letter-spacing:-.03em}
+.big small{font-size:22px;opacity:.7;margin-right:4px}
+.path{display:flex;margin:6px 0 4px}
+.path div{flex:1;text-align:center;font-size:12px;font-weight:700;color:var(--mut);position:relative;padding-top:28px}
+.path div i{position:absolute;left:50%;top:0;width:20px;height:20px;margin-left:-10px;border-radius:50%;border:2.5px solid rgba(197,154,85,.4);background:var(--bg);display:grid;place-items:center}
+.path div::before{content:"";position:absolute;left:-50%;right:50%;top:9px;height:3px;background:rgba(197,154,85,.25)}
+.path div:first-child::before{display:none}
+.path .d,.path .c{color:var(--fg)}
+.path .d i{background:var(--br);border-color:var(--br);color:#241606}.path .d::before,.path .c::before{background:var(--br)}
+.path .c i{border-color:var(--br2);box-shadow:0 0 0 4px rgba(226,194,131,.16)}
+.path i .i{width:11px;height:11px;stroke-width:3.4}
+.pausebn{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:12px 14px;border:1px solid var(--br);border-radius:6px;background:rgba(197,154,85,.1)}
+.pausebn div{flex:1;font-size:13.5px;font-weight:600}.pausebn span{display:block;font-size:12px;color:var(--mut);font-weight:400}
+
+.nav{position:absolute;left:0;right:0;bottom:0;height:74px;display:grid;grid-template-columns:repeat(5,1fr);background:#0a1712;border-top:1px solid var(--line);z-index:5;padding:6px 2px 10px}
+.nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10.5px;font-weight:700;color:#5e7567;position:relative}
+.nav .on{color:var(--br2)}
+.nav .bd{position:absolute;top:5px;left:calc(50% + 7px);width:10px;height:10px;border-radius:50%;background:var(--warn);box-shadow:0 0 8px var(--warn)}
+.sheetwrap{position:absolute;inset:0;z-index:20;display:none}
+.sheetwrap.on{display:block}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.66);animation:fade .2s}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:92%;overflow:auto;background:#12281e;border-top:2px solid var(--br);border-radius:26px 26px 0 0;padding:10px 20px 28px;animation:up .28s cubic-bezier(.2,.8,.2,1);scrollbar-width:none}
+.grab{width:40px;height:4px;background:var(--line);border-radius:4px;margin:0 auto 14px}
+.sheet h2{font:500 26px var(--serif);margin-bottom:4px}
+.toast{position:absolute;left:16px;right:16px;bottom:88px;background:var(--br2);color:#2a1d08;padding:12px 15px;border-radius:6px;font-weight:700;font-size:14px;z-index:30;opacity:0;transform:translateY(10px);pointer-events:none;transition:.25s;text-align:center}
+.toast.on{opacity:1;transform:none}
+.wl{display:flex;gap:14px;align-items:flex-start;padding:12px 0}
+.wl b{width:32px;height:32px;border-radius:50%;background:var(--br);color:#241606;display:grid;place-items:center;font:700 15px var(--serif);flex:none}
+.wl div{font-size:14.5px;font-weight:600;line-height:1.3}.wl span{display:block;font-size:13px;color:var(--mut);font-weight:400;margin-top:2px}
+
+/* режим выбора */
+.picking [data-k]{cursor:crosshair!important}
+.picking .phone *{user-select:none}
+.hov{outline:1.5px dashed var(--pick)!important;outline-offset:2px}
+.sel{outline:2px solid var(--pick)!important;outline-offset:2px;background-image:linear-gradient(rgba(76,195,255,.1),rgba(76,195,255,.1))}
+.picking .phone::after{content:"РЕЖИМ ВЫБОРА";position:absolute;top:8px;left:50%;transform:translateX(-50%);background:var(--pick);color:#04202c;font-size:10px;font-weight:700;letter-spacing:.12em;padding:3px 10px;border-radius:20px;z-index:50;pointer-events:none}
+@media (max-width:900px){
+ .stage{display:block;padding:0}
+ .phone{width:100%;height:100dvh;border-radius:0;border:0;box-shadow:none}
+ .tools{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;max-height:80dvh;border-radius:22px 22px 0 0;z-index:100;transform:translateY(105%);transition:transform .3s}
+ .tools.open{transform:none}
+ .fab{display:flex}.tclose{display:block}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+ <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+ <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+ <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19a2 2 0 0 0 2 2h13"/></symbol>
+ <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+ <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h3M20 17v4"/></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
+ <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+ <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+ <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+</svg>
+
+<div class="stage">
+ <aside class="tools" id="tools">
+  <button class="tclose" id="tclose">×</button>
+  <h3>NEXT · простая версия</h3>
+  <p class="how">То же оформление, но проще: пять понятных вкладок, а на главной приложение само подсказывает следующий шаг. Чтобы прислать правки: «Выбирать», кликай по элементам, отмечай «Оставить / Изменить / Убрать», «Скопировать».</p>
+  <div class="lbl">Режим</div>
+  <div class="modes" id="modes"><button class="on" data-mode="use">Пользоваться</button><button data-mode="pick" class="pk">Выбирать</button></div>
+  <div class="lbl">Экраны</div>
+  <div class="scrs" id="scrs">
+   <button data-go="home" class="on"><b>1</b>Главная</button>
+   <button data-go="req"><b>2</b>Запросы</button>
+   <button data-go="meet"><b>3</b>Встречи</button>
+   <button data-go="lib"><b>4</b>Библиотека</button>
+   <button data-go="prof"><b>5</b>Профиль</button>
+  </div>
+  <button class="tbtn sec" id="restart" style="margin-top:12px">Начать сначала</button>
+  <div class="lbl">Выбрано: <span id="selCount">0</span></div>
+  <div id="selList"><div class="empty">Пока пусто. Включи «Выбирать» и кликни по элементу на экране.</div></div>
+  <div class="lbl">Общий комментарий</div>
+  <textarea id="gnote" placeholder="Например: шаги крупнее, меньше текста…"></textarea>
+  <button class="tbtn main" id="copyBtn">Скопировать выбранное</button>
+  <button class="tbtn sec" id="clearBtn">Очистить выбор</button>
+  <textarea id="out" readonly style="display:none;margin-top:10px;min-height:120px"></textarea>
+ </aside>
+
+ <main class="phone" id="phone">
+  <section class="screen on" id="s-home" data-k="Экран «Главная»"></section>
+  <section class="screen" id="s-req" data-k="Экран «Запросы»"></section>
+  <section class="screen" id="s-meet" data-k="Экран «Встречи»"></section>
+  <section class="screen" id="s-lib" data-k="Экран «Библиотека»"></section>
+  <section class="screen" id="s-prof" data-k="Экран «Профиль»"></section>
+  <nav class="nav" data-k="Нижнее меню">
+   <button data-go="home" class="on" data-k="Вкладка «Главная»"><svg class="i"><use href="#i-home"/></svg>Главная</button>
+   <button data-go="req" data-k="Вкладка «Запросы»"><svg class="i"><use href="#i-chat"/></svg>Запросы<i class="bd" id="bdq" style="display:none"></i></button>
+   <button data-go="meet" data-k="Вкладка «Встречи»"><svg class="i"><use href="#i-cal"/></svg>Встречи</button>
+   <button data-go="lib" data-k="Вкладка «Библиотека»"><svg class="i"><use href="#i-book"/></svg>Библиотека</button>
+   <button data-go="prof" data-k="Вкладка «Профиль»"><svg class="i"><use href="#i-user"/></svg>Профиль</button>
+  </nav>
+  <div class="sheetwrap" id="sheetWrap"><div class="scrim" data-act="close"></div><div class="sheet" id="sheet" data-k="Окно (шторка)"></div></div>
+  <div class="toast" id="toast"></div>
+ </main>
+</div>
+<button class="fab" id="fab">Выбор · <span id="fabN">0</span></button>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const phone=$('#phone');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ic=(n,c='i s')=>`<svg class="${c}"><use href="#i-${n}"/></svg>`;
+const person=n=>'№'+String(n).padStart(2,'0');
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function drawQR(cv,seed,fg,bg){if(!cv)return;const N=25,c=cv.getContext('2d'),s=cv.width/N,r=rng(seed);c.fillStyle=bg;c.fillRect(0,0,cv.width,cv.height);
+ const fin=(x,y)=>{c.fillStyle=fg;c.fillRect(x*s,y*s,7*s,7*s);c.fillStyle=bg;c.fillRect((x+1)*s,(y+1)*s,5*s,5*s);c.fillStyle=fg;c.fillRect((x+2)*s,(y+2)*s,3*s,3*s)};
+ c.fillStyle=fg;for(let y=0;y<N;y++)for(let x=0;x<N;x++){const f=(x<8&&y<8)||(x>N-9&&y<8)||(x<8&&y>N-9);if(!f&&r()>.52)c.fillRect(x*s,y*s,s,s)}
+ fin(0,0);fin(N-7,0);fin(0,N-7)}
+
+/* ================= данные ================= */
+const SPH=['Работа','Бумаги','Переезд','Бизнес','Дизайн и digital','Знания','Быт'];
+const REQS=[
+ {id:'r1',t:'Нужен перевод письма от Jobcenter на русский',sph:'Бумаги',due:'до 14 окт',by:12,n:2,urgent:true,r:1.4},
+ {id:'r2',t:'Ищу Steuerberater во Фрайбурге для Gewerbe',sph:'Бизнес',due:'до 20 окт',by:3,n:4,r:-1.8},
+ {id:'r3',t:'Нужен логотип для стартапа — оплата по клубным условиям',sph:'Дизайн и digital',due:'до 25 окт',by:21,n:1,r:1.1}
+];
+const OFFERS=[
+ {id:'o1',t:'Резюме на немецком + 30 минут разбора собеседования',sph:'Работа',by:9,r:-1.2},
+ {id:'o2',t:'Видео и монтаж для соцсетей — клубная скидка 20%',sph:'Дизайн и digital',by:15,r:1.5},
+ {id:'o3',t:'Помогу с Anmeldung и поиском квартиры во Фрайбурге',sph:'Переезд',by:4,r:-1}
+];
+const RESP=[{n:12,why:'Переводил такие письма, сделаю сегодня',niche:'Бумаги и переводы'},{n:4,why:'Знаю, как это обычно просят',niche:'Переезд и жильё'},{n:26,why:'Могу вычитать и оформить',niche:'Дизайн и digital'}];
+const LIB=[
+ {t:'Письмо от Finanzamt: что отвечать и в какой срок',min:6,by:12,tag:'Finanzamt',b:['Не паникуй: в письме важны три вещи — Steuernummer, срок (Frist) и что именно запрашивают.','Если срок короткий — отправь короткое «получил, отвечу до даты», а документы приложи позже.','Внутри — шаблон ответа на немецком и список, что приложить.']},
+ {t:'Gewerbeanmeldung за один визит: что взять с собой',min:8,by:3,tag:'Gewerbe',b:['Список документов и порядок шагов.','Типичные ошибки в анкете.','Что делать после регистрации: Finanzamt, Steuerberater, счёт.']},
+ {t:'Резюме на немецком: чем отличается от привычного',min:7,by:9,tag:'Найм',b:['Структура и длина.','Фразы, которые работают, и фразы, которые режут слух.','Что писать про опыт из Украины и России.']},
+ {t:'Ответ арендодателю: шаблон письма и пакет документов',min:5,by:4,tag:'Квартира',b:['Какие документы просят почти всегда и как собрать их за день.','Как написать первое письмо, чтобы его дочитали.','Что делать, если ответа нет три дня.']},
+ {t:'Три сервиса, которые экономят час в неделю на бумагах',min:3,by:15,tag:'Фишки',b:['Сканер документов с автоматическим именованием.','Напоминания о сроках писем.','Шаблоны ответов на немецком.']}
+];
+const PEOPLE={12:'Бумаги и переводы',4:'Переезд и жильё',26:'Дизайн и digital',18:'Стартапы'};
+
+/* ================= состояние ================= */
+const S=Object.assign({},window._S0={screen:'home',seg:'mine',libF:'Все',resp:new Set(),mine:'none',myReq:null,respCount:0,helper:0,slot:'',mon:2,scanI:0,met:{},goal:'',goalDone:false,pulse:74,signed:false,fire:false,paused:false,welcomed:false,qrLeft:30,qrSeed:7001});
+
+/* ================= окна ================= */
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2800)}
+function openSheet(html,mount){$('#sheet').innerHTML='<div class="grab"></div>'+html;$('#sheetWrap').classList.add('on');$('#sheet').scrollTop=0;mount&&mount($('#sheet'));reapplySel()}
+function closeSheet(){$('#sheetWrap').classList.remove('on')}
+const sh2=t=>`<h2>${t}</h2>`;
+function goTo(id){
+ S.screen=id;
+ $$('.screen').forEach(s=>s.classList.toggle('on',s.id==='s-'+id));
+ $$('.nav [data-go]').forEach(b=>b.classList.toggle('on',b.dataset.go===id));
+ $$('#scrs button').forEach(b=>b.classList.toggle('on',b.dataset.go===id));
+ $('#s-'+id).scrollTop=0;closeSheet();
+ if(id==='meet')setTimeout(()=>drawQR($('#qrc'),S.qrSeed,'#2a1d08','#f3e9d2'),0);
+}
+
+/* ================= путь по шагам ================= */
+const helped=()=>REQS.some(r=>S.resp.has(r.id));
+const STEPS=()=>[
+ {id:'goal',n:'Поставь цель на неделю',why:'Одно главное дело на неделю — первое правило клуба. Так ты всегда в движении.',btn:'Поставить цель',done:!!S.goal,ready:true},
+ {id:'ask',n:'Попроси о помощи',why:'Напиши, что тебе сейчас нужно. Откликнутся участники, которые могут помочь.',btn:'Написать запрос',done:S.mine!=='none',ready:true},
+ {id:'meet',n:'Договорись о встрече',why:'Участник №18 просит 30 минут. Одно новое знакомство в месяц — правило клуба.',btn:'Выбрать время',done:!!S.slot,ready:true},
+ {id:'help',n:'Помоги другому',why:'Откликнись на чужой запрос, в котором можешь помочь. Помощь — главное, что здесь ценится.',btn:'Посмотреть запросы',done:helped(),ready:true},
+ {id:'pick',n:'Выбери помощника',why:'На твой запрос откликнулись. Выбери, кому доверить задачу. С выбранным откроется чат в Telegram.',btn:'Выбрать помощника',done:S.mine==='work'||S.mine==='closed',ready:S.mine==='open'&&S.respCount>0,wait:'Ждём откликов на твой запрос. Обычно это занимает день-два. Мы позовём тебя, как только откликнутся.'},
+ {id:'confirm',n:'Подтверди помощь',why:'Когда задача сделана, подтверди это. Так помощник получает заслуженные баллы.',btn:'Подтвердить помощь',done:S.mine==='closed',ready:S.mine==='work',wait:'Задача у помощника. Когда он закончит, здесь появится кнопка «Подтвердить».'}
+];
+function runStep(id){
+ if(id==='goal')act({dataset:{act:'goal'}});
+ else if(id==='ask'){S.seg='mine';goTo('req');keep();act({dataset:{act:'newreq'}})}
+ else if(id==='meet'){goTo('meet')}
+ else if(id==='help'){S.seg='help';keep();goTo('req')}
+ else if(id==='pick'){S.seg='mine';keep();goTo('req');act({dataset:{act:'pick'}})}
+ else if(id==='confirm'){S.seg='mine';keep();goTo('req');act({dataset:{act:'confirm'}})}
+}
+
+/* ================= экраны ================= */
+function rHome(){
+ const st=STEPS(),nd=st.filter(x=>x.done).length;
+ const cur=st.find(x=>!x.done&&x.ready);
+ const waitS=!cur?st.find(x=>!x.done):null;
+ let guide;
+ if(cur){
+  guide=`<div class="guide" data-k="Карточка «Следующий шаг»"><div class="top"><span>ШАГ ${nd+1} ИЗ ${st.length}</span><span class="dots">${st.map(x=>`<i class="${x.done?'f':''}"></i>`).join('')}</span></div><h2>${cur.n}</h2><p>${cur.why}</p><button class="btn" data-run="${cur.id}" data-k="Главная кнопка шага">${cur.btn}</button></div>`;
+ }else if(waitS){
+  guide=`<div class="guide waitc" data-k="Карточка «Ждём»"><div class="top"><span>ШАГ ${nd+1} ИЗ ${st.length}</span><span class="dots">${st.map(x=>`<i class="${x.done?'f':''}"></i>`).join('')}</span></div><h2>${waitS.n}</h2><p>${waitS.wait}</p><button class="btn o" data-go="req">Открыть запросы</button></div>`;
+ }else{
+  guide=`<div class="guide waitc" data-k="Карточка «Неделя выполнена»"><div class="top"><span>ВСЁ ГОТОВО</span><span class="dots">${st.map(()=>'<i class="f"></i>').join('')}</span></div><h2>Неделя выполнена</h2><p>Ты поставил цель, помог и познакомился. Ближайшее в клубе — ниже. Следующий шаг появится в понедельник.</p><button class="btn o" data-go="lib">Почитать в библиотеке</button></div>`;
+ }
+ return `<div class="eb" data-k="Приветствие">Добрый вечер</div><h1 class="t" data-k="Имя">Алексей</h1><div class="chipx" data-k="Уровень">${ic('check','i s')}Участник · активность ${S.pulse}</div>
+ <div style="margin-top:16px">${guide}</div>
+ <h3 class="rt" data-k="Заголовок «Твой путь»">Твой путь на эту неделю<small>${nd} из ${st.length}</small></h3>
+ <div class="steps" data-k="Список шагов">${st.map((x,i)=>{const c=!x.done&&x===(cur||waitS);return `<div class="stp ${x.done?'d':c?'c':''}" data-k="Шаг"><div class="n">${x.done?ic('check','i'):i+1}</div><div class="tx">${x.n}</div>${c&&!cur?'<span class="st">ждём</span>':''}</div>`}).join('')}</div>
+ <h3 class="rt" data-k="Заголовок «Скоро»">Скоро в клубе</h3>
+ <div class="card" style="padding:2px 15px" data-k="События">
+  <div class="ev"><div class="d"><b>16</b><span>ЧТ</span></div><div class="x">Горячий стул · онлайн<span>19:00 · один участник выносит ситуацию, все помогают</span></div><button class="btn sm ${S.fire?'on':'o'}" data-act="firego">${S.fire?'✓':'Напомнить'}</button></div>
+  <div class="ev"><div class="d"><b>18</b><span>СБ</span></div><div class="x">Живая встреча · Фрайбург<span>17:00 · спорт и «круг запросов»</span></div><button class="btn sm ${S.signed?'on':'o'}" data-act="sign">${S.signed?'✓':'Записаться'}</button></div>
+ </div>`;
+}
+function note(r,kind){
+ const on=S.resp.has(r.id),give=kind==='offer';
+ return `<div class="note ${on?'on':''}" style="--r:${r.r||0}deg" data-k="Записка"><div class="tg">${r.sph}${r.urgent?' · <span class="u">срочно</span>':''}</div><h4>${esc(r.t)}</h4><div class="mt">${person(r.by)}${r.due?' · '+r.due:''}${r.n!=null?' · откликов '+(r.n+(on?1:0)):''}</div><button class="nb" data-act="resp" data-id="${r.id}" data-kind="${kind}" data-k="Кнопка отклика">${on?(give?'Вы написали ✓':'Вы откликнулись ✓'):(give?'Написать':'Могу помочь')}</button></div>`;
+}
+function rReq(){
+ S.pulse=S.pulse;
+ const mr=S.myReq||{t:'',sph:'',due:''};
+ let mine;
+ if(S.mine==='none')mine=`<div class="note blank" style="--r:-.6deg" data-k="Пустая записка"><div class="tg">Мой запрос</div><h4>Тебе что-то нужно?</h4><div class="mt">Опиши, что именно, и откликнутся те, кто может помочь</div><button class="nb gold" data-act="newreq" data-k="Кнопка «Написать запрос»">+ Написать запрос</button></div>`;
+ else if(S.mine==='open')mine=`<div class="note mine" style="--r:-1.2deg" data-k="Мой запрос"><div class="tg">Мой запрос · ${S.respCount?'<span class="u">откликнулись: '+S.respCount+'</span>':'ждём откликов'}</div><h4>${esc(mr.t)}</h4><div class="mt">${mr.due} · ${mr.sph}</div>${S.respCount?`<button class="nb" data-act="pick" data-k="Кнопка «Выбрать помощника»">Выбрать помощника</button>`:`<button class="nb" disabled>Ждём откликов…</button>`}</div>`;
+ else if(S.mine==='work')mine=`<div class="note mine" style="--r:-1.2deg" data-k="Мой запрос (в работе)"><div class="tg">Мой запрос · в работе</div><h4>${esc(mr.t)}</h4><div class="mt">Задачу делает ${person(S.helper)}</div><button class="nb" data-act="tgopen" data-n="${S.helper}" data-k="Кнопка «Написать в Telegram»">Написать в Telegram</button><button class="nb gold" data-act="confirm" data-k="Кнопка «Подтвердить помощь»">Подтвердить помощь</button></div>`;
+ else mine=`<div class="note cl" style="--r:-1deg" data-k="Мой запрос (закрыт)"><div class="tg">Мой запрос · закрыт</div><h4>${esc(mr.t)}</h4><div class="mt">Помощь подтверждена</div></div>`;
+ const mineTab=`${S.mine==='none'?'':`<p class="hint" style="margin:0 0 12px" data-k="Подсказка по запросу">${S.mine==='open'&&!S.respCount?'Если никто не откликнется за 48 часов, бот сам позовёт подходящих участников.':S.mine==='open'?'Выбери того, кому доверишь задачу. С ним откроется чат в Telegram.':S.mine==='work'?'Когда задача сделана, подтверди помощь.':'Можно написать новый запрос.'}</p>`}<div class="board" data-k="Мой запрос">${mine}</div>
+  ${S.mine==='closed'?`<button class="btn" style="margin-top:16px" data-act="newreq" data-k="Кнопка «Написать новый запрос»">${ic('plus','i')} Написать новый запрос</button>`:''}
+  <div class="lockbox" data-k="Правило одного запроса">${ic('lock','i s')}У каждого один активный запрос. Новый можно написать, когда старый закрыт.</div>`;
+ const helpTab=`<p class="hint" style="margin:0 0 12px" data-k="Подсказка">Выбери запрос, в котором можешь помочь, и напиши одной строкой, как. Автор сам выберет помощника.</p><div class="board" data-k="Запросы других">${REQS.map(r=>note(r,'req')).join('')}</div><h3 class="rt" data-k="Заголовок «Предложения»">Предложения участников</h3><div class="board" data-k="Предложения">${OFFERS.map(o=>note(o,'offer')).join('')}</div>`;
+ return `<h1 class="t" data-k="Заголовок">Запросы</h1><p class="lead">Попроси помощи или помоги другим.</p>
+ <div class="sgm" data-k="Переключатель"><button class="${S.seg==='mine'?'on':''}" data-act="seg" data-v="mine">Мой запрос</button><button class="${S.seg==='help'?'on':''}" data-act="seg" data-v="help">Помочь другим</button></div>
+ ${S.seg==='mine'?mineTab:helpTab}`;
+}
+function rMeet(){
+ const inb=S.slot?`<div class="card" data-k="Встреча назначена"><div class="tg">Встреча назначена</div><h4>${person(18)} · ${S.slot}</h4><div class="mt">После встречи покажите друг другу QR, тогда она засчитается.</div></div>`
+  :`<div class="card hl" data-k="Просят встречу"><div class="tg">Тебя просят о встрече · <b>осталось 12 дней</b></div><h4>${person(18)} · «Выход на рынок Австрии»</h4><div class="mt">Минимум 30 минут. Отказаться нельзя, перенести можно один раз. Выбери время:</div>${['Вт 14 окт · 18:00','Ср 15 окт · 12:30','Пт 17 окт · 19:00'].map(s=>`<button class="btn o" style="margin-bottom:8px" data-act="slot" data-s="${s}" data-k="Время встречи">${s}</button>`).join('')}</div>`;
+ return `<h1 class="t" data-k="Заголовок">Встречи</h1><p class="lead">Раз в месяц — новое знакомство. Встреча засчитывается, когда оба показали друг другу QR.</p>
+ <div class="card" data-k="Счётчик встреч"><div class="tg">В октябре</div><div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font:500 28px var(--serif);color:var(--br2)">${S.mon} из 4</b><span class="hint" style="margin:0">встреч</span></div><div class="bar3" style="margin:10px 0 0"><div class="t"><i style="width:${S.mon/4*100}%"></i></div></div></div>
+ ${inb}
+ <h3 class="rt" data-k="Заголовок «Мой QR»">После встречи</h3>
+ <div class="card" style="text-align:center" data-k="Мой QR"><div class="tg">Покажи этот код человеку, с которым встретился</div><div class="qrw"><canvas id="qrc" width="250" height="250"></canvas></div><div class="qrb2"><i id="qrbar" style="width:${S.qrLeft/30*100}%"></i></div><div class="hint" style="margin:0" id="qrt">Код обновляется: ещё ${S.qrLeft} с</div></div>
+ <button class="btn" data-act="scan" data-k="Кнопка «Сканировать»">${ic('qr','i')} Сканировать код другого</button>
+ <h3 class="rt" data-k="Заголовок «Новое знакомство»">Новое знакомство месяца</h3>
+ <div class="card" data-k="Пара месяца"><div class="tg">Подобрали для тебя</div><h4>${person(26)} · Дизайн и digital</h4><div class="mt">Вы ещё не знакомы. Предложи встречу.</div><button class="btn o" data-act="pair" data-k="Кнопка «Предложить встречу»">Предложить встречу</button></div>`;
+}
+function rLib(){
+ const tags=['Все','Finanzamt','Gewerbe','Найм','Квартира','Фишки'];
+ return `<h1 class="t" data-k="Заголовок">Библиотека</h1><p class="lead">Разборы и фишки, за которые снаружи платят. Для участников бесплатно.</p>
+ <div class="chips" data-k="Фильтр">${tags.map(t=>`<button class="chp ${S.libF===t?'on':''}" data-act="libf" data-v="${t}">${t}</button>`).join('')}</div>
+ <div class="card" style="padding:2px 15px" data-k="Список статей">${LIB.filter(l=>S.libF==='Все'||l.tag===S.libF).map(l=>`<div class="li" data-act="art" data-i="${LIB.indexOf(l)}" data-k="Статья"><div class="ic">${ic('book','i s')}</div><div class="tx">${l.t}<span>${l.tag} · ${l.min} мин · от ${person(l.by)}</span></div></div>`).join('')}</div>`;
+}
+function rProf(){
+ const p=S.pulse;
+ const focus=S.goalDone?`<div class="card" data-k="Цель недели (готово)"><div class="tg">Цель недели · <b>выполнена ✓</b></div><h4 style="text-decoration:line-through;opacity:.6">${esc(S.goal)}</h4></div>`
+  :S.goal?`<div class="card hl" data-k="Цель недели"><div class="tg">Цель недели</div><h4>${esc(S.goal)}</h4><div class="mt">Когда сделаешь, отметь.</div><button class="btn" data-act="gdone" data-k="Кнопка «Отметить»">${ic('check','i')} Отметить выполнено</button></div>`
+  :`<div class="card hl" data-k="Цель недели (не задана)"><div class="tg">Цель недели</div><h4>Пока не задана</h4><div class="mt">Одно главное действие на неделю.</div><button class="btn" data-act="goal" data-k="Кнопка «Поставить цель»">Поставить цель</button></div>`;
+ return (S.paused?`<div class="pausebn" data-k="Баннер паузы"><div>Пауза включена<span>До 11 ноября · активность не падает</span></div><button class="btn sm o" data-act="unpause">Выйти</button></div>`:'')+
+ `<div style="text-align:center;padding-top:6px" data-k="Шапка профиля"><div class="big"><small>№</small>07</div><h2 style="font:500 24px var(--serif);margin-top:4px">Алексей М.</h2><div class="lead" style="margin:4px 0 0">Дизайн и digital · Фрайбург</div><div class="chipx">★ Основатель клуба</div></div>
+ <div style="margin-top:18px">${focus}</div>
+ <h3 class="rt" data-k="Заголовок «Уровень»">Твой уровень</h3>
+ <div class="card" data-k="Уровень"><div class="path"><div class="d"><i>${ic('check','i')}</i>Кандидат</div><div class="c"><i></i>Участник</div><div><i></i>Партнёр</div></div>
+ <div class="hint" style="margin-top:12px">Чтобы стать Партнёром: активность 80 (сейчас ${p}) и ещё одна серьёзная помощь (2 из 3). Партнёр помогает принимать новых людей.</div></div>
+ <h3 class="rt" data-k="Заголовок «Активность»">Активность<small>${p} из 100</small></h3>
+ <div class="card" data-k="Активность"><div class="hint" style="margin:0 0 6px">Растёт, когда ты делаешь шаги, встречаешься и помогаешь. Если пропасть, медленно падает.</div>
+  <div class="bar3"><div class="l"><span>Шаги к цели</span><b>${S.goalDone?23:20} / 25</b></div><div class="t"><i style="width:${S.goalDone?92:80}%"></i></div></div>
+  <div class="bar3"><div class="l"><span>Новые знакомства</span><b>21 / 30</b></div><div class="t"><i style="width:70%"></i></div></div>
+  <div class="bar3"><div class="l"><span>Помощь другим</span><b>33 / 45</b></div><div class="t"><i style="width:73%"></i></div></div></div>
+ <h3 class="rt" data-k="Заголовок «Мне помогли»">Мне помогли</h3>
+ <div class="card" style="padding:2px 15px" data-k="Мне помогли"><div class="li" style="cursor:default"><div class="ic">12</div><div class="tx">«Помог разобрать письмо от Finanzamt, срок был через 2 дня. Всё успел.»<span>${person(12)} · изменило мою ситуацию</span></div></div><div class="li" style="cursor:default"><div class="ic">04</div><div class="tx">«Познакомил с человеком, который нашёл мне первого клиента.»<span>${person(4)} · серьёзно</span></div></div></div>
+ <h3 class="rt" data-k="Заголовок «Настройки»">Настройки</h3>
+ <div class="card" style="padding:2px 15px" data-k="Настройки">
+  <button class="setrow" data-act="myqr" data-k="Строка «Мой QR»"><div><b>Мой QR-код</b><span>Показать при встрече</span></div>${ic('chev','i s')}</button>
+  <button class="setrow" data-act="pause" data-k="Строка «Пауза»"><div><b>Пауза</b><span>До 3 месяцев раз в год, активность не падает</span></div>${ic('chev','i s')}</button>
+  <button class="setrow" data-act="laws" data-k="Строка «Правила клуба»"><div><b>Правила клуба</b><span>Десять простых правил</span></div>${ic('chev','i s')}</button>
+  <button class="setrow" data-act="leave" data-k="Строка «Выйти из клуба»"><div><b style="color:var(--warn)">Выйти из клуба</b><span>В один шаг, данные удаляются</span></div></button>
+ </div>`;
+}
+function renderAll(){
+ $('#s-home').innerHTML=rHome();$('#s-req').innerHTML=rReq();$('#s-meet').innerHTML=rMeet();$('#s-lib').innerHTML=rLib();$('#s-prof').innerHTML=rProf();
+ $('#bdq').style.display=((S.mine==='open'&&S.respCount)||S.mine==='work')?'block':'none';
+ if(S.screen==='meet')drawQR($('#qrc'),S.qrSeed,'#2a1d08','#f3e9d2');
+ reapplySel();
+}
+const keep=()=>{const e=$('#s-'+S.screen);const t=e.scrollTop;renderAll();e.scrollTop=t};
+setInterval(()=>{S.qrLeft--;if(S.qrLeft<=0){S.qrLeft=30;S.qrSeed=Math.floor(Math.random()*1e6);drawQR($('#qrc'),S.qrSeed,'#2a1d08','#f3e9d2');drawQR($('#qrs'),S.qrSeed,'#2a1d08','#f3e9d2')}
+ const b=$('#qrbar'),t=$('#qrt');if(b)b.style.width=S.qrLeft/30*100+'%';if(t)t.textContent=`Код обновляется: ещё ${S.qrLeft} с`;const q=$('#qrst');if(q)q.textContent='Обновится через '+S.qrLeft+' с'},1000);
+
+/* ================= действия ================= */
+phone.addEventListener('click',e=>{
+ if(picking)return;
+ const r=e.target.closest('[data-run]');if(r){runStep(r.dataset.run);return}
+ const a=e.target.closest('[data-act]');if(a){act(a);return}
+ const g=e.target.closest('[data-go]');if(g)goTo(g.dataset.go);
+});
+function connectSheet(){
+ openSheet(`<div style="text-align:center"><div style="width:62px;height:62px;border-radius:50%;background:rgba(111,191,138,.15);color:var(--ok);display:grid;place-items:center;margin:4px auto 12px">${ic('check','i')}</div>${sh2('Вы на связи с '+person(S.helper))}<div class="hint" style="margin:0 0 6px">Задача доверена. Дальше общайтесь напрямую в Telegram.</div></div>
+ <div style="background:#0b1812;border:1px solid var(--line);border-radius:12px;padding:13px 14px;font-size:14px;margin:14px 0" data-k="Сообщение бота"><div style="font-size:11px;letter-spacing:.16em;color:var(--br2);font-weight:700;margin-bottom:7px">БОТ NEXT · ВАМ ОБОИМ</div>${person(7)} доверил(а) ${person(S.helper)} задачу «${esc((S.myReq&&S.myReq.t)||'')}». Напишите друг другу в Telegram. Через 3 дня я спрошу, как прошло.</div>
+ <button class="btn" data-act="tgopen" data-n="${S.helper}" data-k="Кнопка «Открыть чат в Telegram»">Открыть чат в Telegram</button><button class="btn o" data-act="close" style="margin-top:8px">Позже</button>
+ <div class="hint" style="text-align:center">Остальным, кто откликнулся, ушло «спасибо за отклик». Чат только с выбранным.</div>`);
+}
+function act(a){
+ const k=a.dataset.act,v=a.dataset.v;
+ switch(k){
+  case 'close':closeSheet();break;
+  case 'seg':S.seg=v;keep();break;
+  case 'libf':S.libF=v;keep();break;
+  case 'myqr':openSheet(`${sh2('Мой QR-код')}<div class="hint" style="margin:0 0 10px">Покажи другому участнику. Код меняется каждые 30 секунд. Встреча засчитается, когда оба отсканируют друг друга.</div><div class="qrw"><canvas id="qrs" width="250" height="250"></canvas></div><div class="hint" style="text-align:center" id="qrst">Обновится через ${S.qrLeft} с</div><button class="btn o" data-act="close" style="margin-top:14px">Закрыть</button>`,()=>drawQR($('#qrs'),S.qrSeed,'#2a1d08','#f3e9d2'));break;
+  case 'resp':{const id=a.dataset.id;
+   if(S.resp.has(id)){S.resp.delete(id);keep();toast('Отклик отозван');break}
+   if(a.dataset.kind==='offer'){const o=OFFERS.find(x=>x.id===id);
+    openSheet(`${sh2('Написать '+person(o.by))}<div class="hint" style="margin:0 0 12px">Предложение: «${esc(o.t)}». Дальше вы общаетесь в личном чате Telegram.</div><textarea class="fld" id="wm" data-k="Сообщение автору предложения">Привет! Увидел твоё предложение в NEXT. Расскажешь подробнее?</textarea><button class="btn" id="wok" style="margin-top:14px" data-k="Кнопка «Открыть Telegram»">Открыть Telegram</button><div class="hint">Сообщение подставится в чат, останется нажать «Отправить».</div>`,s=>{$('#wok',s).onclick=()=>{S.resp.add(id);closeSheet();keep();toast('В настоящем приложении откроется чат Telegram с '+person(o.by))}});break}
+   const r=REQS.find(x=>x.id===id);
+   openSheet(`${sh2('Чем ты можешь помочь?')}<div class="hint" style="margin:0 0 12px">«${esc(r.t)}». Автор увидит твоё сообщение и сам выберет, кому доверить. Чат в Telegram откроется только с выбранным.</div><textarea class="fld" id="rm" maxlength="140" placeholder="Одной строкой: что именно можешь сделать" data-k="Сообщение с откликом"></textarea><div class="chips" style="flex-wrap:wrap;margin:10px 0 0;padding:0">${['Могу сделать сегодня','Знаю, как это сделать','Знаю нужного человека'].map(x=>`<button class="chp" data-v="${x}">${x}</button>`).join('')}</div><button class="btn" id="rok" style="margin-top:16px" disabled data-k="Кнопка «Отправить отклик»">Отправить отклик</button>`,s=>{const t=$('#rm',s),b=$('#rok',s);t.oninput=()=>b.disabled=t.value.trim().length<5;$$('.chp',s).forEach(c=>c.onclick=()=>{t.value=c.dataset.v;t.oninput()});b.onclick=()=>{S.resp.add(id);closeSheet();keep();toast('Отклик ушёл автору. Если выберет тебя, откроется чат в Telegram')}})}break;
+  case 'tgopen':closeSheet();toast('В настоящем приложении откроется чат Telegram с '+person(a.dataset.n));break;
+  case 'pick':if(!S.respCount){toast('Пока никто не откликнулся');break}openSheet(`${sh2('Кто откликнулся')}<div class="hint" style="margin:0 0 6px">Выбери, кому доверить задачу</div>${RESP.map(r=>`<div class="li" data-act="trust" data-n="${r.n}" data-k="Откликнувшийся"><div class="ic">${String(r.n).padStart(2,'0')}</div><div class="tx">${person(r.n)} · ${r.niche}<span>«${r.why}»</span></div></div>`).join('')}`);break;
+  case 'trust':S.mine='work';S.helper=+a.dataset.n;closeSheet();keep();connectSheet();break;
+  case 'confirm':{let rate='Серьёзно';openSheet(`${sh2('Подтверди помощь')}<div class="hint" style="margin:0 0 12px">От ${person(S.helper)}. Это поднимает его активность.</div><div style="font-size:13px;font-weight:700;margin-bottom:8px">Насколько это было важно?</div><div class="chips" style="flex-wrap:wrap;margin:0;padding:0" id="rt">${['Мелочь','Серьёзно','Изменило мою ситуацию'].map(x=>`<button class="chp ${x===rate?'on':''}" data-v="${x}">${x}</button>`).join('')}</div><button class="btn" id="cfok" style="margin-top:18px">Подтвердить</button>`,s=>{$$('#rt .chp',s).forEach(b=>b.onclick=()=>{rate=b.dataset.v;$$('#rt .chp',s).forEach(x=>x.classList.toggle('on',x===b))});$('#cfok',s).onclick=()=>{S.mine='closed';closeSheet();keep();toast('Помощь подтверждена. Запрос закрыт')}})}break;
+  case 'newreq':{if(!(S.mine==='none'||S.mine==='closed')){toast('Сначала закрой старый запрос');break}
+   let sph='Бумаги',due='Неделя',urg=false;
+   openSheet(`${sh2('Новый запрос')}<div class="hint" style="margin:0 0 12px">Напиши конкретно, что нужно. Чем яснее, тем быстрее откликнутся.</div><textarea class="fld" id="nr" maxlength="160" placeholder="Что нужно?" data-k="Поле «Текст запроса»"></textarea><div style="font-size:12px;letter-spacing:.12em;color:var(--mut);font-weight:700;margin:14px 0 8px">СФЕРА</div><div class="chips" style="flex-wrap:wrap;margin:0;padding:0" id="ns" data-k="Выбор сферы">${SPH.map(x=>`<button class="chp ${x===sph?'on':''}" data-v="${x}">${x}</button>`).join('')}</div><div style="font-size:12px;letter-spacing:.12em;color:var(--mut);font-weight:700;margin:14px 0 8px">СРОК</div><div class="chips" style="flex-wrap:wrap;margin:0;padding:0" id="nd" data-k="Выбор срока">${['3 дня','Неделя','2 недели','Месяц'].map(x=>`<button class="chp ${x===due?'on':''}" data-v="${x}">${x}</button>`).join('')}</div><button class="setrow" id="nu" style="margin-top:8px" data-k="Переключатель «Срочно»"><div><b>Срочно</b><span>Можно раз в месяц, чтобы пометка не обесценилась</span></div><span id="nus" style="width:44px;height:26px;border-radius:20px;background:#244033;position:relative;flex:none"><i style="position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:var(--mut);transition:.2s"></i></span></button><button class="btn" id="nok" style="margin-top:14px" disabled data-k="Кнопка «Опубликовать»">Опубликовать запрос</button>`,s=>{
+    $('#nr',s).oninput=e2=>{$('#nok',s).disabled=e2.target.value.trim().length<10};
+    $$('#ns .chp',s).forEach(b=>b.onclick=()=>{sph=b.dataset.v;$$('#ns .chp',s).forEach(x=>x.classList.toggle('on',x===b))});
+    $$('#nd .chp',s).forEach(b=>b.onclick=()=>{due=b.dataset.v;$$('#nd .chp',s).forEach(x=>x.classList.toggle('on',x===b))});
+    $('#nu',s).onclick=()=>{urg=!urg;const t=$('#nus',s);t.style.background=urg?'var(--br2)':'#244033';t.firstChild.style.left=urg?'21px':'3px';t.firstChild.style.background=urg?'#2a1d08':'var(--mut)'};
+    $('#nok',s).onclick=()=>{const req={t:$('#nr',s).value.trim(),sph,due:'срок: '+due.toLowerCase()+(urg?' · срочно':'')};S.myReq=req;S.mine='open';S.respCount=0;closeSheet();keep();toast('Запрос опубликован. Ждём откликов…');
+     setTimeout(()=>{if(S.mine==='open'&&S.myReq===req){S.respCount=3;keep();toast('На твой запрос откликнулись 3 человека')}},4000)}})}break;
+  case 'slot':S.slot=a.dataset.s;keep();toast('Встреча назначена: '+a.dataset.s);break;
+  case 'sign':S.signed=!S.signed;keep();toast(S.signed?'Записал. Напомним за день':'Запись отменена');break;
+  case 'firego':S.fire=!S.fire;keep();toast(S.fire?'Напомним в четверг за час':'Напоминание снято');break;
+  case 'pair':openSheet(`${sh2('Встреча с '+person(26))}<div class="hint" style="margin:0 0 12px">Участник обязан встретиться в течение двух недель.</div><input class="fld" id="pt" placeholder="Зачем? Одной строкой"><button class="btn" id="pok" style="margin-top:12px">Отправить</button>`,s=>{$('#pok',s).onclick=()=>{closeSheet();toast('Запрос отправлен '+person(26))}});break;
+  case 'scan':{const seq=[12,26,12,12],n=seq[S.scanI++%seq.length],m=S.met[n]||0,pts=[4,2,0][Math.min(m,2)];S.met[n]=m+1;if(m===0)S.mon=Math.min(4,S.mon+1);S.pulse=Math.min(100,S.pulse+pts);keep();
+   openSheet(`<div style="text-align:center"><div style="width:62px;height:62px;border-radius:50%;background:rgba(111,191,138,.15);color:var(--ok);display:grid;place-items:center;margin:4px auto 12px">${ic('check','i')}</div>${sh2('Встреча засчитана')}<div class="hint">${person(n)} · ${PEOPLE[n]}</div><div style="margin:12px 0;font-weight:700;color:var(--br2)">Новые знакомства ${pts?'+'+pts:'+0'}</div><div class="hint">${m===0?'Первая встреча с этим человеком: полные баллы.':m===1?'Повторная встреча: баллы меньше.':'Повторных встреч уже достаточно: баллов нет.'}</div></div><input class="fld" id="scn" placeholder="О чём договорились (по желанию, +1)" style="margin-top:14px"><button class="btn" id="scok" style="margin-top:12px">Готово</button>`,s=>{$('#scok',s).onclick=()=>{const t=$('#scn',s).value.trim();closeSheet();if(t.length>2&&pts){S.pulse=Math.min(100,S.pulse+1);keep();toast('Записал. Бонус +1')}else toast('Готово')}})}break;
+  case 'art':{const l=LIB[+a.dataset.i];openSheet(`<span style="font-size:11px;letter-spacing:.14em;color:var(--br2);font-weight:700">${l.tag.toUpperCase()}</span><h2 style="font:500 24px/1.2 var(--serif);margin:8px 0 4px">${l.t}</h2><div class="hint" style="margin:0 0 12px">${l.min} мин · от участника ${person(l.by)}</div>${l.b.map(p=>`<p style="margin-bottom:10px">${p}</p>`).join('')}<div class="hint">Пример наполнения.</div><button class="btn o" data-act="close" style="margin-top:14px">Закрыть</button>`)}break;
+  case 'goal':openSheet(`${sh2('Главное на этой неделе')}<div class="hint" style="margin:0 0 12px">Одно действие к твоей цели. Конкретно и проверяемо.</div><textarea class="fld" id="gl" maxlength="120" placeholder="Например: отправить 5 предложений клиентам" data-k="Поле «Цель недели»"></textarea><div class="chips" style="margin:10px 0 0;padding:0;flex-wrap:wrap">${['Записаться на Gewerbe-термин','Провести 2 созвона','Сделать первый экран сайта'].map(x=>`<button class="chp" data-v="${x}">${x}</button>`).join('')}</div><button class="btn" id="glok" style="margin-top:16px" disabled>Зафиксировать</button>`,s=>{const t=$('#gl',s),b=$('#glok',s);t.oninput=()=>b.disabled=t.value.trim().length<8;$$('.chp',s).forEach(c=>c.onclick=()=>{t.value=c.dataset.v;t.oninput()});b.onclick=()=>{S.goal=t.value.trim();closeSheet();keep();toast('Цель зафиксирована. Когда сделаешь, отметь в профиле')}});break;
+  case 'gdone':S.goalDone=true;S.pulse=Math.min(100,S.pulse+3);keep();toast('Отмечено. Активность +3 → '+S.pulse);break;
+  case 'pause':openSheet(`${sh2('Пауза')}<div class="hint" style="margin:0 0 14px">Болезнь, ребёнок, экзамены, большое событие. До трёх месяцев раз в год. Активность не падает, статус сохраняется.</div><button class="btn" data-act="pauseok">Включить паузу на 1 месяц</button>`);break;
+  case 'pauseok':S.paused=true;closeSheet();keep();toast('Пауза включена до 11 ноября');break;
+  case 'unpause':S.paused=false;keep();toast('Пауза завершена');break;
+  case 'laws':{const L=['Каждую неделю — шаг к своей цели','Каждый месяц — новое знакомство','Каждый месяц — помощь другому участнику','Сначала отдаёшь, потом просишь','Что сказано в клубе, остаётся в клубе','Правила одни для всех, включая создателя','Статус не покупается, его можно только заработать','Политика остаётся за дверью','Обман участника — выход навсегда','Кто остановился — уходит. Клуб никого не выгоняет'];openSheet(`${sh2('Правила клуба')}${L.map((l,i)=>`<div class="li" style="cursor:default"><div class="ic">${i+1}</div><div class="tx">${l}</div></div>`).join('')}`)}break;
+  case 'leave':openSheet(`${sh2('Выйти из клуба?')}<p style="margin:8px 0 16px;color:var(--mut)">Уйти можно в любой момент, без объяснений. Данные удаляются из приложения. Вернуться можно через обычный отбор.</p><button class="btn o" data-act="close">Остаться</button><button class="btn o" style="margin-top:8px;color:var(--warn);border-color:var(--warn)" data-act="close">Выйти (в прототипе отключено)</button>`);break;
+  case 'why':openSheet(`${sh2('Зачем это')}<div class="hint" style="margin:0">${a.dataset.v}</div><button class="btn o" data-act="close" style="margin-top:14px">Понятно</button>`);break;
+ }
+}
+
+/* ================= приветствие ================= */
+function welcome(){
+ openSheet(`${sh2('Добро пожаловать в NEXT')}<div class="hint" style="margin:0 0 10px">Здесь всё просто. Приложение само подскажет, что делать дальше.</div>
+ <div class="wl"><b>1</b><div>Каждую неделю — одна цель<span>Одно главное дело. Ты всегда в движении.</span></div></div>
+ <div class="wl"><b>2</b><div>Проси помощь и помогай другим<span>Откликается тот, кто может. Дальше общение в Telegram.</span></div></div>
+ <div class="wl"><b>3</b><div>Раз в месяц — новое знакомство<span>Встреча подтверждается QR-кодом.</span></div></div>
+ <button class="btn" data-act="close" style="margin-top:14px" data-k="Кнопка «Начать»">Понятно, начнём</button>`);
+}
+
+/* ================= режим выбора ================= */
+let picking=false,hovEl=null;const sel=new Map();
+const pathOf=el=>{const p=[];let n=el;while(n&&n!==phone){if(n.dataset&&n.dataset.k)p.unshift(n.dataset.k);n=n.parentElement}return p.join(' › ')};
+const textOf=el=>(el.innerText||el.textContent||'').replace(/\s+/g,' ').trim().slice(0,70);
+const keyOf=el=>pathOf(el)+'|'+textOf(el);
+function reapplySel(){$$('[data-k]',phone).forEach(e=>e.classList.toggle('sel',sel.has(keyOf(e))))}
+function setMode(m){picking=m==='pick';document.body.classList.toggle('picking',picking);$$('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));if(hovEl){hovEl.classList.remove('hov');hovEl=null}}
+$$('#modes button').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+phone.addEventListener('click',e=>{
+ if(!picking)return;
+ const el=e.target.closest('[data-k]');
+ e.preventDefault();e.stopPropagation();if(!el)return;
+ const key=keyOf(el);
+ if(sel.has(key)){sel.delete(key);el.classList.remove('sel')}else{sel.set(key,{path:pathOf(el),text:textOf(el),v:'Оставить',note:''});el.classList.add('sel')}
+ renderSel();
+},true);
+phone.addEventListener('mousedown',e=>{if(picking)e.preventDefault()},true);
+phone.addEventListener('mouseover',e=>{if(!picking)return;const el=e.target.closest('[data-k]');if(hovEl&&hovEl!==el)hovEl.classList.remove('hov');hovEl=el;if(el)el.classList.add('hov')});
+phone.addEventListener('mouseleave',()=>{if(hovEl){hovEl.classList.remove('hov');hovEl=null}});
+function renderSel(){
+ const L=$('#selList');$('#selCount').textContent=sel.size;$('#fabN').textContent=sel.size;
+ if(!sel.size){L.innerHTML='<div class="empty">Пока пусто. Включи «Выбирать» и кликни по элементу на экране.</div>';return}
+ L.innerHTML=[...sel.entries()].map(([k,s],i)=>`<div class="selitem" data-key="${esc(k)}"><button class="x" data-x="1">×</button><div class="p">${i+1}. ${esc(s.path)}</div><div class="t">«${esc(s.text)}»</div><div class="vs">${['Оставить','Изменить','Убрать'].map(v=>`<button data-v="${v}" class="${s.v===v?'on':''}">${v}</button>`).join('')}</div><input placeholder="Комментарий (необязательно)" value="${esc(s.note)}"/></div>`).join('');
+}
+$('#selList').addEventListener('click',e=>{const it=e.target.closest('.selitem');if(!it)return;const k=it.dataset.key,s=sel.get(k);if(!s)return;if(e.target.dataset.x){sel.delete(k);renderSel();reapplySel();return}const b=e.target.closest('.vs button');if(b){s.v=b.dataset.v;$$('.vs button',it).forEach(x=>x.classList.toggle('on',x===b))}});
+$('#selList').addEventListener('input',e=>{const it=e.target.closest('.selitem');if(it&&sel.get(it.dataset.key))sel.get(it.dataset.key).note=e.target.value});
+function buildOut(){const g=$('#gnote').value.trim();let t='ВЫБОР ПО ПРОСТОЙ ВЕРСИИ NEXT (club-simple.html)\n';if(g)t+='\nОбщий комментарий: '+g+'\n';t+='\n';[...sel.values()].forEach((s,i)=>{t+=`${i+1}) ${s.v.toUpperCase()} — ${s.path}\n   Текст на элементе: «${s.text}»\n`+(s.note?`   Комментарий: ${s.note}\n`:'')+'\n'});return t.trim()}
+$('#copyBtn').onclick=async()=>{
+ if(!sel.size&&!$('#gnote').value.trim()){toast('Сначала выбери хотя бы один элемент');return}
+ const t=buildOut(),o=$('#out');o.value=t;
+ try{await navigator.clipboard.writeText(t);o.style.display='none';toast('Скопировано. Отправь мне в чат')}
+ catch(_){o.style.display='block';o.select();try{document.execCommand('copy');toast('Скопировано. Отправь мне в чат')}catch(__){toast('Выдели текст ниже и скопируй вручную')}}
+};
+$('#clearBtn').onclick=()=>{sel.clear();renderSel();reapplySel();$('#out').style.display='none'};
+$('#restart').onclick=()=>location.reload();
+$('#fab').onclick=()=>$('#tools').classList.add('open');
+$('#tclose').onclick=()=>$('#tools').classList.remove('open');
+$('#scrs').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){goTo(b.dataset.go);if(innerWidth<=900)$('#tools').classList.remove('open')}});
+
+renderAll();renderSel();welcome();
+</script>
+</body>
+</html>

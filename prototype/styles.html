@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXT — выбор стиля</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Literata:opsz,wght@7..72,400;7..72,600;7..72,800&family=Unbounded:wght@500;700;900&family=Golos+Text:wght@400;500;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#0a0a0b;color:#ece9e2;font:15px/1.45 'Onest',system-ui,sans-serif;min-height:100dvh;padding-bottom:150px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- страница выбора ---------- */
+.head{max-width:1700px;margin:0 auto;padding:34px 24px 10px}
+.head h1{font:700 34px/1.1 'Onest';letter-spacing:-.02em}
+.head p{color:#9a968c;margin-top:10px;max-width:640px}
+.ctl{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:22px}
+.ctl .lb{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#6e6a62}
+.gseg{display:inline-flex;background:#141416;border:1px solid #26262b;border-radius:12px;padding:4px;gap:4px}
+.gseg button{padding:9px 16px;border-radius:9px;font-size:14px;color:#9a968c;font-weight:500}
+.gseg button.on{background:#25252b;color:#fff}
+.grid{max-width:1700px;margin:26px auto 0;padding:0 24px;display:flex;flex-wrap:wrap;gap:44px 36px;justify-content:center}
+.opt{width:366px}
+.cap{margin-top:26px}
+.cap .n{font:700 13px 'Onest';color:#6e6a62;letter-spacing:.14em}
+.cap h2{font:700 22px/1.2 'Onest';margin:4px 0 6px}
+.cap p{color:#9a968c;font-size:14px;min-height:62px}
+.cap .kw{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 14px}
+.cap .kw span{font-size:12px;border:1px solid #2a2a30;border-radius:20px;padding:3px 10px;color:#b9b5aa}
+.pickbtn{width:100%;padding:14px;border-radius:14px;border:1.5px solid #34343b;font-weight:600;font-size:15px;transition:.15s}
+.pickbtn:hover{border-color:#8a8a95}
+.opt.chosen .pickbtn{background:#4cc3ff;border-color:#4cc3ff;color:#04202c}
+.opt.chosen .ph{box-shadow:0 0 0 3px #4cc3ff,0 0 0 11px #0c0c0e,0 24px 60px #0008}
+
+.bar{position:fixed;left:0;right:0;bottom:0;background:#101012ee;backdrop-filter:blur(14px);border-top:1px solid #26262b;padding:14px 24px;z-index:50}
+.bar .in{max-width:1700px;margin:0 auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.bar .cur{font-weight:600;min-width:220px}
+.bar .cur small{display:block;font-weight:400;color:#6e6a62;font-size:12px}
+.bar input{flex:1;min-width:240px;background:#0a0a0b;border:1px solid #2a2a30;border-radius:12px;padding:12px 14px;font:inherit;color:inherit;outline:none}
+.bar input:focus{border-color:#4cc3ff}
+.bar .go{background:#4cc3ff;color:#04202c;font-weight:700;padding:12px 22px;border-radius:12px}
+.bar .go[disabled]{opacity:.4;pointer-events:none}
+.gtoast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(10px);background:#4cc3ff;color:#04202c;font-weight:600;padding:10px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:60}
+.gtoast.on{opacity:1;transform:translateX(-50%)}
+
+/* ---------- общий каркас телефона ---------- */
+.ph{position:relative;width:350px;height:720px;border-radius:40px;overflow:hidden;background:var(--bg);color:var(--fg);font-family:var(--fb);box-shadow:0 0 0 8px #101012,0 24px 60px #0008;margin:0 auto;font-size:15px;line-height:1.4}
+.ph *{box-sizing:border-box}
+.ph h1,.ph h2,.ph h3,.ph h4,.ph p,.ph ul{margin:0}
+.ph ul{list-style:none;padding:0}
+.top{position:absolute;top:0;left:0;right:0;height:42px;display:flex;justify-content:space-between;align-items:center;padding:0 20px;font-size:12px;z-index:4}
+.sc{position:absolute;top:42px;bottom:0;left:0;right:0;overflow-y:auto;padding:16px 18px 100px;scrollbar-width:none}
+.sc::-webkit-scrollbar{display:none}
+.scr{display:none}.scr.on{display:block;animation:in .3s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+nav{position:absolute;left:0;right:0;bottom:0;height:64px;display:grid;grid-template-columns:repeat(5,1fr);z-index:4}
+nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px}
+.pul{position:relative;width:60px;height:60px}
+.pul svg{width:100%;height:100%}
+.pul .t{fill:none;stroke-width:5;stroke:var(--line)}
+.pul .v{fill:none;stroke-width:5;stroke:var(--acc);stroke-linecap:round}
+.pul b{position:absolute;inset:0;display:grid;place-items:center;font:700 17px var(--fd)}
+.idt{display:flex;justify-content:space-between;align-items:center}
+.idb{display:flex;justify-content:space-between;align-items:flex-end}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.tile b{display:block}
+.tile span{font-size:12.5px;color:var(--mut)}
+.tasks li{display:flex;align-items:center;gap:11px}
+.cb{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--mut);flex:none;display:grid;place-items:center}
+.tasks li.d .cb{background:var(--acc);border-color:var(--acc)}
+.tasks li.d span{opacity:.5;text-decoration:line-through}
+.tg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:16px 0 14px}
+.seg button{padding:9px 4px;font-size:13.5px;font-weight:500}
+.mt{font-size:12.5px;color:var(--mut);margin:8px 0 12px}
+.cta{display:block;width:100%;padding:13px;font-weight:700;font-size:14px;text-align:center}
+.steps{display:flex;margin:12px 0 4px}
+.st{flex:1;text-align:center;position:relative;font-size:11px;padding-top:22px;color:var(--mut)}
+.st i{position:absolute;top:0;left:50%;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--bg);border:2px solid var(--line)}
+.st::before{content:"";position:absolute;top:6px;left:-50%;width:100%;height:2px;background:var(--line)}
+.st:first-child::before{display:none}
+.st.d,.st.c{color:var(--fg)}
+.st.d::before,.st.c::before{background:var(--acc)}
+.st.d i{background:var(--acc);border-color:var(--acc)}
+.st.c i{border-color:var(--acc)}
+.br{margin:12px 0}
+.bl{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px}
+.bar2{height:7px;background:var(--line);overflow:hidden}
+.bar2 i{display:block;height:100%;background:var(--acc)}
+.story p{margin:8px 0 6px}
+.lead{font-size:14px;color:var(--mut);margin-top:8px}
+
+/* =========================================================
+   1. ЗАКРЫТЫЙ БАНК — тёмный, золото, серифы
+   ========================================================= */
+.T-bank{--bg:#09090a;--fg:#ece7dd;--mut:#908c84;--line:#28282e;--card:#151518;--acc:#c8a96b;--acc2:#e4cb93;--fd:'Playfair Display',serif;--fb:'Onest',sans-serif}
+.T-bank .top{background:#0f0f11;border-bottom:1px solid var(--line);color:var(--mut);letter-spacing:.06em;font-weight:600}
+.T-bank .eb{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+.T-bank h1{font:500 32px/1.1 var(--fd);margin-top:6px}
+.T-bank .idc{margin-top:16px;border-radius:22px;padding:18px;background:radial-gradient(120% 90% at 100% 0%,#2a2417,transparent 55%),linear-gradient(160deg,#17171b,#0e0e10);border:1px solid #3a3326}
+.T-bank .idt .mono{font:600 10px ui-monospace,monospace;letter-spacing:.08em;color:#5f5c56}
+.T-bank .tag{border:1px solid #5b4b2a;background:rgba(200,169,107,.11);color:var(--acc2);border-radius:20px}
+.T-bank .num{font:700 88px/1 var(--fd);color:var(--acc2);margin:14px 0 12px;letter-spacing:-.02em}
+.T-bank .num small{font-size:26px;font-weight:500;color:var(--acc);margin-right:6px;vertical-align:top;position:relative;top:10px}
+.T-bank .l{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#5f5c56}
+.T-bank .idb>div:first-child b{font-size:16px;display:block;margin-top:3px}
+.T-bank .tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px}
+.T-bank .tile b{font:500 18px var(--fd);margin:6px 0 2px}
+.T-bank .sh{font:500 20px var(--fd);margin:26px 0 12px}
+.T-bank .tasks{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:2px 14px}
+.T-bank .tasks li{padding:13px 0;border-bottom:1px solid var(--line)}
+.T-bank .tasks li:last-child{border:0}
+.T-bank .tasks li.d .cb{color:#17130a}
+.T-bank .lib{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+.T-bank .lib .tag{margin-bottom:10px}
+.T-bank .lib b{font:500 17px/1.25 var(--fd);display:block;margin-bottom:10px}
+.T-bank .lib small{color:var(--mut);font-size:12.5px}
+.T-bank .seg{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:4px}
+.T-bank .seg button{border-radius:10px;color:var(--mut)}
+.T-bank .seg button.on{background:#1c1c20;color:var(--fg);box-shadow:inset 0 0 0 1px var(--line)}
+.T-bank .rq{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px}
+.T-bank .rq.mine{border-color:#5b4b2a;background:linear-gradient(180deg,#1b1810,var(--card))}
+.T-bank .rq h4{font-size:15.5px;font-weight:600;line-height:1.3}
+.T-bank .tag{border-radius:20px}
+.T-bank .tag.w{border-color:#5a3326;background:rgba(217,128,98,.1);color:#d98062}
+.T-bank .tag.g{border-color:var(--line);background:transparent;color:var(--mut)}
+.T-bank .cta{border-radius:14px;background:var(--acc);color:#17130a}
+.T-bank .cta.o{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.T-bank .bar2{border-radius:6px}.T-bank .bar2 i{border-radius:6px}
+.T-bank .pf{text-align:center;padding-top:4px}
+.T-bank .pf .num{margin:6px 0 4px;font-size:80px}
+.T-bank .pf h2{font:500 22px var(--fd)}
+.T-bank .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+.T-bank .story p{font:italic 500 16px/1.35 var(--fd)}
+nav{background:var(--nbg)}
+.T-bank{--nbg:#0f0f11}
+.T-bank nav{border-top:1px solid var(--line);color:#5f5c56}
+.T-bank nav .on{color:var(--acc)}
+
+/* =========================================================
+   2. ЖУРНАЛ — светлая бумага, чернила, красный акцент
+   ========================================================= */
+.T-paper{--bg:#f2ede2;--fg:#16140f;--mut:#6f6a5e;--line:#cfc8b6;--acc:#d2421f;--fd:'Literata',serif;--fb:'Literata',serif;--fl:'Onest',sans-serif;--nbg:#f2ede2}
+.T-paper .top{border-bottom:2px solid var(--fg);font:700 10.5px var(--fl);letter-spacing:.22em;text-transform:uppercase}
+.T-paper .eb{font:700 10px var(--fl);letter-spacing:.22em;text-transform:uppercase;color:var(--acc)}
+.T-paper h1{font:800 46px/.95 var(--fd);letter-spacing:-.035em;margin-top:8px}
+.T-paper .idc{margin-top:18px;border-top:4px solid var(--fg);border-bottom:1px solid var(--fg);padding:12px 0 14px}
+.T-paper .idt .mono{font:600 9.5px var(--fl);letter-spacing:.2em}
+.T-paper .tag{font:700 10px var(--fl);letter-spacing:.14em;text-transform:uppercase;border:1.5px solid var(--fg);padding:3px 8px}
+.T-paper .num{font:800 138px/.78 var(--fd);color:var(--acc);letter-spacing:-.07em;margin:14px 0 18px}
+.T-paper .num small{display:block;font:700 13px var(--fl);color:var(--fg);letter-spacing:.14em;margin-bottom:10px}
+.T-paper .l{font:700 9.5px var(--fl);letter-spacing:.18em;text-transform:uppercase;color:var(--mut)}
+.T-paper .idb>div:first-child b{font:600 18px var(--fd);display:block;margin-top:2px}
+.T-paper .pul{width:auto;height:auto;text-align:right}
+.T-paper .pul svg{display:none}
+.T-paper .pul b{position:static;display:block;font:800 52px/.9 var(--fd);color:var(--fg);letter-spacing:-.04em}
+.T-paper .pul b::after{content:"пульс";display:block;font:700 9.5px var(--fl);letter-spacing:.18em;text-transform:uppercase;color:var(--mut);margin-top:6px}
+.T-paper .tiles{gap:16px}
+.T-paper .tile{border-top:1px solid var(--fg);padding-top:10px}
+.T-paper .tile b{font:700 19px/1.15 var(--fd);margin:5px 0 2px}
+.T-paper .sh{font:700 10.5px var(--fl);letter-spacing:.22em;text-transform:uppercase;border-top:4px solid var(--fg);padding-top:8px;margin:28px 0 8px}
+.T-paper .tasks li{border-bottom:1px solid var(--line);padding:12px 0;font:500 16px/1.3 var(--fd)}
+.T-paper .cb{border-radius:50%;border-color:var(--fg)}
+.T-paper .tasks li.d .cb{background:var(--fg);border-color:var(--fg)}
+.T-paper .lib b{display:block;font:800 25px/1.08 var(--fd);letter-spacing:-.02em;margin:10px 0}
+.T-paper .lib small{font:600 11px var(--fl);letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.T-paper .seg{border-bottom:1px solid var(--fg);gap:0}
+.T-paper .seg button{font:700 11px var(--fl);letter-spacing:.16em;text-transform:uppercase;color:var(--mut);border-bottom:3px solid transparent;margin-bottom:-1px;padding:10px 4px}
+.T-paper .seg button.on{color:var(--fg);border-color:var(--acc)}
+.T-paper .rq{border-top:2px solid var(--fg);padding:12px 0 18px}
+.T-paper .rq.mine h4::before{content:"Ваш запрос · ";color:var(--acc);font:700 10.5px var(--fl);letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px}
+.T-paper .rq h4{font:800 22px/1.12 var(--fd);letter-spacing:-.02em}
+.T-paper .tag.w{background:var(--acc);border-color:var(--acc);color:#fff}
+.T-paper .mt{font:500 12.5px var(--fl)}
+.T-paper .cta{background:var(--fg);color:var(--bg);border-radius:0;font:700 11.5px var(--fl);letter-spacing:.18em;text-transform:uppercase}
+.T-paper .cta.o{background:none;color:var(--fg);border:1.5px solid var(--fg)}
+.T-paper .bar2{height:3px;background:var(--line)}.T-paper .bar2 i{background:var(--fg)}
+.T-paper .pf .num{font-size:120px;margin:10px 0 14px}
+.T-paper .pf h2{font:800 28px/1 var(--fd);letter-spacing:-.02em}
+.T-paper .st i{border-radius:0}
+.T-paper .st{font-family:var(--fl);font-weight:600}
+.T-paper .card{border-top:1px solid var(--fg);padding-top:10px}
+.T-paper .story p{font:italic 400 19px/1.3 var(--fd)}
+.T-paper nav{border-top:2px solid var(--fg);font:700 9.5px var(--fl);letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+.T-paper nav svg{display:none}
+.T-paper nav .on{color:var(--fg);box-shadow:inset 0 -3px 0 var(--acc)}
+
+/* =========================================================
+   3. УЛИЦА — необрутализм, яркие блоки, жирные рамки
+   ========================================================= */
+.T-brut{--bg:#f7f3e9;--fg:#0a0a0a;--mut:#4a4a4a;--line:#0a0a0a;--acc:#c6ff3d;--bl:#3b3bff;--pk:#ff6fb1;--yl:#ffd21f;--fd:'Unbounded',sans-serif;--fb:'Golos Text',sans-serif;--nbg:#0a0a0a}
+.T-brut .top{background:#0a0a0a;color:var(--acc);font:700 11px var(--fd);letter-spacing:.06em}
+.T-brut .eb{display:inline-block;background:var(--yl);border:2px solid #000;padding:2px 8px;font:700 10.5px var(--fb);letter-spacing:.08em;text-transform:uppercase;transform:rotate(-1.5deg)}
+.T-brut h1{font:900 34px/1 var(--fd);margin-top:12px;letter-spacing:-.03em}
+.T-brut .idc{margin-top:18px;background:var(--bl);color:#fff;border:3px solid #000;box-shadow:6px 6px 0 #000;border-radius:8px;padding:16px}
+.T-brut .idt .mono{font:700 10px var(--fb);letter-spacing:.08em}
+.T-brut .tag{border:2px solid #000;background:var(--yl);color:#000;transform:rotate(-3deg);border-radius:4px;font:700 11px var(--fb)}
+.T-brut .num{font:900 92px/1 var(--fd);color:var(--acc);margin:12px 0;letter-spacing:-.05em;text-shadow:3px 3px 0 #000}
+.T-brut .num small{font-size:28px;margin-right:4px;vertical-align:top;position:relative;top:8px}
+.T-brut .l{font:700 10px var(--fb);letter-spacing:.1em;text-transform:uppercase;opacity:.8}
+.T-brut .idb>div:first-child b{font:700 15px var(--fd);display:block;margin-top:3px}
+.T-brut .pul{width:64px;height:64px;background:var(--acc);border:3px solid #000;border-radius:8px;box-shadow:3px 3px 0 #000;transform:rotate(3deg)}
+.T-brut .pul svg{display:none}
+.T-brut .pul b{color:#000;font:900 22px var(--fd)}
+.T-brut .tile{border:3px solid #000;box-shadow:4px 4px 0 #000;border-radius:8px;padding:12px}
+.T-brut .tile:nth-child(1){background:var(--pk)}
+.T-brut .tile:nth-child(2){background:var(--yl)}
+.T-brut .tile b{font:800 15px/1.15 var(--fd);margin:6px 0 3px}
+.T-brut .tile span{color:#000;font-weight:500}
+.T-brut .tile .l{opacity:1}
+.T-brut .sh{display:inline-block;font:900 17px var(--fd);margin:28px 0 14px;background:#000;color:var(--acc);padding:4px 10px;transform:rotate(-1deg)}
+.T-brut .tasks li{border:3px solid #000;background:#fff;box-shadow:4px 4px 0 #000;margin-bottom:12px;padding:11px 12px;font-weight:700;border-radius:6px}
+.T-brut .cb{border:3px solid #000;border-radius:4px;background:#fff}
+.T-brut .tasks li.d{background:var(--acc)}
+.T-brut .tasks li.d .cb{background:#000;border-color:#000}
+.T-brut .tasks li.d span{opacity:1}
+.T-brut .lib{border:3px solid #000;box-shadow:5px 5px 0 #000;background:#fff;border-radius:8px;padding:14px}
+.T-brut .lib .tag{margin-bottom:10px;background:var(--pk)}
+.T-brut .lib b{font:800 17px/1.2 var(--fd);display:block;margin-bottom:10px}
+.T-brut .lib small{font-weight:600}
+.T-brut .seg{gap:10px}
+.T-brut .seg button{border:3px solid #000;border-radius:6px;background:#fff;font:800 12px var(--fd);text-transform:uppercase}
+.T-brut .seg button.on{background:var(--acc);box-shadow:3px 3px 0 #000}
+.T-brut .rq{border:3px solid #000;box-shadow:5px 5px 0 #000;background:#fff;border-radius:8px;padding:14px;margin-bottom:16px}
+.T-brut .rq.mine{background:var(--yl)}
+.T-brut .rq h4{font:800 15px/1.25 var(--fd)}
+.T-brut .tag.w{background:var(--pk)}.T-brut .tag.g{background:#fff}
+.T-brut .mt{color:#000;font-weight:500}
+.T-brut .cta{background:#000;color:var(--acc);border:3px solid #000;box-shadow:4px 4px 0 var(--bl);border-radius:8px;font:800 12.5px var(--fd);text-transform:uppercase}
+.T-brut .cta.o{background:#fff;color:#000;box-shadow:4px 4px 0 #000}
+.T-brut .bar2{height:14px;border:3px solid #000;background:#fff;border-radius:6px}.T-brut .bar2 i{background:var(--bl)}
+.T-brut .pf{text-align:left}
+.T-brut .pf .num{font-size:110px;color:#000;text-shadow:5px 5px 0 var(--acc)}
+.T-brut .pf h2{font:900 26px var(--fd)}
+.T-brut .st i{border:3px solid #000;border-radius:4px;background:#fff}
+.T-brut .st::before{background:#000;height:3px;top:5px}
+.T-brut .st.d i,.T-brut .st.c i{background:var(--acc)}
+.T-brut .st{color:#000;font-weight:700}
+.T-brut .card{border:3px solid #000;box-shadow:4px 4px 0 #000;background:#fff;border-radius:8px;padding:14px}
+.T-brut .story p{font-weight:600}
+.T-brut nav{color:#fff;border-top:3px solid #000;font-weight:700}
+.T-brut nav .on{background:var(--acc);color:#000}
+
+/* =========================================================
+   4. АВРОРА — стекло, неон, мягкие формы
+   ========================================================= */
+.T-glass{--bg:#0a0b1e;--fg:#f1f0ff;--mut:#a3a1c9;--line:rgba(255,255,255,.14);--acc:#22d3ee;--ac2:#a78bfa;--fd:'Manrope',sans-serif;--fb:'Manrope',sans-serif;--nbg:rgba(255,255,255,.09);
+ background:radial-gradient(70% 45% at 10% 0%,rgba(110,60,235,.75),transparent 70%),radial-gradient(55% 40% at 100% 28%,rgba(6,182,212,.4),transparent 70%),radial-gradient(60% 40% at 0% 100%,rgba(236,72,153,.4),transparent 70%),#0a0b1e}
+.T-glass .top{color:var(--mut);font-weight:600;letter-spacing:.04em}
+.T-glass .eb{font-size:12px;color:var(--mut);font-weight:600}
+.T-glass h1{font:800 34px/1.1 var(--fd);margin-top:4px;letter-spacing:-.02em}
+.T-glass .idc{margin-top:16px;border-radius:30px;padding:20px;background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.04));backdrop-filter:blur(22px);border:1px solid var(--line);box-shadow:0 20px 50px rgba(80,40,200,.3),inset 0 1px 0 rgba(255,255,255,.25)}
+.T-glass .idt .mono{font-size:11px;color:var(--mut);font-weight:600}
+.T-glass .tag{border-radius:20px;background:rgba(255,255,255,.12);border:1px solid var(--line);color:#fff}
+.T-glass .num{font:800 92px/1 var(--fd);margin:12px 0;letter-spacing:-.05em;background:linear-gradient(135deg,#fff 10%,var(--ac2) 55%,var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent}
+.T-glass .num small{font-size:26px;margin-right:6px;vertical-align:top;position:relative;top:10px}
+.T-glass .l{font-size:11px;color:var(--mut);font-weight:600}
+.T-glass .idb>div:first-child b{display:block;font-size:17px;margin-top:2px}
+.T-glass .pul .v{stroke:url(#gg)}
+.T-glass .pul b{font-weight:800}
+.T-glass .tile,.T-glass .tasks,.T-glass .lib,.T-glass .rq,.T-glass .card{background:rgba(255,255,255,.07);backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:26px}
+.T-glass .tile{padding:15px}
+.T-glass .tile b{font:800 18px var(--fd);margin:6px 0 2px}
+.T-glass .sh{font:800 19px var(--fd);margin:26px 0 12px}
+.T-glass .tasks{padding:4px 16px}
+.T-glass .tasks li{padding:13px 0;border-bottom:1px solid var(--line)}
+.T-glass .tasks li:last-child{border:0}
+.T-glass .cb{border-radius:50%;border-color:var(--mut)}
+.T-glass .tasks li.d .cb{background:linear-gradient(135deg,#8b5cf6,#22d3ee);border:0}
+.T-glass .lib{padding:16px}
+.T-glass .lib .tag{margin-bottom:10px}
+.T-glass .lib b{display:block;font:700 18px/1.25 var(--fd);margin-bottom:10px}
+.T-glass .lib small{color:var(--mut)}
+.T-glass .seg{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:30px;padding:4px}
+.T-glass .seg button{border-radius:26px;color:var(--mut)}
+.T-glass .seg button.on{background:rgba(255,255,255,.16);color:#fff}
+.T-glass .rq{padding:16px;margin-bottom:12px}
+.T-glass .rq.mine{border-color:rgba(167,139,250,.6);box-shadow:0 0 40px rgba(139,92,246,.25)}
+.T-glass .rq h4{font:700 16px/1.3 var(--fd)}
+.T-glass .tag.w{background:rgba(251,113,133,.18);border-color:rgba(251,113,133,.5);color:#fda4af}
+.T-glass .tag.g{background:transparent;color:var(--mut)}
+.T-glass .cta{border-radius:999px;background:linear-gradient(135deg,#8b5cf6,#22d3ee);color:#fff;box-shadow:0 10px 30px rgba(139,92,246,.4)}
+.T-glass .cta.o{background:rgba(255,255,255,.1);box-shadow:none;border:1px solid var(--line)}
+.T-glass .bar2{border-radius:8px;height:8px;background:rgba(255,255,255,.12)}.T-glass .bar2 i{border-radius:8px;background:linear-gradient(90deg,#8b5cf6,#22d3ee)}
+.T-glass .pf{text-align:center}
+.T-glass .pf .num{font-size:96px}
+.T-glass .pf h2{font:800 24px var(--fd)}
+.T-glass .st i{background:#14153a}
+.T-glass .st.d i{background:linear-gradient(135deg,#8b5cf6,#22d3ee);border:0}
+.T-glass .st.d::before,.T-glass .st.c::before{background:linear-gradient(90deg,#8b5cf6,#22d3ee)}
+.T-glass .card{padding:16px}
+.T-glass .story p{font-weight:500;font-size:15.5px}
+.T-glass nav{left:14px;right:14px;bottom:14px;height:62px;border-radius:32px;backdrop-filter:blur(26px);border:1px solid var(--line);color:var(--mut);box-shadow:0 14px 40px rgba(0,0,0,.4)}
+.T-glass nav .on{color:#fff}
+.T-glass nav .on svg{filter:drop-shadow(0 0 8px var(--acc));color:var(--acc)}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a78bfa"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs>
+ <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+ <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></symbol>
+ <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+ <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h3M20 17v4"/></symbol>
+ <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
+</svg>
+
+<div class="head">
+ <h1>Выбери стиль приложения</h1>
+ <p>Четыре принципиально разных направления. Везде один и тот же контент, меняется только подача. Прокручивай экраны внутри телефонов, переключай экран сверху — сразу меняются все четыре. Нажми «Выбираю этот» под тем, что цепляет.</p>
+ <div class="ctl">
+  <span class="lb">Показать экран</span>
+  <div class="gseg" id="gseg">
+   <button class="on" data-s="home">Главная</button>
+   <button data-s="req">Запросы</button>
+   <button data-s="prof">Профиль</button>
+  </div>
+ </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="bar"><div class="in">
+ <div class="cur" id="cur">Пока не выбрано<small>Нажми «Выбираю этот» под телефоном</small></div>
+ <input id="note" placeholder="Комментарий: например, «цвета из 4, шрифты из 2», «светлее», «больше воздуха»">
+ <button class="go" id="go" disabled>Скопировать выбор</button>
+</div></div>
+<div class="gtoast" id="gt"></div>
+
+<template id="tpl">
+ <div class="scr on" data-s="home">
+  <div class="eb">Добрый вечер</div>
+  <h1>Алексей</h1>
+  <div class="idc">
+   <div class="idt"><span class="mono">NEXT · ЗАКРЫТЫЙ КЛУБ</span><span class="tag">★ Основатель</span></div>
+   <div class="num"><small>№</small>07</div>
+   <div class="idb">
+    <div><div class="l">Статус</div><b>Участник</b></div>
+    <div class="pul"><svg viewBox="0 0 56 56"><circle class="t" cx="28" cy="28" r="24"/><circle class="v" cx="28" cy="28" r="24" stroke-dasharray="150.8" stroke-dashoffset="39.2" transform="rotate(-90 28 28)"/></svg><b>74</b></div>
+   </div>
+  </div>
+  <div class="tiles">
+   <div class="tile"><div class="l">Фокус недели</div><b>Не задан</b><span>Задай одну задачу</span></div>
+   <div class="tile"><div class="l">Встречи</div><b>2 из 4</b><span>в октябре</span></div>
+  </div>
+  <h3 class="sh">Мои задачи</h3>
+  <ul class="tasks">
+   <li class="d"><i class="cb"><svg class="i" style="width:13px;height:13px;stroke-width:3;color:#000"><use href="#i-check"/></svg></i><span>Задать фокус недели</span></li>
+   <li><i class="cb"></i><span>Подтвердить полученную помощь</span></li>
+   <li><i class="cb"></i><span>Ответить на запрос встречи от №18</span></li>
+  </ul>
+  <h3 class="sh">Выбор Совета</h3>
+  <div class="lib"><span class="tag">Finanzamt</span><b>Письмо от Finanzamt: что отвечать и в какой срок</b><small>6 мин · от участника №12</small></div>
+ </div>
+
+ <div class="scr" data-s="req">
+  <div class="eb">Доска клуба</div>
+  <h1>Запросы</h1>
+  <p class="lead">Проси о любой помощи — откликаются те, кто может. Кого выбрать, решаешь ты.</p>
+  <div class="seg"><button class="on">Запросы</button><button>Предложения</button></div>
+  <article class="rq mine">
+   <div class="tg"><span class="tag">Мой запрос</span><span class="tag g">3 отклика</span></div>
+   <h4>Нужна помощь с договором аренды — перевод и проверка</h4>
+   <div class="mt">до 16 окт · Бумаги</div>
+   <button class="cta">Выбрать помощника</button>
+  </article>
+  <article class="rq">
+   <div class="tg"><span class="tag g">Бумаги</span><span class="tag w">Срочно</span></div>
+   <h4>Нужен перевод письма от Jobcenter на русский</h4>
+   <div class="mt">№12 · до 14 окт · 2 отклика</div>
+   <button class="cta o">Откликнуться</button>
+  </article>
+  <article class="rq">
+   <div class="tg"><span class="tag g">Бизнес</span></div>
+   <h4>Ищу Steuerberater во Фрайбурге для Gewerbe</h4>
+   <div class="mt">№03 · до 20 окт · 4 отклика</div>
+   <button class="cta o">Откликнуться</button>
+  </article>
+ </div>
+
+ <div class="scr" data-s="prof">
+  <div class="pf">
+   <div class="eb">Профиль</div>
+   <div class="num"><small>№</small>07</div>
+   <h2>Алексей М.</h2>
+   <div class="mt" style="margin-bottom:10px">Дизайн и digital · Фрайбург</div>
+   <span class="tag">★ Пожизненный статус</span>
+  </div>
+  <h3 class="sh">Путь</h3>
+  <div class="steps"><div class="st d"><i></i>Кандидат</div><div class="st c"><i></i>Участник</div><div class="st"><i></i>Партнёр</div><div class="st"><i></i>Совет</div></div>
+  <h3 class="sh">Подтверждённая помощь</h3>
+  <div class="card story">
+   <span class="tag">Изменило мою ситуацию</span>
+   <p>«Помог разобрать письмо от Finanzamt, срок был через 2 дня. Всё успел.»</p>
+   <div class="mt" style="margin:0">от участника №12</div>
+  </div>
+  <h3 class="sh">Пульс</h3>
+  <div class="br"><div class="bl"><span>Движение</span><b>20 / 25</b></div><div class="bar2"><i style="width:80%"></i></div></div>
+  <div class="br"><div class="bl"><span>Связи</span><b>21 / 30</b></div><div class="bar2"><i style="width:70%"></i></div></div>
+  <div class="br"><div class="bl"><span>Вклад</span><b>33 / 45</b></div><div class="bar2"><i style="width:73%"></i></div></div>
+ </div>
+</template>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const STYLES=[
+ {k:'bank',n:'1',name:'Закрытый банк',d:'Тёмный, строгий, золото. Серифные цифры и заголовки, номер участника как на премиальной карте. Ощущение закрытого клуба, как в концепции.',kw:['тёмный','золото','серифы','премиум']},
+ {k:'paper',n:'2',name:'Журнал',d:'Светлая бумага, чёрные чернила, красный акцент. Без карточек: только линейки и огромная типографика. Читается как редакционная вёрстка.',kw:['светлый','типографика','без карточек','редакция']},
+ {k:'brut',n:'3',name:'Улица',d:'Яркие блоки, жирные чёрные рамки, жёсткие тени, стикеры. Дерзко и живо, заметно отличается от всех «клубных» приложений.',kw:['яркий','жирные рамки','энергия','дерзкий']},
+ {k:'glass',n:'4',name:'Аврора',d:'Глубокий градиент, матовое стекло, неон, мягкие круглые формы. Современное, «технологичное» ощущение, приятное для глаза вечером.',kw:['градиент','стекло','неон','мягкий']}
+];
+const tpl=$('#tpl').innerHTML;
+const NAV=[['home','home','Главная'],['focus','target','Фокус'],['req','chat','Запросы'],['meet','qr','Встречи'],['prof','user','Профиль']];
+let cur='home',chosen=null;
+STYLES.forEach(s=>{
+ const o=document.createElement('div');o.className='opt';o.dataset.k=s.k;
+ o.innerHTML=`<div class="ph T-${s.k}">
+  <div class="top"><span>NEXT</span><span>закрытый клуб</span></div>
+  <div class="sc">${tpl}</div>
+  <nav>${NAV.map(([g,i,l])=>`<button data-go="${g}"><svg class="i"><use href="#i-${i}"/></svg>${l}</button>`).join('')}</nav>
+ </div>
+ <div class="cap"><div class="n">СТИЛЬ ${s.n}</div><h2>${s.name}</h2><p>${s.d}</p><div class="kw">${s.kw.map(k=>`<span>${k}</span>`).join('')}</div><button class="pickbtn">Выбираю этот</button></div>`;
+ $('#grid').appendChild(o);
+ $('.pickbtn',o).onclick=()=>choose(s.k);
+});
+function show(id){
+ cur=id;
+ $$('.scr').forEach(e=>{const on=e.dataset.s===id;e.classList.toggle('on',on);if(on){const sc=e.closest('.sc');sc.scrollTop=0}});
+ $$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.go===id));
+ $$('#gseg button').forEach(b=>b.classList.toggle('on',b.dataset.s===id));
+}
+$('#gseg').onclick=e=>{const b=e.target.closest('button');if(b)show(b.dataset.s)};
+document.addEventListener('click',e=>{
+ const b=e.target.closest('nav button');if(!b)return;
+ const g=b.dataset.go;
+ if(['home','req','prof'].includes(g))show(g);else gtoast('Фокус и Встречи покажу в выбранном стиле');
+});
+function choose(k){
+ chosen=chosen===k?null:k;
+ $$('.opt').forEach(o=>{o.classList.toggle('chosen',o.dataset.k===chosen);$('.pickbtn',o).textContent=o.dataset.k===chosen?'✓ Выбрано':'Выбираю этот'});
+ const s=STYLES.find(x=>x.k===chosen);
+ $('#cur').innerHTML=s?`Стиль ${s.n}: «${s.name}»<small>Можно добавить комментарий и скопировать</small>`:'Пока не выбрано<small>Нажми «Выбираю этот» под телефоном</small>';
+ $('#go').disabled=!s;
+}
+function gtoast(m){const t=$('#gt');t.textContent=m;t.classList.add('on');clearTimeout(gtoast.t);gtoast.t=setTimeout(()=>t.classList.remove('on'),2200)}
+$('#go').onclick=async()=>{
+ const s=STYLES.find(x=>x.k===chosen);if(!s)return;
+ const n=$('#note').value.trim();
+ const t=`ВЫБОР СТИЛЯ NEXT: стиль ${s.n} — «${s.name}»`+(n?`\nКомментарий: ${n}`:'');
+ try{await navigator.clipboard.writeText(t);gtoast('Скопировано. Отправь мне в чат')}
+ catch(_){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');gtoast('Скопировано. Отправь мне в чат')}catch(__){gtoast(t)}a.remove()}
+};
+show('home');
+</script>
+</body>
+</html>

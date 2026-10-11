@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXT — 3 версии «Дома клуба»</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Poiret+One&family=Jost:wght@300;400;500;600;700&family=Nunito:wght@500;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#0a0a0b;color:#ece9e2;font:15px/1.45 'Onest',system-ui,sans-serif;min-height:100dvh;padding-bottom:140px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.i.s{width:16px;height:16px}
+
+/* ---------- страница ---------- */
+.head{max-width:1500px;margin:0 auto;padding:34px 24px 6px}
+.head h1{font:800 34px/1.1 'Onest';letter-spacing:-.02em}
+.head p{color:#9a968c;margin-top:10px;max-width:760px}
+.grid{max-width:1500px;margin:26px auto 0;padding:0 24px;display:flex;flex-wrap:wrap;gap:50px 40px;justify-content:center}
+.opt{width:396px}
+.cap{margin-top:26px}
+.cap .n{font:700 12px 'Onest';color:#6e6a62;letter-spacing:.16em}
+.cap h2{font:800 24px/1.2 'Onest';margin:4px 0 12px}
+.cap .row{margin-bottom:10px}
+.cap .row b{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6e6a62;margin-bottom:2px;font-weight:700}
+.cap .row span{color:#c9c5ba;font-size:14px}
+.cap .try{margin:12px 0 14px;padding:10px 12px;border:1px dashed #34343b;border-radius:12px;font-size:13px;color:#9a968c}
+.pickbtn{width:100%;padding:14px;border-radius:14px;border:1.5px solid #34343b;font-weight:700;font-size:15px;transition:.15s}
+.pickbtn:hover{border-color:#8a8a95}
+.opt.chosen .pickbtn{background:#4cc3ff;border-color:#4cc3ff;color:#04202c}
+.opt.chosen .ph{box-shadow:0 0 0 3px #4cc3ff,0 0 0 11px #0c0c0e,0 24px 60px #0008}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#101012ee;backdrop-filter:blur(14px);border-top:1px solid #26262b;padding:14px 24px;z-index:80}
+.bar .in{max-width:1500px;margin:0 auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.bar .cur{font-weight:700;min-width:240px}
+.bar .cur small{display:block;font-weight:400;color:#6e6a62;font-size:12px}
+.bar input{flex:1;min-width:240px;background:#0a0a0b;border:1px solid #2a2a30;border-radius:12px;padding:12px 14px;font:inherit;color:inherit;outline:none}
+.bar input:focus{border-color:#4cc3ff}
+.bar .go{background:#4cc3ff;color:#04202c;font-weight:700;padding:12px 22px;border-radius:12px}
+.bar .go[disabled]{opacity:.4;pointer-events:none}
+.gtoast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(10px);background:#4cc3ff;color:#04202c;font-weight:600;padding:10px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:90}
+.gtoast.on{opacity:1;transform:translateX(-50%)}
+
+/* ---------- каркас телефона ---------- */
+.ph{position:relative;width:380px;height:790px;border-radius:42px;overflow:hidden;box-shadow:0 0 0 8px #101012,0 24px 60px #0008;margin:0 auto;font-size:15px;line-height:1.4;isolation:isolate}
+.ph *{box-sizing:border-box}
+.ph h1,.ph h2,.ph h3,.ph h4,.ph p,.ph ul{margin:0}
+.ph ul{list-style:none;padding:0}
+.scr{position:absolute;inset:0;overflow-y:auto;display:none;scrollbar-width:none}
+.scr::-webkit-scrollbar{display:none}
+.scr.on{display:block;animation:in .3s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@keyframes fade{from{opacity:0}}
+.sheetw{position:absolute;inset:0;z-index:40;display:none}
+.sheetw.on{display:block}
+.sheetw .scrim{position:absolute;inset:0;background:rgba(0,0,0,.62)}
+.sheetw .sheet{position:absolute;left:0;right:0;bottom:0;max-height:88%;overflow:auto;padding:10px 20px 28px;border-radius:26px 26px 0 0;animation:up .28s cubic-bezier(.2,.8,.2,1);scrollbar-width:none}
+.grab{width:38px;height:4px;border-radius:4px;background:currentColor;opacity:.2;margin:0 auto 14px}
+.ptoast{position:absolute;left:16px;right:16px;bottom:30px;padding:12px 14px;border-radius:14px;font-weight:600;font-size:13.5px;z-index:60;opacity:0;transform:translateY(10px);pointer-events:none;transition:.25s;text-align:center}
+.ptoast.on{opacity:1;transform:none}
+@keyframes shake{20%,60%{transform:translateX(-4px)}40%,80%{transform:translateX(4px)}}
+.shk{animation:shake .4s}
+
+/* =========================================================
+   V1 · «ЭТАЖИ» — лифт и ар-деко
+   ========================================================= */
+.V1{background:#0a0a0c;color:#efe6d0;font-family:'Jost',sans-serif;--g:#d8bd86;--g2:#f0dcab;--em:#0f3a31;--mut:#948d7b;--line:rgba(216,189,134,.32);--pd:'Poiret One',serif}
+.V1 .main{position:absolute;left:0;top:0;bottom:0;right:64px;overflow:hidden}
+.V1 .scr{padding:0 16px 44px 18px}
+.V1 .fan{position:absolute;left:0;right:0;top:0;height:170px;background:repeating-conic-gradient(from -52deg at 50% 100%,rgba(216,189,134,.17) 0 3.4deg,transparent 3.4deg 7deg);-webkit-mask:linear-gradient(#000 20%,transparent);mask:linear-gradient(#000 20%,transparent);pointer-events:none}
+.V1 .dh{position:relative;text-align:center;padding:30px 0 16px}
+.V1 .dh .fl{font:500 10px 'Jost';letter-spacing:.42em;color:var(--g);padding-left:.42em}
+.V1 .dh h1{font:400 33px/1.05 var(--pd);letter-spacing:.12em;text-transform:uppercase;color:var(--g2);margin-top:8px;padding-left:.12em}
+.V1 .dh .orn{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px}
+.V1 .dh .orn i{height:1px;width:46px;background:linear-gradient(90deg,transparent,var(--g))}
+.V1 .dh .orn i:last-child{transform:scaleX(-1)}
+.V1 .dh .orn s{width:7px;height:7px;background:var(--g);transform:rotate(45deg);text-decoration:none}
+.V1 .key{position:relative;margin:4px 0 0;padding:16px 18px;background:linear-gradient(150deg,#1d1810,#0c0b09);border:1px solid var(--g);box-shadow:inset 0 0 0 4px #0a0a0c,inset 0 0 0 5px rgba(216,189,134,.4),0 16px 36px #000a;cursor:pointer;overflow:hidden}
+.V1 .key::before{content:"";position:absolute;right:-40px;top:-60px;width:220px;height:220px;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(216,189,134,.12) 0 4deg,transparent 4deg 9deg);border-radius:50%}
+.V1 .key .r1{display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:.3em;color:var(--g);position:relative}
+.V1 .key .nm{font:400 86px/1 var(--pd);color:var(--g2);margin:8px 0 6px;position:relative;letter-spacing:.02em}
+.V1 .key .r2{display:flex;justify-content:space-between;align-items:flex-end;position:relative;font-size:12px;letter-spacing:.14em}
+.V1 .key .ch{width:40px;height:30px;border:1px solid var(--g);background:linear-gradient(135deg,rgba(216,189,134,.5),rgba(216,189,134,.12))}
+.V1 .sh{display:flex;align-items:center;gap:12px;margin:26px 0 12px;font:400 20px var(--pd);letter-spacing:.14em;text-transform:uppercase;color:var(--g)}
+.V1 .sh::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+.V1 .cd{position:relative;padding:14px 16px;background:linear-gradient(160deg,rgba(15,58,49,.45),rgba(15,58,49,.12));border:1px solid var(--line);box-shadow:inset 0 0 0 4px #0a0a0c,inset 0 0 0 5px rgba(216,189,134,.18);margin-bottom:12px}
+.V1 .tk{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.V1 .tk:last-child{border:0}
+.V1 .tk .bx{width:20px;height:20px;border:1px solid var(--g);transform:rotate(45deg) scale(.8);display:grid;place-items:center;flex:none}
+.V1 .tk.d .bx{background:var(--g)}
+.V1 .tk.d .tt{opacity:.45;text-decoration:line-through}
+.V1 .tk .tt{flex:1;font-size:14.5px;line-height:1.3}
+.V1 .tk .tt span{display:block;font-size:12px;color:var(--mut);margin-top:2px;text-decoration:none}
+.V1 .tk .fl2{font:500 10px 'Jost';letter-spacing:.14em;color:var(--g);border:1px solid var(--line);padding:3px 7px}
+.V1 .ev{display:flex;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.V1 .ev:last-child{border:0}
+.V1 .ev b{font:400 28px var(--pd);color:var(--g2);width:46px;text-align:center;line-height:1}
+.V1 .ev b small{display:block;font:500 9px 'Jost';letter-spacing:.2em;color:var(--mut)}
+.V1 .ev div{font-size:14px}.V1 .ev div span{display:block;font-size:12px;color:var(--mut)}
+.V1 .req{position:relative;padding:15px 16px 14px;background:#101012;border:1px solid var(--line);box-shadow:inset 0 0 0 4px #0a0a0c,inset 0 0 0 5px rgba(216,189,134,.16);margin-bottom:14px}
+.V1 .req.mine{background:linear-gradient(160deg,#1c1709,#101012);border-color:var(--g)}
+.V1 .req .tg{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--g);margin-bottom:8px}
+.V1 .req .tg b{color:#e98a6f;font-weight:600}
+.V1 .req h4{font:500 16.5px/1.28 'Jost'}
+.V1 .req .mt{font-size:12.5px;color:var(--mut);margin:8px 0 12px}
+.V1 .bt{display:block;width:100%;padding:12px;background:var(--g);color:#1a1405;font:600 12px 'Jost';letter-spacing:.24em;text-transform:uppercase;text-align:center;transition:.15s}
+.V1 .bt.o{background:transparent;color:var(--g);border:1px solid var(--g)}
+.V1 .bt.on{background:var(--em);color:var(--g2);border:1px solid var(--g)}
+.V1 .lift{position:absolute;right:0;top:0;bottom:0;width:64px;background:linear-gradient(90deg,#0f0f12,#16161a);border-left:1px solid var(--g);display:flex;flex-direction:column;align-items:center;padding:14px 0 12px;gap:7px;z-index:6}
+.V1 .lift .lb{font:400 11px var(--pd);letter-spacing:.34em;color:var(--g);margin-bottom:2px}
+.V1 .fw{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%}
+.V1 .fb{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--g);display:grid;place-items:center;font:600 16px 'Jost';color:var(--g);position:relative;transition:.2s}
+.V1 .fb.on{background:var(--g);color:#1a1405;box-shadow:0 0 18px rgba(216,189,134,.6)}
+.V1 .fb.lk{color:#5e5848;border-color:#4a4536;border-style:dashed}
+.V1 .fb .i{width:14px;height:14px;position:absolute;right:-5px;top:-5px;background:#0a0a0c;border-radius:50%;padding:2px;color:#7a7360}
+.V1 .fw small{font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.V1 .fw.on small{color:var(--g2)}
+.V1 .lift .sp{flex:1}
+.V1 .doors{position:absolute;left:0;top:0;bottom:0;right:64px;z-index:5;pointer-events:none;display:flex;overflow:hidden}
+.V1 .doors i{flex:1;background:repeating-linear-gradient(90deg,#2a2314 0 3px,#8f7a47 3px 4px,#2a2314 4px 11px);transition:transform .3s ease-in-out;box-shadow:inset 0 0 40px #000}
+.V1 .doors i:first-child{transform:translateX(-101%);border-right:2px solid var(--g)}
+.V1 .doors i:last-child{transform:translateX(101%);border-left:2px solid var(--g)}
+.V1 .doors.c i{transform:none}
+.V1 .sheetw .sheet{background:#0e0e11;color:#efe6d0;border-top:1px solid var(--g)}
+.V1 .sheet h2{font:400 26px var(--pd);letter-spacing:.1em;text-transform:uppercase;color:var(--g2)}
+.V1 .ptoast{background:var(--g);color:#1a1405}
+.V1 .ln{margin:12px 0}.V1 .ln .l{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+.V1 .ln .t{height:4px;background:#26241c}.V1 .ln .t i{display:block;height:100%;background:var(--g)}
+.V1 .gauge{display:block;margin:0 auto}
+.V1 .gauge text{font:400 46px var(--pd);fill:#f0dcab;text-anchor:middle}
+.V1 .keys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;font-size:10.5px;color:var(--mut);letter-spacing:.06em}
+.V1 .keys div{padding:12px 2px;border:1px solid var(--line)}
+.V1 .keys .i{width:22px;height:22px;display:block;margin:0 auto 6px;color:#575141}
+.V1 .keys .f{color:var(--g2);background:rgba(15,58,49,.4);border-color:var(--g)}.V1 .keys .f .i{color:var(--g)}
+.V1 .lt{padding:14px 0;border-bottom:1px solid var(--line)}
+.V1 .lt p{font:500 17px/1.3 'Jost';font-style:italic}.V1 .lt span{display:block;font-size:12px;color:var(--mut);margin-top:6px;letter-spacing:.06em}
+
+/* =========================================================
+   V2 · «ОСОБНЯК В РАЗРЕЗЕ» — живой иллюстрированный дом
+   ========================================================= */
+.V2{background:linear-gradient(180deg,#171546 0%,#4a2f78 38%,#c9626a 74%,#f4b26e 100%);color:#2a1d12;font-family:'Nunito',sans-serif}
+.V2 .stars{position:absolute;inset:0;height:50%}
+.V2 .bar2{position:absolute;top:0;left:0;right:0;padding:20px 20px 0;z-index:5;display:flex;justify-content:space-between;align-items:center;color:#fff}
+.V2 .bar2 b{font:900 20px 'Nunito';letter-spacing:.04em}
+.V2 .bar2 small{display:block;font-size:11px;font-weight:700;opacity:.7;letter-spacing:.08em;text-transform:uppercase;margin-top:1px}
+.V2 .lum{width:140px;text-align:right;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.V2 .lum .t{height:8px;border-radius:6px;background:rgba(255,255,255,.2);margin-top:5px;overflow:hidden}
+.V2 .lum .t i{display:block;height:100%;background:linear-gradient(90deg,#ffd27a,#fff3c8);box-shadow:0 0 10px #ffd27a;border-radius:6px}
+.V2 .hz{position:absolute;left:0;right:0;top:56px;height:640px;transition:transform .6s cubic-bezier(.6,0,.2,1);transform-origin:50% 50%}
+.V2 .hz svg{width:100%;height:100%;display:block;overflow:visible}
+.V2 .hz.zoom{transform:scale(2.7)}
+.V2 .rm{cursor:pointer}
+.V2 .rm:hover .rv{filter:brightness(1.1)}
+.V2 .fg{animation:bob 3.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-2px)}}
+.V2 .smoke{animation:smk 4s ease-out infinite;opacity:0}
+@keyframes smk{0%{transform:translateY(0) scale(.6);opacity:.7}100%{transform:translateY(-34px) scale(1.5);opacity:0}}
+.V2 .flick{animation:fl 1.2s ease-in-out infinite;transform-origin:center bottom;transform-box:fill-box}
+@keyframes fl{50%{transform:scaleY(1.2) scaleX(.9)}}
+.V2 .keyb{position:absolute;left:50%;transform:translateX(-50%);bottom:24px;z-index:6;display:flex;align-items:center;gap:10px;padding:13px 22px;border-radius:30px;background:#fff6dd;color:#3a2410;font-weight:900;font-size:15px;box-shadow:0 10px 30px #0006}
+.V2 .keyb .i{color:#b3641f}
+.V2 .hint2{position:absolute;left:0;right:0;bottom:84px;text-align:center;color:#fff;font-weight:800;font-size:12.5px;letter-spacing:.06em;z-index:5;text-shadow:0 1px 6px #0006}
+.V2 .room{position:absolute;inset:0;z-index:8;background:var(--bgr,#f2e3c6);display:none;overflow-y:auto;scrollbar-width:none}
+.V2 .room.on{display:block;animation:fade .4s}
+.V2 .room .ill{position:relative;height:210px;overflow:hidden}
+.V2 .room .ill svg{position:absolute;inset:0;width:100%;height:100%}
+.V2 .back{position:absolute;left:14px;top:18px;z-index:3;display:flex;align-items:center;gap:6px;padding:8px 14px 8px 8px;border-radius:20px;background:rgba(255,246,221,.95);font-weight:900;font-size:13px;color:#3a2410}
+.V2 .pan{position:relative;margin-top:-26px;background:#fff6dd;border-radius:28px 28px 0 0;padding:22px 18px 40px;min-height:600px}
+.V2 .pan h1{font:900 28px/1.1 'Nunito';letter-spacing:-.01em}
+.V2 .pan .sb{color:#8a6b48;font-weight:700;font-size:13.5px;margin:4px 0 16px}
+.V2 .note{position:relative;background:#fff;border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 4px 0 #ecd9ae,0 8px 18px rgba(80,40,0,.12)}
+.V2 .note.mine{background:#fff0b8;box-shadow:0 4px 0 #e8c765,0 8px 18px rgba(80,40,0,.12)}
+.V2 .note .tg{display:flex;gap:6px;margin-bottom:8px;font-size:11px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#b3641f}
+.V2 .note .tg b{color:#d64a3a}
+.V2 .note h4{font:800 16px/1.28 'Nunito'}
+.V2 .note .mt{font-size:12.5px;color:#8a6b48;font-weight:700;margin:8px 0 12px}
+.V2 .nb{padding:11px 18px;border-radius:14px;background:#3a2410;color:#ffe9b3;font-weight:900;font-size:14px}
+.V2 .nb.on{background:#2f8a5b;color:#fff}
+.V2 .nb.w{width:100%;padding:13px}
+.V2 .li{display:flex;gap:12px;align-items:center;padding:13px 0;border-bottom:2px dashed #ecd9ae;font-weight:700;font-size:14.5px}
+.V2 .li:last-child{border:0}
+.V2 .li span{display:block;font-size:12px;color:#8a6b48;font-weight:600}
+.V2 .li .em{width:42px;height:42px;border-radius:14px;background:#ffe9b3;display:grid;place-items:center;font-size:20px;flex:none}
+.V2 .plt{display:inline-block;background:linear-gradient(135deg,#f6d98e,#c98b2c);color:#3a2410;padding:12px 20px;border-radius:12px;font-weight:900;text-align:center;box-shadow:0 6px 0 #9c6a1c}
+.V2 .plt b{display:block;font:900 24px 'Nunito';letter-spacing:.04em}.V2 .plt span{font-size:10px;letter-spacing:.2em;font-weight:900}
+.V2 .lamps{display:flex;gap:10px;margin:8px 0 6px}
+.V2 .lamps div{flex:1;text-align:center;font-size:11px;font-weight:800;color:#8a6b48}
+.V2 .lamps i{display:block;height:54px;border-radius:14px;margin-bottom:6px;background:#eadbb6;position:relative;overflow:hidden}
+.V2 .lamps i b{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,#ffe28a,#ffb347);box-shadow:0 0 18px #ffd27a}
+.V2 .lamps em{font-style:normal;color:#3a2410;font-weight:900;font-size:15px;display:block}
+.V2 .ks{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;font-size:11px;font-weight:800;color:#a58a63}
+.V2 .ks div{padding:12px 2px;border-radius:14px;background:#eadbb6}
+.V2 .ks .i{width:24px;height:24px;display:block;margin:0 auto 6px}
+.V2 .ks .f{background:#3a2410;color:#ffe9b3}
+.V2 .let{background:#fff;border-radius:16px;padding:14px 16px;margin-bottom:10px;box-shadow:0 4px 0 #ecd9ae;font-weight:700;font-size:14.5px;line-height:1.35}
+.V2 .let span{display:block;margin-top:6px;font-size:12px;color:#8a6b48}
+.V2 .sheetw .sheet{background:#fff6dd;color:#2a1d12;border-radius:30px 30px 0 0}
+.V2 .sheet h2{font:900 24px 'Nunito'}
+.V2 .ptoast{background:#3a2410;color:#ffe9b3}
+.V2 .qrb{background:#fff;padding:14px;border-radius:22px;width:max-content;margin:16px auto 8px;box-shadow:0 6px 0 #ecd9ae}
+.V2 .qrb canvas{display:block;width:200px;height:200px;image-rendering:pixelated}
+.V2 .sec2{font:900 13px 'Nunito';letter-spacing:.14em;text-transform:uppercase;color:#b3641f;margin:24px 0 10px}
+
+/* =========================================================
+   V3 · «ПЛАН И МАРШРУТ» — чертёж дома, фишка и маршрут дня
+   ========================================================= */
+.V3{background:#0b2545;color:#e8f0ff;font-family:'Onest',sans-serif;--ln:#8fb8ff;--or:#ff8a3d;--ink:#12233d;--paper:#f2eee2;--mono:'IBM Plex Mono',monospace;
+ background-image:linear-gradient(rgba(143,184,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(143,184,255,.07) 1px,transparent 1px);background-size:20px 20px}
+.V3 .tb{position:absolute;top:0;left:0;right:0;height:54px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;z-index:5;font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.V3 .tb b{font-weight:600;color:#fff}
+.V3 .tb .rg{display:flex;align-items:center;gap:10px}
+.V3 .pill{display:flex;align-items:center;gap:6px;padding:6px 11px;border:1px solid var(--ln);border-radius:20px;font:500 11px var(--mono);letter-spacing:.08em;color:#fff}
+.V3 .pill.or{background:var(--or);border-color:var(--or);color:#2a1100;font-weight:600}
+.V3 .plan{position:absolute;top:54px;left:0;right:0;height:420px}
+.V3 .plan svg{position:absolute;inset:0;width:100%;height:100%}
+.V3 .plan text{font:500 8.5px var(--mono);letter-spacing:.12em;fill:var(--ln);text-transform:uppercase}
+.V3 .plan .rn{font-weight:600;fill:#fff;font-size:9px}
+.V3 .plan .lv{fill:#7dffb2;font-size:8px}
+.V3 .rz{cursor:pointer}
+.V3 .rz:hover rect.hit{fill:rgba(143,184,255,.1)}
+.V3 .rz.on rect.hit{fill:rgba(255,138,61,.12)}
+.V3 .march{stroke-dasharray:3 6;animation:march 1s linear infinite}
+@keyframes march{to{stroke-dashoffset:-9}}
+.V3 .tokn{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:var(--or);color:#2a1100;display:grid;place-items:center;font:700 11px var(--mono);box-shadow:0 0 0 4px rgba(255,138,61,.28),0 6px 16px #0008;transition:left .75s cubic-bezier(.5,0,.2,1),top .75s cubic-bezier(.5,0,.2,1);z-index:3;pointer-events:none}
+.V3 .tokn::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:1px solid var(--or);animation:rp 2s infinite}
+@keyframes rp{0%{transform:scale(.7);opacity:.9}100%{transform:scale(1.4);opacity:0}}
+.V3 .stop{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:1.5px solid var(--or);background:#0b2545;color:var(--or);display:grid;place-items:center;font:600 10px var(--mono);z-index:2;pointer-events:none;transition:.3s}
+.V3 .stop.d{background:var(--or);color:#2a1100}
+.V3 .dr{position:absolute;left:0;right:0;bottom:0;height:332px;background:var(--paper);color:var(--ink);border-radius:26px 26px 0 0;z-index:6;box-shadow:0 -10px 40px #0007;display:flex;flex-direction:column}
+.V3 .dr .hd{padding:10px 20px 8px;flex:none}
+.V3 .dr .hdl{width:40px;height:4px;border-radius:4px;background:#12233d33;margin:0 auto 10px}
+.V3 .dr .ro{display:flex;justify-content:space-between;align-items:baseline}
+.V3 .dr .ro h2{font:600 15px var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.V3 .dr .ro span{font:500 11px var(--mono);color:#4a6288}
+.V3 .dr .db{flex:1;overflow-y:auto;padding:4px 20px 22px;scrollbar-width:none;animation:in .3s}
+.V3 .dr .db::-webkit-scrollbar{display:none}
+.V3 .rt{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px dashed #12233d33;cursor:pointer}
+.V3 .rt:last-child{border:0}
+.V3 .rt .nn{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--or);color:#c4570f;display:grid;place-items:center;font:600 11px var(--mono);flex:none}
+.V3 .rt.d .nn{background:var(--or);color:#2a1100}
+.V3 .rt.d .tt{opacity:.45;text-decoration:line-through}
+.V3 .rt .tt{flex:1;font-weight:600;font-size:14.5px;line-height:1.3}
+.V3 .rt .tt span{display:block;font:500 11px var(--mono);color:#4a6288;margin-top:3px;text-decoration:none;letter-spacing:.04em;text-transform:uppercase}
+.V3 .bn{display:block;width:100%;padding:13px;border-radius:12px;background:var(--ink);color:#fff;font:600 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;text-align:center;margin-top:12px}
+.V3 .bn.or{background:var(--or);color:#2a1100}
+.V3 .bn.o{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.V3 .bn.on{background:#2f8a5b;color:#fff}
+.V3 .bn.s{display:inline-block;width:auto;padding:9px 14px;margin:0}
+.V3 .rq{padding:14px 0;border-bottom:1px dashed #12233d33}
+.V3 .rq:last-child{border:0}
+.V3 .rq .tg{font:600 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#4a6288;margin-bottom:6px}
+.V3 .rq .tg b{color:#c4570f}
+.V3 .rq h4{font:700 15px/1.3 'Onest'}
+.V3 .rq .mt{font:500 11px var(--mono);color:#4a6288;margin:7px 0 10px}
+.V3 .rq.mine{background:#fff3d6;margin:0 -20px;padding:14px 20px}
+.V3 .kcard{background:linear-gradient(135deg,#0b2545,#143a6b);color:#fff;border-radius:16px;padding:16px;position:relative;overflow:hidden;cursor:pointer}
+.V3 .kcard::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(143,184,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(143,184,255,.12) 1px,transparent 1px);background-size:14px 14px}
+.V3 .kcard>*{position:relative;z-index:1}
+.V3 .kcard .r{display:flex;justify-content:space-between;font:500 10px var(--mono);letter-spacing:.16em;color:#9ec3ff}
+.V3 .kcard b{display:block;font:600 52px/1 var(--mono);margin:8px 0 4px;letter-spacing:-.04em}
+.V3 .in{width:100%;padding:13px 14px;border-radius:12px;border:1.5px solid var(--ink);background:#fff;font:500 15px 'Onest';color:var(--ink);outline:none;margin-top:10px}
+.V3 .in:focus{border-color:var(--or)}
+.V3 .chp{display:inline-block;padding:9px 14px;margin:8px 8px 0 0;border:1.5px solid var(--ink);border-radius:20px;font:600 12px var(--mono);letter-spacing:.04em}
+.V3 .chp.on{background:var(--ink);color:#fff}
+.V3 .mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin:10px 0}
+.V3 .mini div{padding:10px 4px;border:1.5px solid var(--ink);border-radius:12px;font:500 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:#4a6288}
+.V3 .mini b{display:block;font:600 22px var(--mono);color:var(--ink);letter-spacing:-.02em}
+.V3 .stamp{position:absolute;left:50%;top:210px;transform:translate(-50%,-50%) rotate(-10deg) scale(0);z-index:7;border:3px solid #7dffb2;color:#7dffb2;font:600 22px var(--mono);letter-spacing:.2em;padding:8px 16px;border-radius:8px;background:rgba(11,37,69,.9);transition:.4s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
+.V3 .stamp.on{transform:translate(-50%,-50%) rotate(-10deg) scale(1)}
+.V3 .sheetw .sheet{background:var(--paper);color:var(--ink);border-radius:26px 26px 0 0}
+.V3 .sheet h2{font:600 16px var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.V3 .ptoast{background:var(--or);color:#2a1100;bottom:344px}
+.V3 .qrb{background:#fff;padding:14px;border-radius:14px;width:max-content;margin:16px auto 8px;border:1.5px solid var(--ink)}
+.V3 .qrb canvas{display:block;width:200px;height:200px;image-rendering:pixelated}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+ <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h3M20 17v4"/></symbol>
+ <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+ <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M16 7l3 3M14 9l2 2"/></symbol>
+ <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+ <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
+</svg>
+
+<div class="head">
+ <h1>3 версии «Дома клуба»</h1>
+ <p>Основа везде одна: клуб — это дом с комнатами и ключ-картой. Но каждая версия по-разному отвечает на вопрос «как человек ходит по дому». Все три живые: нажимай на комнаты, этажи, фишку. Под каждой написано, что стоит нажать.</p>
+</div>
+<div class="grid" id="grid"></div>
+
+<div class="bar"><div class="in">
+ <div class="cur" id="cur">Пока не выбрано<small>Нажми «Беру эту версию» под телефоном</small></div>
+ <input id="note" placeholder="Комментарий: что взять из других версий, что поменять, что убрать">
+ <button class="go" id="go" disabled>Скопировать выбор</button>
+</div></div>
+<div class="gtoast" id="gt"></div>
+
+<!-- ================= V1 ================= -->
+<template id="tV1">
+<div class="ph V1">
+ <div class="main">
+  <section class="scr on" data-s="f0">
+   <div class="fan"></div>
+   <div class="dh"><div class="fl">ЭТАЖ 0 · ХОЛЛ</div><h1>NEXT</h1><div class="orn"><i></i><s></s><i></i></div></div>
+   <div class="key" data-act="qr"><div class="r1"><span>КЛЮЧ-КАРТА</span><span>ОСНОВАТЕЛЬ</span></div><div class="nm">№07</div><div class="r2"><span>АЛЕКСЕЙ М.</span><div class="ch"></div></div></div>
+   <div class="sh">У стойки</div>
+   <div class="cd" style="padding:2px 16px" id="v1Tasks"></div>
+   <div class="sh">Сегодня в клубе</div>
+   <div class="cd" style="padding:2px 16px">
+    <div class="ev"><b>14<small>ОКТ</small></b><div>Встреча с №18<span>вт · 18:00 · онлайн</span></div></div>
+    <div class="ev"><b>16<small>ОКТ</small></b><div>Горячий стул<span>чт · 19:00 · каминная</span></div></div>
+    <div class="ev"><b>18<small>ОКТ</small></b><div>Живая встреча клуба<span>сб · 17:00 · Фрайбург</span></div></div>
+   </div>
+  </section>
+  <section class="scr" data-s="f1">
+   <div class="fan"></div>
+   <div class="dh"><div class="fl">ЭТАЖ 1</div><h1>Доска</h1><div class="orn"><i></i><s></s><i></i></div></div>
+   <div id="v1Board"></div>
+   <div class="req" style="border-style:dashed"><div class="tg">Правило</div><div style="font-size:13.5px;color:var(--mut)">У каждого одна записка. Новую — после того, как старая закрыта.</div></div>
+  </section>
+  <section class="scr" data-s="f2">
+   <div class="fan"></div>
+   <div class="dh"><div class="fl">ЭТАЖ 2</div><h1>Библиотека</h1><div class="orn"><i></i><s></s><i></i></div></div>
+   <div id="v1Lib"></div>
+   <div class="sh">Каминная</div>
+   <div class="req"><div class="tg">Четверг · 19:00 · онлайн</div><h4>Горячий стул</h4><div class="mt">Один участник выносит свою ситуацию, остальные 45 минут дают решения и контакты. По желанию.</div><button class="bt o" data-act="sign">Напомнить мне</button></div>
+  </section>
+  <section class="scr" data-s="cab">
+   <div class="fan"></div>
+   <div class="dh"><div class="fl">КАБИНЕТ</div><h1>Алексей М.</h1><div class="orn"><i></i><s></s><i></i></div></div>
+   <svg class="gauge" viewBox="0 0 260 150" width="260"><path d="M30 134 A100 100 0 0 1 230 134" fill="none" stroke="#26241c" stroke-width="10"/><path id="v1Arc" d="M30 134 A100 100 0 0 1 230 134" fill="none" stroke="#d8bd86" stroke-width="10" stroke-dasharray="314" stroke-dashoffset="82"/><text x="130" y="126">74</text><text x="130" y="146" style="font:500 10px Jost;letter-spacing:.3em;fill:#948d7b">ПУЛЬС</text></svg>
+   <div class="ln"><div class="l"><span>Движение</span><b>20 / 25</b></div><div class="t"><i style="width:80%"></i></div></div>
+   <div class="ln"><div class="l"><span>Связи</span><b>21 / 30</b></div><div class="t"><i style="width:70%"></i></div></div>
+   <div class="ln"><div class="l"><span>Вклад</span><b>33 / 45</b></div><div class="t"><i style="width:73%"></i></div></div>
+   <div class="sh">Ключи этажей</div>
+   <div class="keys"><div class="f"><svg class="i"><use href="#i-key"/></svg>Холл</div><div class="f"><svg class="i"><use href="#i-key"/></svg>Этажи 1–2</div><div><svg class="i"><use href="#i-lock"/></svg>Этаж 3</div><div><svg class="i"><use href="#i-lock"/></svg>Этаж 4</div></div>
+   <div class="sh">Письма</div>
+   <div class="lt"><p>«Помог разобрать письмо от Finanzamt, срок был через 2 дня. Всё успел.»</p><span>от №12 · изменило мою ситуацию</span></div>
+   <div class="lt"><p>«Познакомил с человеком, который нашёл мне первого клиента.»</p><span>от №04 · серьёзно</span></div>
+  </section>
+ </div>
+ <div class="doors"><i></i><i></i></div>
+ <aside class="lift" id="v1Lift"></aside>
+ <div class="sheetw"><div class="scrim" data-act="close"></div><div class="sheet"></div></div>
+ <div class="ptoast"></div>
+</div>
+</template>
+
+<!-- ================= V2 ================= -->
+<template id="tV2">
+<div class="ph V2">
+ <svg class="stars" id="v2Stars" viewBox="0 0 380 395"></svg>
+ <div class="bar2"><div><b>NEXT</b><small>Дом · Фрайбург</small></div><div class="lum">Свет в доме<div class="t"><i style="width:74%"></i></div></div></div>
+ <div class="hz" id="v2Hz"><svg viewBox="0 0 380 640" id="v2Svg"></svg></div>
+ <div class="hint2">Нажми на любую комнату</div>
+ <button class="keyb" data-act="qr"><svg class="i"><use href="#i-key"/></svg>Ключ-карта</button>
+ <div id="v2Rooms"></div>
+ <div class="sheetw"><div class="scrim" data-act="close"></div><div class="sheet"></div></div>
+ <div class="ptoast"></div>
+</div>
+</template>
+
+<!-- ================= V3 ================= -->
+<template id="tV3">
+<div class="ph V3">
+ <div class="tb"><b>NEXT · план</b><div class="rg"><span class="pill">Пульс <span id="v3P">74</span></span><button class="pill or" data-act="qr"><svg class="i s"><use href="#i-qr"/></svg>QR</button></div></div>
+ <div class="plan" id="v3Plan">
+  <svg viewBox="0 0 380 420" id="v3Svg"></svg>
+  <div class="stop" id="v3s1"></div><div class="stop" id="v3s2"></div><div class="stop" id="v3s3"></div>
+  <div class="tokn" id="v3Tok">07</div>
+ </div>
+ <div class="stamp" id="v3Stamp">МАРШРУТ ПРОЙДЕН</div>
+ <div class="dr"><div class="hd"><div class="hdl"></div><div class="ro"><h2 id="v3T">Холл</h2><span id="v3S"></span></div></div><div class="db" id="v3Body"></div></div>
+ <div class="sheetw"><div class="scrim" data-act="close"></div><div class="sheet"></div></div>
+ <div class="ptoast"></div>
+</div>
+</template>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const ic=(n,c='i s')=>`<svg class="${c}"><use href="#i-${n}"/></svg>`;
+const person=n=>'№'+String(n).padStart(2,'0');
+function toast(ph,m){const t=$('.ptoast',ph);t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2500)}
+function sheet(ph,html){const w=$('.sheetw',ph);$('.sheet',w).innerHTML='<div class="grab"></div>'+html;w.classList.add('on')}
+function closeSheet(ph){$('.sheetw',ph).classList.remove('on')}
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function drawQR(cv,seed,fg,bg){const N=25,c=cv.getContext('2d'),s=cv.width/N,r=rng(seed);c.fillStyle=bg;c.fillRect(0,0,cv.width,cv.height);
+ const fin=(x,y)=>{c.fillStyle=fg;c.fillRect(x*s,y*s,7*s,7*s);c.fillStyle=bg;c.fillRect((x+1)*s,(y+1)*s,5*s,5*s);c.fillStyle=fg;c.fillRect((x+2)*s,(y+2)*s,3*s,3*s)};
+ c.fillStyle=fg;for(let y=0;y<N;y++)for(let x=0;x<N;x++){const f=(x<8&&y<8)||(x>N-9&&y<8)||(x<8&&y>N-9);if(!f&&r()>.52)c.fillRect(x*s,y*s,s,s)}
+ fin(0,0);fin(N-7,0);fin(0,N-7)}
+function qrSheet(ph,o){
+ sheet(ph,`<h2>${o.title}</h2><div style="opacity:.65;font-size:13px;margin-top:4px">Покажи другому участнику. QR меняется каждые 30 секунд — скриншот не сработает. Встреча засчитается, когда оба отсканируют друг друга.</div><div class="qrb"><canvas width="250" height="250"></canvas></div><div style="text-align:center;font-size:13px;opacity:.7" class="qt">Обновится через 30 с</div>`);
+ const cv=$('canvas',ph);let left=30;drawQR(cv,Math.floor(Math.random()*1e6),o.fg,o.bg);
+ clearInterval(ph._qi);ph._qi=setInterval(()=>{if(!$('.sheetw',ph).classList.contains('on')||!cv.isConnected){clearInterval(ph._qi);return}left--;if(left<=0){left=30;drawQR(cv,Math.floor(Math.random()*1e6),o.fg,o.bg)}const t=$('.qt',ph);if(t)t.textContent='Обновится через '+left+' с'},1000);
+}
+const REQS=[
+ {id:'r1',t:'Нужен перевод письма от Jobcenter на русский',sph:'Бумаги',due:'до 14 окт',by:12,n:2,urgent:true},
+ {id:'r2',t:'Ищу Steuerberater во Фрайбурге для Gewerbe',sph:'Бизнес',due:'до 20 окт',by:3,n:4},
+ {id:'r3',t:'Нужен логотип для стартапа — оплата по клубным условиям',sph:'Дизайн и digital',due:'до 25 окт',by:21,n:1}
+];
+const RESP=[{n:12,why:'Переводил такие письма, сделаю сегодня',niche:'Бумаги и переводы'},{n:4,why:'Знаю, как это обычно просят',niche:'Переезд и жильё'},{n:26,why:'Могу вычитать и оформить',niche:'Дизайн и digital'}];
+const LIB=[
+ {t:'Письмо от Finanzamt: что отвечать и в какой срок',min:6,by:12,tag:'Finanzamt',b:['Не паникуй: в письме важны три вещи — Steuernummer, срок (Frist) и что именно запрашивают.','Если срок короткий — отправь короткое «получил, отвечу до даты», а документы приложи позже.','Внутри — шаблон ответа на немецком и список, что приложить.']},
+ {t:'Gewerbeanmeldung за один визит: что взять с собой',min:8,by:3,tag:'Gewerbe',b:['Список документов и порядок шагов.','Типичные ошибки в анкете.','Что делать после регистрации: Finanzamt, Steuerberater, счёт.']},
+ {t:'Резюме на немецком: чем отличается от привычного',min:7,by:9,tag:'Найм',b:['Структура и длина.','Фразы, которые работают, и фразы, которые режут слух.','Что писать про опыт из Украины и России.']},
+ {t:'Ответ арендодателю: шаблон письма и пакет документов',min:5,by:4,tag:'Квартира',b:['Какие документы просят почти всегда и как собрать их за день.','Как написать первое письмо, чтобы его дочитали.','Что делать, если ответа нет три дня.']}
+];
+const needBars=`<div class="ln"><div class="l"><span>Пульс</span><b>74 / 80</b></div><div class="t"><i style="width:92%"></i></div></div><div class="ln"><div class="l"><span>Серьёзная помощь</span><b>2 / 3</b></div><div class="t"><i style="width:66%"></i></div></div>`;
+
+/* ================= V1 · ЭТАЖИ ================= */
+function initV1(ph){
+ const S={fl:'f0',busy:false,resp:new Set(),done:[0,0,0],mine:'open'};
+ const FL=[['f4','4','Совет',1],['f3','3','Салон',1],['f2','2','Книги',0],['f1','1','Доска',0],['f0','0','Холл',0]];
+ const lift=()=>{$('#v1Lift',ph).innerHTML=`<div class="lb">ЛИФТ</div>`+FL.map(([id,n,l,lk])=>`<div class="fw ${S.fl===id?'on':''}"><button class="fb ${S.fl===id?'on':''} ${lk?'lk':''}" data-fl="${id}">${n}${lk?ic('lock','i'):''}</button><small>${l}</small></div>`).join('')+`<div class="sp"></div><div class="fw ${S.fl==='cab'?'on':''}"><button class="fb ${S.fl==='cab'?'on':''}" data-fl="cab">${ic('user','i s').replace('class="i s"','class="i s" style="position:static;width:18px;height:18px;padding:0;background:none;color:inherit"')}</button><small>Кабинет</small></div>`};
+ const tasks=()=>{
+  const T=[['Фокус недели не задан','Задай одну задачу · кабинет','cab'],['№18 просит встречу','«Выход на рынок Австрии» · этаж 1','f1'],[S.mine==='open'?'Откликнулись трое на твой запрос':'Запрос закрыт, помощь подтверждена','Выбери помощника · этаж 1','f1']];
+  $('#v1Tasks',ph).innerHTML=T.map(([t,s,f],i)=>`<div class="tk ${S.done[i]?'d':''}" data-tk="${i}" data-fl="${f}"><div class="bx">${S.done[i]?ic('check','i').replace('class="i"','class="i" style="width:12px;height:12px;transform:rotate(-45deg) scale(1.2);color:#1a1405"'):''}</div><div class="tt">${t}<span>${s}</span></div><span class="fl2">${f==='cab'?'КАБ':f.slice(1)+' ЭТ'}</span></div>`).join('');
+ };
+ const board=()=>{
+  const mine=S.mine==='open'?`<div class="req mine"><div class="tg">Моя записка · ${'<b>3 отклика</b>'}</div><h4>Нужна помощь с договором аренды — перевод и проверка</h4><div class="mt">до 16 окт · Бумаги</div><button class="bt" data-act="pick">Выбрать помощника</button></div>`:`<div class="req"><div class="tg">Моя записка · <b>закрыта</b></div><h4 style="opacity:.6">Договор аренды — помощь подтверждена</h4></div>`;
+  $('#v1Board',ph).innerHTML=mine+REQS.map(r=>{const on=S.resp.has(r.id);return `<div class="req"><div class="tg">${r.sph}${r.urgent?' · <b>срочно</b>':''}</div><h4>${r.t}</h4><div class="mt">${person(r.by)} · ${r.due} · откликов ${r.n+(on?1:0)}</div><button class="bt ${on?'on':'o'}" data-act="resp" data-id="${r.id}">${on?'Вы откликнулись':'Откликнуться'}</button></div>`}).join('');
+ };
+ const lib=()=>{$('#v1Lib',ph).innerHTML=LIB.map((l,i)=>`<div class="req" data-act="art" data-i="${i}" style="cursor:pointer"><div class="tg">${l.tag} · ${l.min} мин</div><h4>${l.t}</h4><div class="mt">от участника ${person(l.by)}</div></div>`).join('')};
+ async function go(id){
+  if(S.busy||id===S.fl)return;
+  if(id==='f3'||id==='f4'){const b=$(`[data-fl="${id}"]`,ph);b.classList.remove('shk');void b.offsetWidth;b.classList.add('shk');
+   sheet(ph,id==='f3'?`<h2>Этаж 3 · Салон Партнёров</h2><div style="color:#948d7b;font-size:13.5px;margin:6px 0 10px">Здесь голос при отборе новых людей и право быть поручителем.</div>${needBars}<div style="font-size:12.5px;color:#948d7b">Ты на пути: ещё чуть-чуть Пульса и одна серьёзная помощь.</div>`:`<h2>Этаж 4 · Совет</h2><div style="color:#948d7b;font-size:13.5px;margin:6px 0 10px">Крыша клуба. Анкеты кандидатов, голосование, «Плечо клуба». Попадают те, у кого самый высокий Пульс, доказательства помощи и решение Совета.</div><div style="font-size:12.5px;color:#948d7b">Сначала нужен ключ «Партнёр» от этажа 3.</div>`);return}
+  S.busy=true;const d=$('.doors',ph);d.classList.add('c');await sleep(320);
+  $$('.scr',ph).forEach(s=>s.classList.toggle('on',s.dataset.s===id));S.fl=id;$('.scr.on',ph).scrollTop=0;lift();await sleep(120);d.classList.remove('c');await sleep(320);S.busy=false;
+ }
+ ph.addEventListener('click',e=>{
+  const a=e.target.closest('[data-act]');
+  if(a){const k=a.dataset.act;
+   if(k==='close')closeSheet(ph);
+   if(k==='qr')qrSheet(ph,{title:'Ключ-карта №07',fg:'#0a0a0c',bg:'#f0dcab'});
+   if(k==='resp'){S.resp.has(a.dataset.id)?S.resp.delete(a.dataset.id):S.resp.add(a.dataset.id);board();if(S.resp.has(a.dataset.id))toast(ph,'Отклик отправлен. Автор выберет помощника')}
+   if(k==='pick')sheet(ph,`<h2>Кто откликнулся</h2><div style="color:#948d7b;font-size:13px;margin:4px 0 10px">Выбери, кому доверить задачу</div>${RESP.map(r=>`<div class="tk" data-act="trust" data-n="${r.n}"><div class="bx"></div><div class="tt">${person(r.n)} · ${r.niche}<span>«${r.why}»</span></div></div>`).join('')}`);
+   if(k==='trust'){closeSheet(ph);S.mine='closed';S.done[2]=1;board();tasks();toast(ph,'Задача у '+person(a.dataset.n)+'. Остальным — «спасибо за отклик»')}
+   if(k==='art'){const l=LIB[+a.dataset.i];sheet(ph,`<h2 style="font-size:22px;line-height:1.2">${l.t}</h2><div style="color:#948d7b;font-size:12.5px;margin:6px 0 12px">${l.min} мин · от участника ${person(l.by)}</div>${l.b.map(p=>`<p style="margin-bottom:10px;font-size:14.5px">${p}</p>`).join('')}<div style="font-size:12px;color:#948d7b">Пример наполнения.</div>`)}
+   if(k==='sign'){toast(ph,'Готово. Напомним за час')}
+   return}
+  const f=e.target.closest('[data-fl]');if(f)go(f.dataset.fl);
+ });
+ lift();tasks();board();lib();
+}
+
+/* ================= V2 · ОСОБНЯК В РАЗРЕЗЕ ================= */
+function initV2(ph){
+ const S={resp:new Set(),mine:'open',cur:null};
+ const r=rng(11);let st='';for(let i=0;i<60;i++)st+=`<circle cx="${r()*380}" cy="${r()*380}" r="${r()*1.1+.3}" fill="#fff" opacity="${.3+r()*.6}"/>`;
+ st+='<circle cx="318" cy="66" r="20" fill="#fff6dd"/><circle cx="326" cy="60" r="18" fill="#2a1f5e"/>';$('#v2Stars',ph).innerHTML=st;
+ const W=166,H=120;
+ const ROOMS={
+  hall:{x:24,y:408,name:'Холл',live:2,wall:'#e9d4b0',floor:'#8a5a2b',bgr:'#e9d4b0'},
+  meet:{x:190,y:408,name:'Зал встреч',live:3,wall:'#cdd9c3',floor:'#7a5a33',bgr:'#cdd9c3'},
+  board:{x:24,y:288,name:'Доска запросов',live:4,wall:'#e8c3a4',floor:'#8a5a2b',bgr:'#e8c3a4'},
+  lib:{x:190,y:288,name:'Библиотека',live:2,wall:'#33466d',floor:'#4a3220',bgr:'#33466d'},
+  study:{x:24,y:168,name:'Кабинет',live:1,wall:'#d9c3a0',floor:'#8a5a2b',bgr:'#d9c3a0'},
+  council:{x:190,y:168,name:'Совет',live:0,wall:'#3b3b4a',floor:'#2a2a33',bgr:'#3b3b4a',lock:1}
+ };
+ const figs=(n,k)=>{const cols=['#e86a5a','#3b8fd1','#f2b441','#4aa77a','#9c6ad8'];let s='';for(let i=0;i<n;i++){const x=30+i*(W-60)/Math.max(n-1,1)*(n>1?1:0)+(n===1?53:0);s+=`<g class="fg" style="animation-delay:${i*.6}s" transform="translate(${x},${H-14})"><circle cy="-22" r="6" fill="#f3d2b0"/><rect x="-7" y="-16" width="14" height="18" rx="7" fill="${cols[(i+k)%5]}"/></g>`}return s};
+ const inner=(k)=>{
+  const R=ROOMS[k];let f='';
+  if(k==='hall')f=`<path d="M22 ${H-14}V54a19 19 0 0 1 38 0v${H-68}z" fill="#5a3a1e"/><circle cx="52" cy="84" r="2.5" fill="#e2c283"/><line x1="112" y1="30" x2="112" y2="${H-14}" stroke="#5a3a1e" stroke-width="3"/><path d="M104 40h16M104 56h16" stroke="#5a3a1e" stroke-width="3"/><circle cx="142" cy="38" r="9" fill="#ffe39a"/><line x1="142" y1="0" x2="142" y2="29" stroke="#5a3a1e"/><rect x="70" y="${H-14}" width="30" height="5" fill="#a8372b"/>`;
+  if(k==='meet')f=`<line x1="83" y1="0" x2="83" y2="24" stroke="#4a3a28"/><path d="M70 36a13 13 0 0 1 26 0z" fill="#ffd27a"/><ellipse cx="83" cy="${H-30}" rx="46" ry="9" fill="#8a5a2b"/><rect x="80" y="${H-30}" width="6" height="16" fill="#6a4521"/>${[40,66,100,126].map(x=>`<circle cx="${x}" cy="${H-36}" r="5" fill="#4a3a28"/>`).join('')}`;
+  if(k==='board')f=`<rect x="26" y="20" width="114" height="56" fill="#b9803f" stroke="#6b4a2a" stroke-width="3" rx="3"/>${[[34,28,'#fff6dd'],[62,30,'#ffd1d1'],[90,26,'#fff0a8'],[40,52,'#cfe8ff'],[76,50,'#fff6dd'],[110,48,'#d7f0c6']].map(([x,y,c],i)=>`<rect x="${x}" y="${y}" width="22" height="18" fill="${c}" transform="rotate(${[-4,3,-2,4,-3,2][i]} ${x+11} ${y+9})"/><circle cx="${x+11}" cy="${y+2}" r="2" fill="#d64a3a"/>`).join('')}<rect x="40" y="${H-34}" width="86" height="6" fill="#6a4521"/><rect x="48" y="${H-28}" width="5" height="14" fill="#6a4521"/><rect x="113" y="${H-28}" width="5" height="14" fill="#6a4521"/>`;
+  if(k==='lib')f=[24,56,88].map((y,ri)=>`<rect x="14" y="${y+20}" width="138" height="3" fill="#d9b779"/>`+Array.from({length:12},(_,i)=>`<rect x="${16+i*11.2}" y="${y+(i%3)*2+2}" width="8.5" height="${18-(i%3)*2}" fill="${['#c4553d','#e8b04a','#4a8f7a','#7a5ab0','#d98a3a'][(i+ri)%5]}"/>`).join('')).join('')+`<circle cx="150" cy="${H-30}" r="8" fill="#ffd27a" opacity=".9"/>`;
+  if(k==='study')f=`<rect x="100" y="24" width="48" height="40" rx="3" fill="#1d1a46"/><circle cx="130" cy="42" r="9" fill="#fff6dd"/><rect x="26" y="${H-36}" width="92" height="7" fill="#6a4521"/><rect x="34" y="${H-30}" width="5" height="16" fill="#6a4521"/><rect x="105" y="${H-30}" width="5" height="16" fill="#6a4521"/><rect x="50" y="${H-54}" width="30" height="18" rx="2" fill="#2a2a33"/><rect x="132" y="${H-34}" width="14" height="20" fill="#a8372b"/><path d="M139 ${H-34}c-12-14-4-24 0-30 4 6 12 16 0 30z" fill="#4aa77a"/><rect x="26" y="26" width="34" height="14" rx="2" fill="#e2c283"/><text x="43" y="37" font-size="9" font-weight="900" text-anchor="middle" fill="#3a2410" font-family="Nunito">№07</text>`;
+  if(k==='council')f=`<ellipse cx="83" cy="${H-30}" rx="50" ry="10" fill="#555563"/><rect x="80" y="${H-30}" width="6" height="16" fill="#44444f"/>${[34,62,104,132].map(x=>`<circle cx="${x}" cy="${H-38}" r="5" fill="#44444f"/>`).join('')}`;
+  const glow=R.live?`<rect width="${W}" height="${H}" fill="url(#gw)" opacity="${.35+R.live*.12}"/>`:'';
+  const pw=R.name.length*6.4+36;
+  const lab=`<g transform="translate(8,8)"><rect width="${pw}" height="18" rx="9" fill="rgba(20,12,4,.55)"/><circle cx="10" cy="9" r="3.4" fill="${R.lock?'#9aa':R.live?'#6dff9d':'#bbb'}"/><text x="18" y="12.5" font-size="9.5" font-weight="900" fill="#fff" font-family="Nunito">${R.name}${R.lock?'':' · '+R.live}</text></g>`;
+  const lock=R.lock?`<rect width="${W}" height="${H}" fill="rgba(12,12,24,.55)"/><g transform="translate(83,58)"><rect x="-13" y="-4" width="26" height="22" rx="4" fill="#e2c283"/><path d="M-8-4v-7a8 8 0 0 1 16 0v7" fill="none" stroke="#e2c283" stroke-width="3"/><circle cy="7" r="3" fill="#3b3b4a"/></g>`:'';
+  return `<rect class="rv" width="${W}" height="${H}" fill="${R.wall}"/><rect y="${H-14}" width="${W}" height="14" fill="${R.floor}"/>${f}${R.lock?'':figs(R.live,k.length)}${glow}${lock}${lab}`;
+ };
+ const house=()=>{
+  let s=`<defs><radialGradient id="gw"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".9"/><stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/></radialGradient><linearGradient id="gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f6b4a"/><stop offset="1" stop-color="#143324"/></linearGradient></defs>`;
+  s+=`<ellipse cx="190" cy="560" rx="260" ry="70" fill="url(#gr)"/><path d="M168 528 L150 640 L230 640 L212 528z" fill="#e8c88a" opacity=".85"/>`;
+  s+=`<rect x="290" y="92" width="26" height="62" fill="#7a3a2b"/><rect x="286" y="88" width="34" height="8" fill="#5a2a1f"/>`;
+  [0,1,2].forEach(i=>s+=`<circle class="smoke" cx="303" cy="80" r="7" fill="#fff" style="animation-delay:${i*1.3}s"/>`);
+  s+=`<polygon points="8,172 190,62 372,172" fill="#1f4a52"/><polygon points="8,172 190,62 372,172 360,172 190,76 20,172" fill="#2c6a74"/>`;
+  s+=`<g class="rm" data-room="fire"><circle cx="190" cy="128" r="22" fill="#2a1a10" stroke="#e2c283" stroke-width="3"/><circle cx="190" cy="128" r="18" fill="#ff9a3c" opacity=".35"/><path class="flick" d="M190 144c-9 0-12-8-8-14 2 3 4 4 5 4-2-7 2-12 6-16 0 6 8 10 8 18 0 5-4 8-11 8z" fill="#ffb347"/><rect x="164" y="104" width="52" height="48" fill="transparent"/></g>`;
+  s+=`<rect x="24" y="168" width="332" height="360" fill="#6b3f2a"/>`;
+  Object.entries(ROOMS).forEach(([k,R])=>{s+=`<g class="rm" data-room="${k}" transform="translate(${R.x},${R.y})">${inner(k)}<rect width="${W}" height="${H}" fill="transparent"/></g>`});
+  s+=`<rect x="190" y="168" width="2" height="360" fill="#4a2a1b"/><rect x="24" y="286" width="332" height="3" fill="#4a2a1b"/><rect x="24" y="406" width="332" height="3" fill="#4a2a1b"/><rect x="20" y="526" width="340" height="8" fill="#4a2a1b"/>`;
+  $('#v2Svg',ph).innerHTML=s;
+ };
+ const content={
+  hall:`<h1>Холл</h1><div class="sb">Здесь входят в клуб и встречают гостей</div><div class="li"><div class="em">🗝</div><div>Ключ-карта №07<span>Показать QR для встречи</span></div><button class="nb" data-act="qr" style="margin-left:auto">QR</button></div><div class="li"><div class="em">📣</div><div>Новости клуба<span>Принят кандидат №19 · решение Совета</span></div></div><div class="li"><div class="em">🎫</div><div>Ближайшее событие<span>Сб 18 окт · 17:00 · Фрайбург</span></div></div>`,
+  meet:`<h1>Зал встреч</h1><div class="sb">Здесь сейчас 3 человека</div><div class="note mine"><div class="tg">Просит встречу</div><h4>${person(18)} · «Выход на рынок Австрии»</h4><div class="mt">минимум 30 минут · осталось 12 дней</div><button class="nb w" data-act="meetok">Назначить время</button></div><div class="li"><div class="em">📅</div><div>Живая встреча клуба<span>Сб 18 окт · 17:00 · спорт и «круг запросов»</span></div></div><div class="li"><div class="em">🔥</div><div>Горячий стул<span>Чт · 19:00 · онлайн, по желанию</span></div></div>`,
+  lib:`<h1>Библиотека</h1><div class="sb">Выбор Совета · бесплатно для участников</div>${LIB.map((l,i)=>`<div class="li" data-act="art" data-i="${i}" style="cursor:pointer"><div class="em">📘</div><div>${l.t}<span>${l.tag} · ${l.min} мин · от ${person(l.by)}</span></div></div>`).join('')}`,
+  council:`<h1>Совет</h1><div class="sb">Комната для Партнёров и выше</div><div class="note"><div class="tg">Дверь закрыта</div><h4>Нужен ключ «Партнёр»</h4><div class="mt">Пульс 74 из 80 · серьёзная помощь 2 из 3</div><div class="lamps"><div><i><b style="height:92%"></b></i>Пульс<em>74/80</em></div><div><i><b style="height:66%"></b></i>Помощь<em>2/3</em></div></div></div>`,
+  fire:`<h1>Каминная</h1><div class="sb">Чердак клуба · тут греются у огня</div><div class="note"><div class="tg">Чт · 19:00 · онлайн</div><h4>Горячий стул</h4><div class="mt">Один участник выносит свою ситуацию, остальные 45 минут дают решения и контакты. По желанию.</div><button class="nb w" data-act="sign">Напомнить мне</button></div>`
+ };
+ const boardHTML=()=>{
+  const mine=S.mine==='open'?`<div class="note mine"><div class="tg">Моя записка · <b>3 отклика</b></div><h4>Нужна помощь с договором аренды — перевод и проверка</h4><div class="mt">до 16 окт · Бумаги</div><button class="nb w" data-act="pick">Выбрать помощника</button></div>`:`<div class="note"><div class="tg">Моя записка · <b style="color:#2f8a5b">закрыта</b></div><h4 style="opacity:.6">Договор аренды — помощь подтверждена</h4></div>`;
+  return `<h1>Доска запросов</h1><div class="sb">Прикрепи просьбу — откликнутся те, кто может. Выбираешь ты.</div>${mine}${REQS.map(q=>{const on=S.resp.has(q.id);return `<div class="note"><div class="tg">${q.sph}${q.urgent?' · <b>срочно</b>':''}</div><h4>${q.t}</h4><div class="mt">${person(q.by)} · ${q.due} · откликов ${q.n+(on?1:0)}</div><button class="nb w ${on?'on':''}" data-act="resp" data-id="${q.id}">${on?'Вы откликнулись ✓':'Откликнуться'}</button></div>`}).join('')}<div class="li" style="border:0;opacity:.7"><div class="em">📌</div><div>У каждого одна записка<span>Новую — после того, как старая закрыта</span></div></div>`;
+ };
+ const studyHTML=()=>`<h1>Кабинет</h1><div class="sb">Твоя комната в клубе</div><div style="text-align:center;margin:6px 0 4px"><div class="plt"><b>№ 07 · АЛЕКСЕЙ М.</b><span>ОСНОВАТЕЛЬ · ФРАЙБУРГ</span></div></div><div class="sec2">Свет в твоих окнах</div><div class="lamps"><div><i><b style="height:80%"></b></i>Движение<em>20/25</em></div><div><i><b style="height:70%"></b></i>Связи<em>21/30</em></div><div><i><b style="height:73%"></b></i>Вклад<em>33/45</em></div></div><div class="sec2">Ключи</div><div class="ks"><div class="f">${ic('key','i')}Кандидат</div><div class="f">${ic('key','i')}Участник</div><div>${ic('lock','i')}Партнёр</div><div>${ic('lock','i')}Совет</div></div><div class="sec2">Письма благодарности</div><div class="let">«Помог разобрать письмо от Finanzamt, срок был через 2 дня. Всё успел.»<span>от №12 · изменило мою ситуацию</span></div><div class="let">«Познакомил с человеком, который нашёл мне первого клиента.»<span>от №04 · серьёзно</span></div>`;
+ const bands={hall:'hall',meet:'meet',board:'board',lib:'lib',study:'study',council:'council',fire:null};
+ const roomEl=()=>{let h='';Object.keys(content).concat(['board','study']).forEach(k=>{const R=ROOMS[k];h+=`<section class="room" data-r="${k}" style="--bgr:${R?R.bgr:'#2a1a10'}"><button class="back" data-act="back">${ic('back','i s')}Дом</button><div class="ill"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice">${R?inner(k).replace(/<g transform="translate\(8,8\)">.*?<\/g>/,''):`<rect width="${W}" height="${H}" fill="#2a1a10"/><g transform="translate(83,70)"><path class="flick" d="M0 40c-22 0-30-20-20-36 5 8 10 10 13 10-5-18 5-30 15-40 0 16 20 26 20 46 0 12-10 20-28 20z" fill="#ffb347"/><path class="flick" d="M0 40c-10 0-14-9-9-17 3 4 5 5 6 5-2-8 3-14 7-18 0 8 9 12 9 21 0 6-5 9-13 9z" fill="#ffe28a"/></g><rect y="106" width="${W}" height="14" fill="#4a2a1b"/>`}</svg></div><div class="pan" data-body></div></section>`});$('#v2Rooms',ph).innerHTML=h};
+ roomEl();house();
+ const openRoom=async k=>{
+  S.cur=k;const hz=$('#v2Hz',ph),R=ROOMS[k]||{x:100,y:100};
+  const cx=k==='fire'?190:R.x+W/2,cy=k==='fire'?128:R.y+H/2;
+  hz.style.transformOrigin=`${cx/380*100}% ${cy/640*100}%`;hz.classList.add('zoom');
+  await sleep(520);
+  const el=$(`.room[data-r="${k}"]`,ph);const body=$('[data-body]',el);
+  body.innerHTML=k==='board'?boardHTML():k==='study'?studyHTML():content[k];
+  el.classList.add('on');el.scrollTop=0;
+ };
+ const backHome=()=>{$$('.room',ph).forEach(r=>r.classList.remove('on'));$('#v2Hz',ph).classList.remove('zoom');S.cur=null};
+ ph.addEventListener('click',e=>{
+  const a=e.target.closest('[data-act]');
+  if(a){const k=a.dataset.act;
+   if(k==='close')closeSheet(ph);
+   if(k==='back')backHome();
+   if(k==='qr')qrSheet(ph,{title:'Ключ-карта №07',fg:'#3a2410',bg:'#ffffff'});
+   if(k==='resp'){S.resp.has(a.dataset.id)?S.resp.delete(a.dataset.id):S.resp.add(a.dataset.id);$('[data-r="board"] [data-body]',ph).innerHTML=boardHTML();if(S.resp.has(a.dataset.id))toast(ph,'Отклик отправлен. Автор выберет помощника')}
+   if(k==='pick')sheet(ph,`<h2>Кто откликнулся</h2><div style="color:#8a6b48;font-weight:700;font-size:13px;margin:4px 0 8px">Выбери, кому доверить задачу</div>${RESP.map(q=>`<div class="li" data-act="trust" data-n="${q.n}" style="cursor:pointer"><div class="em">${String(q.n).padStart(2,'0')}</div><div>${person(q.n)} · ${q.niche}<span>«${q.why}»</span></div></div>`).join('')}`);
+   if(k==='trust'){closeSheet(ph);S.mine='closed';$('[data-r="board"] [data-body]',ph).innerHTML=boardHTML();toast(ph,'Задача у '+person(a.dataset.n)+'. Остальным — «спасибо за отклик»')}
+   if(k==='meetok'){sheet(ph,`<h2>Выбери время</h2><div style="color:#8a6b48;font-weight:700;font-size:13px;margin:4px 0 10px">Первая встреча — в общественном месте или онлайн</div>${['Вт 14 окт · 18:00','Ср 15 окт · 12:30','Пт 17 окт · 19:00'].map(s=>`<div class="li" data-act="slot" data-s="${s}" style="cursor:pointer"><div class="em">🕒</div><div>${s}</div></div>`).join('')}`)}
+   if(k==='slot'){closeSheet(ph);toast(ph,'Встреча назначена: '+a.dataset.s)}
+   if(k==='sign')toast(ph,'Готово. Напомним за час');
+   if(k==='art'){const l=LIB[+a.dataset.i];sheet(ph,`<h2 style="line-height:1.2">${l.t}</h2><div style="color:#8a6b48;font-weight:700;font-size:12.5px;margin:6px 0 12px">${l.min} мин · от участника ${person(l.by)}</div>${l.b.map(p=>`<p style="margin-bottom:10px;font-weight:600">${p}</p>`).join('')}<div style="font-size:12px;color:#8a6b48">Пример наполнения.</div>`)}
+   return}
+  const rm=e.target.closest('.rm');if(rm&&!S.cur)openRoom(rm.dataset.room);
+ });
+}
+
+/* ================= V3 · ПЛАН И МАРШРУТ ================= */
+function initV3(ph){
+ const S={room:'hall',done:[0,0,0],resp:new Set(),mine:'open',focus:'',slot:'',p:74};
+ const RM={
+  study:{b:[14,10,134,140],c:[74,75],n:'Кабинет',l:1},
+  lib:{b:[134,10,366,140],c:[250,75],n:'Библиотека',l:2},
+  board:{b:[14,140,190,270],c:[102,205],n:'Доска запросов',l:4},
+  meet:{b:[190,140,366,270],c:[278,205],n:'Зал встреч',l:3},
+  fire:{b:[14,270,130,410],c:[72,340],n:'Каминная',l:0},
+  hall:{b:[130,270,290,410],c:[210,340],n:'Холл',l:2},
+  council:{b:[290,270,366,410],c:[328,340],n:'Совет',l:0,lock:1}
+ };
+ const STOPS=[['board',[124,188],'Выбрать помощника на доске'],['meet',[300,188],'Принять встречу №18 в зале'],['study',[96,58],'Задать фокус недели в кабинете']];
+ const plan=()=>{
+  let s=`<defs><pattern id="ht" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#8fb8ff" stroke-opacity=".3" stroke-width="1"/></pattern></defs>`;
+  Object.entries(RM).forEach(([k,o])=>{const [x1,y1,x2,y2]=o.b;
+   s+=`<g class="rz" data-room="${k}"><rect class="hit" x="${x1}" y="${y1}" width="${x2-x1}" height="${y2-y1}" fill="transparent"/>${o.lock?`<rect x="${x1+2}" y="${y1+2}" width="${x2-x1-4}" height="${y2-y1-4}" fill="url(#ht)"/>`:''}<text class="rn" x="${x1+8}" y="${y1+16}">${o.n}</text>${o.lock?`<text x="${x1+8}" y="${y1+28}">ЗАКРЫТО</text>`:`<text class="lv" x="${x1+8}" y="${y1+28}">● ${o.l} в комнате</text>`}</g>`});
+  // стены
+  s+=`<g fill="none" stroke="#e8f0ff" stroke-width="3" stroke-linecap="square"><rect x="14" y="10" width="352" height="400"/><path d="M134 10V60M134 90V140M14 140H70M104 140H190M190 140V190M190 220V270M190 140H250M284 140H366M14 270H60M90 270H130M130 270V310M130 340V410M290 270V300M290 330V410M130 270H180M210 270H290M340 270H366"/></g>`;
+  // двери (дуги)
+  s+=`<g fill="none" stroke="#8fb8ff" stroke-width="1" stroke-dasharray="2 2"><path d="M134 60a15 15 0 0 1 15 15"/><path d="M70 140a17 17 0 0 0 17 17"/><path d="M190 190a15 15 0 0 1 15 15"/><path d="M250 140a17 17 0 0 1 17 17"/><path d="M60 270a15 15 0 0 0 15 15"/><path d="M130 310a15 15 0 0 1 15 15"/><path d="M290 300a15 15 0 0 0 -15 15"/><path d="M180 410a22 22 0 0 0 -22-22"/></g><rect x="180" y="408" width="60" height="5" fill="#0b2545"/><path d="M180 410h60" stroke="#ff8a3d" stroke-width="3"/><text x="210" y="424" text-anchor="middle" style="fill:#ff8a3d">ВХОД</text>`;
+  // мебель
+  s+=`<g fill="none" stroke="#8fb8ff" stroke-width="1.2"><rect x="30" y="110" width="50" height="16"/><circle cx="45" cy="60" r="8"/><rect x="146" y="28" width="206" height="8"/><rect x="146" y="46" width="30" height="80"/><rect x="190" y="60" width="150" height="6"/><rect x="190" y="100" width="150" height="6"/><rect x="26" y="226" width="70" height="14"/><rect x="24" y="182" width="100" height="6"/><circle cx="278" cy="215" r="26"/>${[0,45,90,135,180,225,270,315].map(a=>`<circle cx="${278+Math.cos(a*Math.PI/180)*35}" cy="${215+Math.sin(a*Math.PI/180)*35}" r="4"/>`).join('')}<rect x="28" y="290" width="44" height="14"/><circle cx="40" cy="366" r="9"/><circle cx="100" cy="366" r="9"/><rect x="152" y="352" width="116" height="36" stroke-dasharray="3 3"/><rect x="154" y="296" width="30" height="20"/></g>`;
+  // маршрут
+  const pts=[RM.hall.c,RM.board.c,RM.meet.c,RM.study.c].map(p=>p.join(',')).join(' ');
+  s+=`<polyline class="march" points="${pts}" fill="none" stroke="#ff8a3d" stroke-width="2" stroke-linecap="round"/>`;
+  $('#v3Svg',ph).innerHTML=s;
+  STOPS.forEach(([k,p],i)=>{const e=$('#v3s'+(i+1),ph);e.style.left=p[0]/380*100+'%';e.style.top=p[1]/420*100+'%';e.textContent=i+1;e.classList.toggle('d',!!S.done[i])});
+ };
+ const tok=k=>{const c=RM[k].c;const t=$('#v3Tok',ph);t.style.left=c[0]/380*100+'%';t.style.top=c[1]/420*100+'%';$$('.rz',ph).forEach(z=>z.classList.toggle('on',z.dataset.room===k))};
+ const doneCount=()=>S.done.reduce((a,b)=>a+b,0);
+ const mark=i=>{if(S.done[i])return;S.done[i]=1;STOPS.forEach((s,j)=>$('#v3s'+(j+1),ph).classList.toggle('d',!!S.done[j]));if(doneCount()===3){S.p=Math.min(100,S.p+3);$('#v3P',ph).textContent=S.p;setTimeout(()=>{$('#v3Stamp',ph).classList.add('on');setTimeout(()=>$('#v3Stamp',ph).classList.remove('on'),2200)},500)}};
+ const body={
+  hall:()=>`<div class="kcard" data-act="qr"><div class="r"><span>КЛЮЧ-КАРТА</span><span>ОСНОВАТЕЛЬ</span></div><b>№07</b><div class="r"><span>АЛЕКСЕЙ М.</span><span>НАЖМИ ДЛЯ QR</span></div></div><h2 style="font:600 13px var(--mono);letter-spacing:.14em;text-transform:uppercase;margin:16px 0 4px">Маршрут дня · ${doneCount()}/3</h2>${STOPS.map(([k,_,t],i)=>`<div class="rt ${S.done[i]?'d':''}" data-room="${k}"><div class="nn">${i+1}</div><div class="tt">${t}<span>${RM[k].n}</span></div></div>`).join('')}`,
+  board:()=>{const mine=S.mine==='open'?`<div class="rq mine"><div class="tg">Моя записка · <b>3 отклика</b></div><h4>Нужна помощь с договором аренды — перевод и проверка</h4><div class="mt">до 16 окт · Бумаги</div><button class="bn or s" data-act="pick">Выбрать помощника</button></div>`:`<div class="rq"><div class="tg">Моя записка · <b>закрыта</b></div><h4 style="opacity:.55">Договор аренды — помощь подтверждена</h4></div>`;
+   return mine+REQS.map(q=>{const on=S.resp.has(q.id);return `<div class="rq"><div class="tg">${q.sph}${q.urgent?' · <b>срочно</b>':''}</div><h4>${q.t}</h4><div class="mt">${person(q.by)} · ${q.due} · откликов ${q.n+(on?1:0)}</div><button class="bn s ${on?'on':'o'}" data-act="resp" data-id="${q.id}">${on?'Вы откликнулись':'Откликнуться'}</button></div>`}).join('')+`<div class="mt" style="font:500 11px var(--mono);color:#4a6288;padding-top:12px">У КАЖДОГО ОДНА ЗАПИСКА. НОВУЮ — ПОСЛЕ ЗАКРЫТИЯ СТАРОЙ.</div>`},
+  meet:()=>`${S.slot?`<div class="rq"><div class="tg">Встреча назначена</div><h4>${person(18)} · ${S.slot}</h4><div class="mt">После встречи покажите друг другу QR</div><button class="bn s o" data-act="qr">Мой QR</button></div>`:`<div class="rq mine"><div class="tg">Просит встречу · осталось 12 дней</div><h4>${person(18)} · «Выход на рынок Австрии»</h4><div class="mt">минимум 30 минут · отказаться нельзя, перенести можно</div>${['Вт 14 окт · 18:00','Ср 15 окт · 12:30','Пт 17 окт · 19:00'].map(s=>`<span class="chp" data-act="slot" data-s="${s}">${s}</span>`).join('')}</div>`}<div class="rq"><div class="tg">Сб 18 окт · 17:00 · Фрайбург</div><h4>Живая встреча клуба</h4><div class="mt">Спорт и «круг запросов»: каждый называет один запрос и одно предложение</div><button class="bn s o" data-act="sign">Записаться</button></div>`,
+  study:()=>`<div class="mini"><div><b>${S.p}</b>Пульс</div><div><b>${Math.min(25,S.p>=77?23:20)}</b>Движение</div><div><b>№07</b>Номер</div></div>${S.focus?`<div class="rq"><div class="tg">Фокус недели</div><h4>${S.focus.replace(/[<>&]/g,'')}</h4><div class="mt">Отметь шаг, когда сделаешь</div></div>`:`<div class="rq mine"><div class="tg">Фокус недели не задан</div><h4>Что главное на этой неделе?</h4><input class="in" id="v3In" placeholder="Например: отправить 5 предложений" maxlength="100"><button class="bn or" data-act="focus">Зафиксировать</button></div>`}<div class="mt" style="font:500 11px var(--mono);color:#4a6288;padding-top:8px">КЛЮЧИ: КАНДИДАТ ✓ · УЧАСТНИК ✓ · ПАРТНЁР — ПУЛЬС 74/80 · ПОМОЩЬ 2/3</div>`,
+  lib:()=>LIB.map((l,i)=>`<div class="rq" data-act="art" data-i="${i}" style="cursor:pointer"><div class="tg">${l.tag} · ${l.min} мин</div><h4>${l.t}</h4><div class="mt">от участника ${person(l.by)}</div></div>`).join(''),
+  fire:()=>`<div class="rq mine"><div class="tg">Чт · 19:00 · онлайн</div><h4>Горячий стул</h4><div class="mt">Один участник выносит свою ситуацию, остальные 45 минут дают решения и контакты. По желанию.</div><button class="bn or s" data-act="sign">Напомнить мне</button></div>`,
+  council:()=>`<div class="rq"><div class="tg">Дверь закрыта</div><h4>Нужен ключ «Партнёр»</h4><div class="mt">ПУЛЬС 74 / 80 · СЕРЬЁЗНАЯ ПОМОЩЬ 2 / 3</div></div>`
+ };
+ const render=k=>{S.room=k;const o=RM[k];$('#v3T',ph).textContent=o.n;$('#v3S',ph).textContent=o.lock?'закрыто':'● '+o.l+' в комнате';const b=$('#v3Body',ph);b.style.animation='none';void b.offsetWidth;b.style.animation='';b.innerHTML=body[k]();b.scrollTop=0};
+ const enter=k=>{tok(k);render(k)};
+ ph.addEventListener('click',e=>{
+  const a=e.target.closest('[data-act]');
+  if(a){const k=a.dataset.act;
+   if(k==='close')closeSheet(ph);
+   if(k==='qr')qrSheet(ph,{title:'Ключ-карта №07',fg:'#12233d',bg:'#ffffff'});
+   if(k==='resp'){S.resp.has(a.dataset.id)?S.resp.delete(a.dataset.id):S.resp.add(a.dataset.id);render('board');if(S.resp.has(a.dataset.id))toast(ph,'Отклик отправлен')}
+   if(k==='pick')sheet(ph,`<h2>Кто откликнулся</h2><div style="font-size:13px;color:#4a6288;margin:6px 0 6px">Выбери, кому доверить задачу</div>${RESP.map(q=>`<div class="rt" data-act="trust" data-n="${q.n}"><div class="nn">${String(q.n).padStart(2,'0')}</div><div class="tt">${person(q.n)} · ${q.niche}<span>«${q.why}»</span></div></div>`).join('')}`);
+   if(k==='trust'){closeSheet(ph);S.mine='closed';mark(0);render('board');toast(ph,'Задача у '+person(a.dataset.n)+' · остановка 1 пройдена')}
+   if(k==='slot'){S.slot=a.dataset.s;mark(1);render('meet');toast(ph,'Встреча назначена · остановка 2 пройдена')}
+   if(k==='focus'){const v=$('#v3In',ph).value.trim();if(v.length<6){toast(ph,'Напиши задачу чуть конкретнее');return}S.focus=v;mark(2);render('study');toast(ph,'Фокус зафиксирован · остановка 3 пройдена')}
+   if(k==='sign')toast(ph,'Готово. Напомним за час');
+   if(k==='art'){const l=LIB[+a.dataset.i];sheet(ph,`<h2 style="font:700 18px/1.25 Onest;letter-spacing:0;text-transform:none">${l.t}</h2><div style="font:500 11px var(--mono);color:#4a6288;margin:6px 0 12px">${l.min} МИН · ОТ ${person(l.by)}</div>${l.b.map(p=>`<p style="margin-bottom:10px;font-size:14.5px">${p}</p>`).join('')}<div style="font-size:12px;color:#4a6288">Пример наполнения.</div>`)}
+   return}
+  const rm=e.target.closest('[data-room]');if(rm)enter(rm.dataset.room);
+ });
+ plan();enter('hall');
+}
+
+/* ================= СТРАНИЦА ================= */
+const V=[
+ {k:'V1',n:'1',name:'Этажи',init:initV1,
+  what:'Дом — это башня с лифтом. Этажи и есть твой статус: Холл и два этажа открыты, этажи Партнёра и Совета видны, но заперты.',
+  diff:'Навигация вертикальная: кнопки лифта справа, двери закрываются при переходе. Ар-деко: чёрное и шампанское золото, геометрия, тонкие двойные рамки.',
+  boost:'Путь «Участник → Партнёр → Совет» превращается в понятную цель: захотелось на этаж выше. Нажатие на запертый этаж показывает, чего не хватает.',
+  try:'Нажми кнопки лифта 1, 2, потом запертую 3. Золотая ключ-карта в холле показывает QR. На доске: «Выбрать помощника».'},
+ {k:'V2',n:'2',name:'Особняк в разрезе',init:initV2,
+  what:'Живой иллюстрированный дом с вечерним небом. В окнах горит свет и ходят люди: сразу видно, где в клубе сейчас жизнь.',
+  diff:'Ты не листаешь меню, а смотришь на дом целиком. Тап по комнате — камера приближается и входишь внутрь. Тёплые цвета, мягкие формы, дружелюбно.',
+  boost:'Клуб ощущается живым: в зале 3 человека, на доске 4, а в Совете свет не горит. Пульс — это «свет в доме».',
+  try:'Нажми «Доска запросов», потом «Кабинет». Окошко на чердаке — Каминная. Совет закрыт замком.'},
+ {k:'V3',n:'3',name:'План и маршрут',init:initV3,
+  what:'Дом как чертёж сверху. Твоя фишка №07 ходит по комнатам. Приложение само прокладывает «маршрут дня»: куда зайти сегодня.',
+  diff:'Карта сверху, а комната открывается снизу панелью. Фишка едет на нужное место. Синий чертёж и оранжевый маркер маршрута.',
+  boost:'Сегодняшние дела превращены в короткую прогулку из трёх остановок. Прошёл маршрут — получил Пульс и штамп.',
+  try:'Пройди 3 остановки: «Доска» → выбери помощника, «Зал» → выбери время, «Кабинет» → задай фокус. Фишка едет по плану сама.'}
+];
+V.forEach(c=>{
+ const o=document.createElement('div');o.className='opt';o.dataset.k=c.k;
+ o.innerHTML=$('#t'+c.k).innerHTML+`<div class="cap"><div class="n">ВЕРСИЯ ${c.n}</div><h2>${c.name}</h2>
+ <div class="row"><b>Что это</b><span>${c.what}</span></div>
+ <div class="row"><b>Чем отличается</b><span>${c.diff}</span></div>
+ <div class="row"><b>Что это даёт клубу</b><span>${c.boost}</span></div>
+ <div class="try"><b style="color:#c9c5ba">Что нажать:</b> ${c.try}</div>
+ <button class="pickbtn">Беру эту версию</button></div>`;
+ $('#grid').appendChild(o);
+ c.init($('.ph',o));
+ $('.pickbtn',o).onclick=()=>choose(c.k);
+});
+let chosen=null;
+function choose(k){
+ chosen=chosen===k?null:k;
+ $$('.opt').forEach(o=>{o.classList.toggle('chosen',o.dataset.k===chosen);$('.pickbtn',o).textContent=o.dataset.k===chosen?'✓ Выбрано':'Беру эту версию'});
+ const c=V.find(x=>x.k===chosen);
+ $('#cur').innerHTML=c?`Версия ${c.n}: «${c.name}»<small>Можно дописать комментарий и скопировать</small>`:'Пока не выбрано<small>Нажми «Беру эту версию» под телефоном</small>';
+ $('#go').disabled=!c;
+}
+function gtoast(m){const t=$('#gt');t.textContent=m;t.classList.add('on');clearTimeout(gtoast.t);gtoast.t=setTimeout(()=>t.classList.remove('on'),2200)}
+$('#go').onclick=async()=>{
+ const c=V.find(x=>x.k===chosen);if(!c)return;
+ const n=$('#note').value.trim();
+ const t=`ВЫБОР ВЕРСИИ «ДОМА КЛУБА»: версия ${c.n} — «${c.name}»`+(n?`\nКомментарий: ${n}`:'');
+ try{await navigator.clipboard.writeText(t);gtoast('Скопировано. Отправь мне в чат')}
+ catch(_){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');gtoast('Скопировано. Отправь мне в чат')}catch(__){gtoast(t)}a.remove()}
+};
+</script>
+</body>
+</html>

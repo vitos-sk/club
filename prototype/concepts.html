@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXT — 4 концепции</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Unbounded:wght@500;700;900&family=Golos+Text:wght@400;500;600;700&family=Manrope:wght@300;400;500;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#0a0a0b;color:#ece9e2;font:15px/1.45 'Onest',system-ui,sans-serif;min-height:100dvh;padding-bottom:140px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.i.s{width:16px;height:16px}
+
+/* ---------- страница ---------- */
+.head{max-width:1760px;margin:0 auto;padding:34px 24px 6px}
+.head h1{font:800 34px/1.1 'Onest';letter-spacing:-.02em}
+.head p{color:#9a968c;margin-top:10px;max-width:720px}
+.grid{max-width:1760px;margin:26px auto 0;padding:0 24px;display:flex;flex-wrap:wrap;gap:50px 34px;justify-content:center}
+.opt{width:366px}
+.cap{margin-top:26px}
+.cap .n{font:700 12px 'Onest';color:#6e6a62;letter-spacing:.16em}
+.cap h2{font:800 24px/1.2 'Onest';margin:4px 0 12px}
+.cap .row{margin-bottom:10px}
+.cap .row b{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6e6a62;margin-bottom:2px;font-weight:700}
+.cap .row span{color:#c9c5ba;font-size:14px}
+.cap .try{margin:12px 0 14px;padding:10px 12px;border:1px dashed #34343b;border-radius:12px;font-size:13px;color:#9a968c}
+.pickbtn{width:100%;padding:14px;border-radius:14px;border:1.5px solid #34343b;font-weight:700;font-size:15px;transition:.15s}
+.pickbtn:hover{border-color:#8a8a95}
+.opt.chosen .pickbtn{background:#4cc3ff;border-color:#4cc3ff;color:#04202c}
+.opt.chosen .ph{box-shadow:0 0 0 3px #4cc3ff,0 0 0 11px #0c0c0e,0 24px 60px #0008}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#101012ee;backdrop-filter:blur(14px);border-top:1px solid #26262b;padding:14px 24px;z-index:80}
+.bar .in{max-width:1760px;margin:0 auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.bar .cur{font-weight:700;min-width:240px}
+.bar .cur small{display:block;font-weight:400;color:#6e6a62;font-size:12px}
+.bar input{flex:1;min-width:240px;background:#0a0a0b;border:1px solid #2a2a30;border-radius:12px;padding:12px 14px;font:inherit;color:inherit;outline:none}
+.bar input:focus{border-color:#4cc3ff}
+.bar .go{background:#4cc3ff;color:#04202c;font-weight:700;padding:12px 22px;border-radius:12px}
+.bar .go[disabled]{opacity:.4;pointer-events:none}
+.gtoast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(10px);background:#4cc3ff;color:#04202c;font-weight:600;padding:10px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:90}
+.gtoast.on{opacity:1;transform:translateX(-50%)}
+
+/* ---------- общий каркас телефона ---------- */
+.ph{position:relative;width:350px;height:720px;border-radius:40px;overflow:hidden;box-shadow:0 0 0 8px #101012,0 24px 60px #0008;margin:0 auto;font-size:15px;line-height:1.4;isolation:isolate}
+.ph *{box-sizing:border-box}
+.ph h1,.ph h2,.ph h3,.ph h4,.ph p,.ph ul{margin:0}
+.ph ul{list-style:none;padding:0}
+.scr{position:absolute;inset:0;overflow-y:auto;display:none;scrollbar-width:none}
+.scr::-webkit-scrollbar{display:none}
+.scr.on{display:block;animation:in .3s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@keyframes pop{from{opacity:0;transform:translateY(6px) scale(.97)}}
+.sheetw{position:absolute;inset:0;z-index:30;display:none}
+.sheetw.on{display:block}
+.sheetw .scrim{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+.sheetw .sheet{position:absolute;left:0;right:0;bottom:0;max-height:88%;overflow:auto;padding:10px 18px 26px;border-radius:26px 26px 0 0;animation:up .28s cubic-bezier(.2,.8,.2,1);scrollbar-width:none}
+.grab{width:38px;height:4px;border-radius:4px;background:currentColor;opacity:.2;margin:0 auto 14px}
+.ptoast{position:absolute;left:16px;right:16px;bottom:96px;padding:11px 14px;border-radius:14px;font-weight:600;font-size:13.5px;z-index:40;opacity:0;transform:translateY(10px);pointer-events:none;transition:.25s;text-align:center}
+.ptoast.on{opacity:1;transform:none}
+.pop{animation:beat .6s ease}
+@keyframes beat{30%{transform:scale(1.07)}}
+
+/* =========================================================
+   A · ПУЛЬС — «что сделать прямо сейчас»
+   ========================================================= */
+.A{background:#0a0605;color:#f4ece6;font-family:'Onest',sans-serif;--c:#ff5a3c;--c2:#ffb347;--mut:#8f827b;--line:#2a1f1b;--card:#15100e}
+.A .scr{padding:24px 20px 120px}
+.A .hd{display:flex;justify-content:space-between;font-size:11px;color:var(--mut);letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+.A .orb{position:relative;width:226px;height:226px;margin:22px auto 8px;display:grid;place-items:center;text-align:center}
+.A .orb::before{content:"";position:absolute;inset:-34px;background:radial-gradient(circle,rgba(255,90,60,.3),transparent 66%);animation:breathe 4.2s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.14);opacity:.65}}
+.A .orb svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.A .orb .track{stroke:#241a16;fill:none;stroke-width:9}
+.A .orb .val{stroke:url(#ag);fill:none;stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset 1.1s cubic-bezier(.3,.8,.2,1)}
+.A .orb .n{font:900 72px/1 'Unbounded';letter-spacing:-.05em;position:relative}
+.A .orb .u{font-size:11px;letter-spacing:.24em;color:var(--mut);margin-top:8px;text-transform:uppercase;position:relative}
+.A .ecg{display:block;width:100%;height:34px;margin:6px 0 4px}
+.A .ecg path{fill:none;stroke:var(--c);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:420;animation:ecg 3.2s linear infinite;filter:drop-shadow(0 0 4px var(--c))}
+@keyframes ecg{from{stroke-dashoffset:420}to{stroke-dashoffset:-420}}
+.A .step{margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:28px;padding:18px 18px 18px;position:relative;overflow:hidden}
+.A .step::after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;background:radial-gradient(circle,rgba(255,90,60,.18),transparent 70%)}
+.A .step .lb{font-size:10.5px;letter-spacing:.2em;color:var(--c);font-weight:800;display:flex;justify-content:space-between;position:relative}
+.A .step .dots{display:flex;gap:5px}.A .step .dots i{width:18px;height:4px;border-radius:3px;background:#332621}.A .step .dots i.f{background:var(--c)}
+.A .step h3{font:800 24px/1.12 'Onest';margin:12px 0 6px;letter-spacing:-.02em;position:relative}
+.A .step p{color:#b8aaa2;font-size:14px;position:relative}
+.A .go{width:100%;margin-top:16px;padding:17px;border-radius:20px;background:linear-gradient(135deg,var(--c),var(--c2));color:#1a0804;font:800 17px 'Onest';position:relative;box-shadow:0 10px 30px rgba(255,90,60,.35);transition:.15s}
+.A .go:active{transform:scale(.98)}
+.A .ghost{display:block;margin:10px auto 0;color:var(--mut);font-size:13px;position:relative}
+.A .week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:18px}
+.A .week div{text-align:center;font-size:11px;color:var(--mut);font-weight:600}
+.A .week i{display:block;width:100%;aspect-ratio:1;border-radius:50%;border:1.5px solid var(--line);margin-top:6px;display:grid;place-items:center}
+.A .week .done i{background:var(--c);border-color:var(--c);color:#1a0804}
+.A .week .today{color:#fff}.A .week .today i{border-color:var(--c);border-style:dashed}
+.A .week .today.done i{border-style:solid}
+.A .nx{margin-top:18px}
+.A .nx li{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:14px}
+.A .nx li b{width:44px;color:var(--c);font-size:12px;letter-spacing:.06em;padding-top:2px}
+.A .big{font:900 38px/1.02 'Unbounded';letter-spacing:-.05em;margin:18px 0 18px}
+.A .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.A .two button{padding:16px 10px;border-radius:20px;border:1.5px solid var(--line);font:700 14px/1.2 'Onest';color:var(--mut);text-align:left}
+.A .two button.on{border-color:var(--c);color:#fff;background:linear-gradient(160deg,rgba(255,90,60,.16),transparent)}
+.A .rq{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:16px;margin-top:12px}
+.A .rq .tg{display:flex;gap:6px;margin-bottom:9px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.A .rq .tg .u{color:var(--c)}
+.A .rq h4{font:700 16.5px/1.28 'Onest'}
+.A .rq .mt{font-size:12.5px;color:var(--mut);margin:8px 0 12px}
+.A .rq button{width:100%;padding:12px;border-radius:16px;background:#241a16;font-weight:700;font-size:14px}
+.A .rq button.on{background:linear-gradient(135deg,var(--c),var(--c2));color:#1a0804}
+.A .rq.pair{border-color:#4a2a20;background:linear-gradient(160deg,#241410,var(--card))}
+.A .qrp{display:flex;gap:6px;align-items:center;padding:7px 13px;border-radius:20px;background:linear-gradient(135deg,var(--c),var(--c2));color:#1a0804;font-weight:800;letter-spacing:.08em;font-size:12px;box-shadow:0 6px 18px rgba(255,90,60,.4)}
+.A .fab{display:none;position:absolute;right:18px;bottom:92px;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--c),var(--c2));color:#1a0804;display:grid;place-items:center;z-index:6;box-shadow:0 10px 28px rgba(255,90,60,.5)}
+.A .fab .i{width:26px;height:26px;stroke-width:2}
+.A nav{position:absolute;left:0;right:0;bottom:0;height:74px;display:grid;grid-template-columns:repeat(3,1fr);background:linear-gradient(transparent,#0a0605 38%);z-index:5;padding:14px 20px 8px}
+.A nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:700;color:#5d514b}
+.A nav .on{color:#fff}.A nav .on .i{color:var(--c)}
+.A .sheetw .sheet{background:#15100e;color:#f4ece6;border-top:1px solid var(--line)}
+.A .ptoast{background:linear-gradient(135deg,var(--c),var(--c2));color:#1a0804}
+.A .nm{font:900 92px/.9 'Unbounded';letter-spacing:-.07em;margin:18px 0 8px;background:linear-gradient(135deg,var(--c),var(--c2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.A .path{position:relative;height:6px;border-radius:6px;background:#241a16;margin:26px 0 8px}
+.A .path i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:linear-gradient(90deg,var(--c),var(--c2));width:44%;box-shadow:0 0 14px var(--c)}
+.A .path s{position:absolute;top:-5px;width:16px;height:16px;border-radius:50%;background:#0a0605;border:2px solid #3a2c26;text-decoration:none}
+.A .path s.f{background:var(--c);border-color:var(--c)}
+.A .plab{display:flex;justify-content:space-between;font-size:11px;color:var(--mut)}
+.A .rings{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:22px;text-align:center;font-size:12px;color:var(--mut)}
+.A .rings svg{width:84px;height:84px;display:block;margin:0 auto 6px}
+.A .rings b{display:block;font:800 15px 'Unbounded';color:#fff;margin-bottom:2px}
+.A .sec{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);font-weight:700;margin:28px 0 10px}
+.A .story{border-left:3px solid var(--c);padding:2px 0 2px 14px;margin-bottom:14px}
+.A .story p{font:600 16px/1.35 'Onest'}
+.A .story span{font-size:12px;color:var(--mut)}
+
+/* =========================================================
+   B · СОЗВЕЗДИЕ — «клуб — это люди»
+   ========================================================= */
+.B{background:radial-gradient(90% 60% at 50% 38%,#16154a 0%,#0a0a26 55%,#04040f 100%);color:#e4ecff;font-family:'Manrope',sans-serif;--c:#9ec5ff;--c2:#b8a4ff;--mut:#7f89b5;--line:rgba(158,197,255,.18)}
+.B svg.sky{position:absolute;inset:0;width:100%;height:100%}
+.B .tw{animation:tw 3.5s ease-in-out infinite}
+@keyframes tw{50%{opacity:.25}}
+.B .nd{cursor:pointer}
+.B .nd text{font:700 10px 'Manrope';fill:#dfe9ff;text-anchor:middle;pointer-events:none}
+.B .nd.un text{fill:#6a739d}
+.B .nd.sel circle.o{stroke-width:2.5}
+.B .halo{animation:halo 2.6s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
+@keyframes halo{50%{opacity:.35;transform:scale(1.5)}}
+.B .top{position:absolute;top:0;left:0;right:0;padding:22px 20px 0;z-index:3;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}
+.B .top h2{font:300 26px/1.1 'Manrope';letter-spacing:-.01em}
+.B .top h2 b{font-weight:700}
+.B .top small{display:block;font-size:11px;letter-spacing:.14em;color:var(--mut);margin-top:6px;text-transform:uppercase}
+.B .pls{text-align:right;font-size:11px;color:var(--mut);letter-spacing:.14em;text-transform:uppercase}
+.B .pls b{display:block;font:300 34px/1 'Manrope';color:#fff;letter-spacing:-.02em;text-shadow:0 0 18px var(--c)}
+.B .leg{position:absolute;left:20px;bottom:150px;font-size:11px;color:var(--mut);z-index:3;display:flex;gap:14px;pointer-events:none}
+.B .leg i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.B .nudge{position:absolute;left:16px;bottom:92px;z-index:4;padding:11px 16px;border-radius:30px;background:rgba(158,197,255,.12);border:1px solid var(--line);backdrop-filter:blur(12px);font-size:13px;font-weight:600;display:flex;gap:8px;align-items:center}
+.B .nudge .i{color:var(--c);animation:tw 2.2s infinite}
+.B .fab{position:absolute;right:16px;bottom:88px;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#7aa9ff,#b8a4ff);color:#07082a;display:grid;place-items:center;z-index:4;box-shadow:0 0 30px rgba(122,169,255,.55)}
+.B nav{position:absolute;left:14px;right:14px;bottom:14px;height:60px;border-radius:30px;background:rgba(20,20,70,.55);backdrop-filter:blur(20px);border:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr);z-index:5}
+.B nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10.5px;font-weight:600;color:var(--mut)}
+.B nav .on{color:#fff}.B nav .on .i{color:var(--c);filter:drop-shadow(0 0 6px var(--c))}
+.B .info{position:absolute;left:12px;right:12px;bottom:12px;z-index:8;border-radius:28px;background:rgba(14,14,50,.88);backdrop-filter:blur(22px);border:1px solid var(--line);padding:18px;transform:translateY(130%);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.B .info.on{transform:none}
+.B .info .x{position:absolute;right:14px;top:12px;color:var(--mut);font-size:22px;line-height:1}
+.B .info h3{font:300 24px 'Manrope'}.B .info h3 b{font-weight:700}
+.B .info .sb{color:var(--mut);font-size:13px;margin:4px 0 14px}
+.B .bt{width:100%;padding:14px;border-radius:18px;background:linear-gradient(135deg,#7aa9ff,#b8a4ff);color:#07082a;font-weight:800;font-size:15px}
+.B .bt.o{background:transparent;border:1px solid var(--line);color:#fff}
+.B .scr.pg{padding:24px 20px 120px}
+.B .pg h1{font:300 34px/1.05 'Manrope';letter-spacing:-.02em}.B .pg h1 b{font-weight:700}
+.B .pg .lead{color:var(--mut);font-size:14px;margin:10px 0 22px}
+.B .fire{position:relative;padding:0 0 22px 34px}
+.B .fire::before{content:"";position:absolute;left:9px;top:20px;bottom:-4px;width:1px;background:linear-gradient(var(--line),transparent)}
+.B .fire .dot{position:absolute;left:0;top:4px;width:19px;height:19px;border-radius:50%;background:radial-gradient(circle,#fff 0 2px,var(--c) 3px,transparent 9px);box-shadow:0 0 18px var(--c);transition:.3s}
+.B .fire.on .dot{background:radial-gradient(circle,#fff 0 3px,#b8ffd9 4px,transparent 10px);box-shadow:0 0 26px #5cffb0}
+.B .fire .cd{background:rgba(158,197,255,.07);border:1px solid var(--line);border-radius:22px;padding:14px 16px}
+.B .fire .tg{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin-bottom:6px;font-weight:700}
+.B .fire h4{font:600 15.5px/1.3 'Manrope'}
+.B .fire .mt{font-size:12.5px;color:var(--mut);margin:7px 0 11px}
+.B .fire button.r{padding:9px 16px;border-radius:14px;border:1px solid var(--line);font-weight:700;font-size:13px}
+.B .fire.on button.r{background:rgba(92,255,176,.14);border-color:#3cc88a;color:#9bffd0}
+.B .fire.mine .cd{border-color:rgba(184,164,255,.6);background:rgba(184,164,255,.1)}
+.B .starbig{position:relative;width:200px;height:200px;margin:14px auto 6px;display:grid;place-items:center}
+.B .starbig::before{content:"";position:absolute;inset:-20px;background:radial-gradient(circle,rgba(158,197,255,.5),rgba(184,164,255,.15) 45%,transparent 70%);animation:breathe2 5s ease-in-out infinite}
+@keyframes breathe2{50%{transform:scale(1.1);opacity:.7}}
+.B .starbig b{position:relative;font:300 86px/1 'Manrope';letter-spacing:-.06em;text-shadow:0 0 24px var(--c)}
+.B .ln{margin:6px 0 14px}
+.B .ln .l{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+.B .ln .l b{font-weight:700}
+.B .ln .t{height:2px;background:var(--line);position:relative}
+.B .ln .t i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--c2),var(--c));box-shadow:0 0 12px var(--c)}
+.B .cons{display:flex;align-items:center;margin:8px 0 4px}
+.B .cons s{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--mut);text-decoration:none;flex:none}
+.B .cons s.f{background:#fff;border-color:#fff;box-shadow:0 0 12px var(--c)}
+.B .cons u{flex:1;height:1px;background:var(--line);text-decoration:none}
+.B .cons u.f{background:var(--c)}
+.B .cl{display:flex;justify-content:space-between;font-size:11px;color:var(--mut)}
+.B .light{padding:12px 0;border-top:1px solid var(--line);font-size:14.5px}
+.B .light span{display:block;font-size:12px;color:var(--mut);margin-top:3px}
+.B .sh2{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);font-weight:700;margin:26px 0 8px}
+.B .sheetw .sheet{background:#0f1040;color:#e4ecff;border-top:1px solid var(--line)}
+.B .ptoast{background:rgba(158,197,255,.95);color:#07082a}
+.B .row2{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:18px;margin-bottom:8px;cursor:pointer}
+.B .row2:active{background:rgba(158,197,255,.1)}
+.B .av2{width:38px;height:38px;border-radius:50%;border:1px solid var(--c);display:grid;place-items:center;font-weight:700;font-size:13px;box-shadow:0 0 12px rgba(158,197,255,.4)}
+
+/* =========================================================
+   C · ДОМ КЛУБА — «закрытый клуб как место»
+   ========================================================= */
+.C{background:#0e1f18;color:#f0e6cf;font-family:'Onest',sans-serif;--br:#c59a55;--br2:#e2c283;--pn:#163226;--mut:#8da193;--line:rgba(197,154,85,.35)}
+.C::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 22px,rgba(255,255,255,.012) 22px 23px);pointer-events:none;z-index:0}
+.C .scr{padding:22px 18px 110px;z-index:1}
+.C .plq{text-align:center;padding-top:6px}
+.C .plq .a{font:700 28px 'Playfair Display';letter-spacing:.34em;color:var(--br2);padding-left:.34em}
+.C .plq .ru{display:flex;align-items:center;gap:10px;justify-content:center;margin:6px 0 0;font-size:10px;letter-spacing:.24em;color:var(--mut)}
+.C .plq .ru i{height:1px;width:34px;background:var(--br)}
+.C .key{margin:20px 0 0;border-radius:16px;padding:16px 18px;background:linear-gradient(135deg,#d7b574,#a77d3a 55%,#d2ae6a);color:#2a1d08;position:relative;box-shadow:0 14px 30px #0008,inset 0 1px 0 #fff6;cursor:pointer;overflow:hidden}
+.C .key::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 10px,rgba(255,255,255,.06) 10px 11px)}
+.C .key .r1{display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:.2em;font-weight:800;position:relative}
+.C .key .nm{font:700 56px/1 'Playfair Display';margin:12px 0 10px;letter-spacing:-.02em;position:relative}
+.C .key .nm small{font-size:18px;margin-right:4px}
+.C .key .r2{display:flex;justify-content:space-between;align-items:flex-end;font-size:12px;font-weight:700;position:relative}
+.C .key .chip{width:38px;height:28px;border-radius:6px;background:linear-gradient(135deg,#f3dc9c,#b88b3c);border:1px solid #8a6424}
+.C h3.rt{font:500 19px 'Playfair Display';margin:26px 0 12px;display:flex;align-items:center;gap:12px}
+.C h3.rt::after{content:"";flex:1;height:1px;background:var(--line)}
+.C .rooms{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.C .room{padding:15px 13px 14px;background:var(--pn);border:1px solid var(--line);outline:1px solid rgba(197,154,85,.18);outline-offset:-5px;border-radius:6px;text-align:left;position:relative;transition:.15s}
+.C .room:active{transform:scale(.98);background:#1d3c2d}
+.C .room .i{color:var(--br2);width:26px;height:26px;margin-bottom:12px}
+.C .room b{display:block;font:500 17px 'Playfair Display';margin-bottom:4px}
+.C .room span{font-size:12px;color:var(--mut);display:flex;align-items:center;gap:6px}
+.C .room span i{width:6px;height:6px;border-radius:50%;background:var(--br2);box-shadow:0 0 8px var(--br2);flex:none}
+.C .room.lk span i{background:#6d7d72;box-shadow:none}
+.C .rh{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--br2);font-weight:600;margin-bottom:14px}
+.C .rh .i{width:18px;height:18px}
+.C h1.rtl{font:500 32px/1.1 'Playfair Display'}
+.C .sub{color:var(--mut);font-size:13.5px;margin:6px 0 18px}
+.C .board{background:#2a1d12;border:6px solid #4a3220;border-radius:10px;padding:14px 12px 4px;box-shadow:inset 0 0 40px #0009;background-image:radial-gradient(circle at 20% 10%,rgba(255,255,255,.04),transparent 40%)}
+.C .note{position:relative;background:#f3e9d2;color:#2a2118;border-radius:3px;padding:18px 14px 14px;margin-bottom:16px;box-shadow:0 6px 14px #0007;transform:rotate(var(--r,0deg))}
+.C .note::before{content:"";position:absolute;top:-6px;left:50%;margin-left:-7px;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff8a7a,#a8261a);box-shadow:0 3px 4px #0006}
+.C .note .tg{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#8a6a2c}
+.C .note .u{color:#b3361f}
+.C .note h4{font:700 16px/1.25 'Onest';margin:5px 0}
+.C .note .mt{font:500 19px/1 'Caveat';color:#5b4b30;margin-bottom:10px}
+.C .note button{padding:8px 14px;border-radius:4px;background:#2a1d12;color:var(--br2);font-weight:700;font-size:13px}
+.C .note.mine{background:#f6e3a8}
+.C .note.on button{background:#2e6a45;color:#fff}
+.C .note.on::after{content:"ОТКЛИК";position:absolute;right:12px;bottom:12px;border:2px solid #2e6a45;color:#2e6a45;font:800 11px 'Onest';letter-spacing:.14em;padding:2px 7px;transform:rotate(-8deg);border-radius:4px}
+.C .lock{display:flex;gap:10px;align-items:center;border:1px dashed var(--line);border-radius:6px;padding:12px;color:var(--mut);font-size:12.5px;margin:2px 0 14px}
+.C .plate{margin:6px auto 20px;width:max-content;max-width:100%;background:linear-gradient(135deg,#d7b574,#a77d3a 55%,#d2ae6a);color:#2a1d08;padding:10px 20px;border-radius:4px;text-align:center;box-shadow:0 8px 18px #0008,inset 0 1px 0 #fff6}
+.C .plate b{display:block;font:700 22px 'Playfair Display';letter-spacing:.06em}
+.C .plate span{font-size:10px;letter-spacing:.22em;font-weight:800}
+.C .gauge{width:240px;margin:0 auto;display:block}
+.C .gauge text{font:700 44px 'Playfair Display';fill:#e2c283;text-anchor:middle}
+.C .gauge .s{font:700 10px 'Onest';fill:#8da193;letter-spacing:.2em}
+.C .keys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;font-size:11px;color:var(--mut)}
+.C .keys div{padding:12px 4px;border:1px solid var(--line);border-radius:6px}
+.C .keys .i{width:26px;height:26px;display:block;margin:0 auto 6px;color:#566a5d}
+.C .keys .f{color:#fff;background:var(--pn)}.C .keys .f .i{color:var(--br2)}
+.C .letter{background:#f3e9d2;color:#2a2118;padding:16px 16px 14px;border-radius:3px;margin-bottom:12px;box-shadow:0 5px 12px #0006;position:relative}
+.C .letter p{font:italic 500 16px/1.35 'Playfair Display'}
+.C .letter span{display:block;margin-top:8px;font-size:12px;color:#7a6a4a;font-weight:600}
+.C .letter::after{content:"";position:absolute;right:12px;top:-10px;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#d6584a,#8e1f16)}
+.C nav{position:absolute;left:0;right:0;bottom:0;height:72px;display:grid;grid-template-columns:1fr 84px 1fr;align-items:center;background:#0a1712;border-top:1px solid var(--line);z-index:5}
+.C nav button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:#5e7567}
+.C nav .on{color:var(--br2)}
+.C nav .kk{width:64px;height:64px;margin:-22px auto 0;border-radius:50%;background:linear-gradient(135deg,#e2c283,#a77d3a);color:#2a1d08;display:grid;place-items:center;box-shadow:0 8px 22px #000a,0 0 0 5px #0a1712;justify-self:center}
+.C .sheetw .sheet{background:#12281e;color:#f0e6cf;border-top:2px solid var(--br)}
+.C .sheet h2{font:500 26px 'Playfair Display'}
+.C .sheet .li{padding:12px 0;border-top:1px solid var(--line);font-size:14.5px}
+.C .sheet .li span{display:block;font-size:12px;color:var(--mut);margin-top:2px}
+.C .ptoast{background:var(--br2);color:#2a1d08}
+.C .qrw{background:#f3e9d2;padding:14px;border-radius:6px;width:max-content;margin:14px auto 6px}
+.C .qrw canvas{display:block;width:200px;height:200px;image-rendering:pixelated}
+.C .btn{width:100%;padding:13px;border-radius:5px;background:var(--br2);color:#2a1d08;font-weight:800;margin-top:14px}
+
+/* =========================================================
+   D · КОНСЬЕРЖ — «спроси клуб»
+   ========================================================= */
+.D{background:#dde5ec;color:#10161c;font-family:'Golos Text',sans-serif;--b:#2aabee;--bd:#168acd}
+.D .dh{position:absolute;top:0;left:0;right:0;height:64px;background:#fff;display:flex;align-items:center;gap:11px;padding:0 14px;border-bottom:1px solid #cfd8e0;z-index:3}
+.D .av{width:40px;height:40px;border-radius:50%;background:#10161c;color:#fff;display:grid;place-items:center;font:900 15px 'Unbounded';flex:none}
+.D .dh b{display:block;font-size:15.5px;font-weight:700}
+.D .dh small{font-size:12px;color:#28a745}
+.D .dh .mn{margin-left:auto;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#5d6c78}
+.D .feed{position:absolute;top:64px;bottom:128px;left:0;right:0;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:8px;scrollbar-width:none;background:radial-gradient(circle at 20% 10%,#e8eff4,transparent 50%)}
+.D .feed::-webkit-scrollbar{display:none}
+.D .m{max-width:86%;padding:10px 13px;border-radius:18px;font-size:14.5px;animation:pop .25s}
+.D .m.c{background:#fff;border-bottom-left-radius:5px;align-self:flex-start;box-shadow:0 1px 1px #0001}
+.D .m.u{background:var(--b);color:#fff;border-bottom-right-radius:5px;align-self:flex-end}
+.D .m.ty{display:flex;gap:4px;padding:14px 16px}
+.D .m.ty i{width:7px;height:7px;border-radius:50%;background:#9aa8b4;animation:ty 1s infinite}
+.D .m.ty i:nth-child(2){animation-delay:.15s}.D .m.ty i:nth-child(3){animation-delay:.3s}
+@keyframes ty{40%{transform:translateY(-4px);background:#5d6c78}}
+.D .w{background:#fff;border-radius:18px;border-bottom-left-radius:5px;align-self:flex-start;width:94%;padding:6px 12px 12px;animation:pop .25s;box-shadow:0 1px 1px #0001}
+.D .w .ttl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#7d8c98;font-weight:700;padding:8px 0 4px}
+.D .tk{display:flex;gap:10px;align-items:center;padding:11px 0;border-top:1px solid #e6ecf1;font-size:14px}
+.D .tk .tt{flex:1;line-height:1.3}
+.D .tk .tt span{display:block;font-size:12px;color:#7d8c98;margin-top:2px}
+.D .tk.dn{opacity:.5}
+.D .sb{padding:8px 13px;border-radius:14px;background:var(--b);color:#fff;font-weight:700;font-size:13px;flex:none}
+.D .sb.o{background:#e6f3fc;color:var(--bd)}
+.D .qb{display:inline-block;margin:8px 6px 0 0;padding:8px 13px;border-radius:16px;background:#e6f3fc;color:var(--bd);font-weight:600;font-size:13.5px}
+.D .bottom{position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #cfd8e0;padding:8px 10px 12px;z-index:3}
+.D .qc{display:flex;gap:7px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+.D .qc::-webkit-scrollbar{display:none}
+.D .qc button{flex:none;padding:8px 13px;border-radius:18px;background:#eef2f6;font-size:13px;font-weight:600;white-space:nowrap}
+.D .qc button.hot{background:var(--b);color:#fff}
+.D .inp{display:flex;gap:8px}
+.D .inp input{flex:1;border:1px solid #cfd8e0;border-radius:22px;padding:11px 15px;font:inherit;font-size:14.5px;outline:none;background:#f7f9fb}
+.D .inp input:focus{border-color:var(--b);background:#fff}
+.D .inp button{width:44px;height:44px;border-radius:50%;background:var(--b);color:#fff;display:grid;place-items:center;flex:none}
+.D .rg{position:relative;width:70px;height:70px;flex:none}
+.D .rg svg{width:100%;height:100%}.D .rg b{position:absolute;inset:0;display:grid;place-items:center;font:800 20px 'Unbounded'}
+.D .bb{margin:7px 0}.D .bb .l{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px}
+.D .bb .t{height:6px;background:#e6ecf1;border-radius:4px}.D .bb .t i{display:block;height:100%;background:var(--b);border-radius:4px}
+.D .qrc{background:#fff;border:1px solid #e6ecf1;border-radius:14px;padding:12px;text-align:center;margin-top:8px}
+.D .qrc canvas{width:170px;height:170px;image-rendering:pixelated;display:block;margin:0 auto 8px}
+.D .qrc small{color:#7d8c98;font-size:12px}
+.D .sheetw .sheet{background:#fff;color:#10161c}
+.D .sheet h2{font:800 20px 'Golos Text';margin-bottom:10px}
+.D .mg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.D .mg button{padding:14px 4px;border-radius:16px;background:#eef2f6;font-size:12.5px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:6px}
+.D .mg .i{color:var(--bd)}
+.D .ptoast{background:#10161c;color:#fff;bottom:140px}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <defs><linearGradient id="ag" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5a3c"/><stop offset="1" stop-color="#ffb347"/></linearGradient>
+ <linearGradient id="ag2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5a3c"/><stop offset="1" stop-color="#ffb347"/></linearGradient></defs>
+ <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+ <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+ <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14a6.5 6.5 0 0 1 3.5 6"/></symbol>
+ <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+ <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h3M20 17v4"/></symbol>
+ <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+ <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.8 6.3.8-4.6 4.3 1.2 6.3L12 17l-5.6 3.2 1.2-6.3L3 9.6l6.3-.8z"/></symbol>
+ <symbol id="i-fire" viewBox="0 0 24 24"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/></symbol>
+ <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19a2 2 0 0 0 2 2h13"/></symbol>
+ <symbol id="i-board" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="1.5"/><path d="M8 9h8M8 13h5M12 18v3"/></symbol>
+ <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+ <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18M7 21h10M4 7h16M4 7l-2.5 6a2.8 2.8 0 0 0 5 0zM20 7l-2.5 6a2.8 2.8 0 0 0 5 0z"/></symbol>
+ <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M16 7l3 3M14 9l2 2"/></symbol>
+ <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+ <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+ <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+ <symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12 20 4l-6 16-3-7z"/></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
+ <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z"/></symbol>
+</svg>
+
+<div class="head">
+ <h1>4 идеи приложения NEXT</h1>
+ <p>Это не четыре раскраски одного и того же. У каждой концепции своя логика: что человек делает, когда открыл приложение. Стиль в каждой вытекает из этой идеи. Все четыре телефона живые: нажимай, листай, пробуй. Под каждым написано, что стоит нажать.</p>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="bar"><div class="in">
+ <div class="cur" id="cur">Пока не выбрано<small>Нажми «Эта идея мне ближе» под телефоном</small></div>
+ <input id="note" placeholder="Комментарий: что взять из других идей, что убрать, что не понравилось">
+ <button class="go" id="go" disabled>Скопировать выбор</button>
+</div></div>
+<div class="gtoast" id="gt"></div>
+
+<!-- ========== A ========== -->
+<template id="tA">
+<div class="ph A" id="phA">
+ <section class="scr on" data-s="now">
+  <div class="hd"><span>NEXT · №07 · Неделя 42</span><button class="qrp" data-act="qr"><svg class="i s"><use href="#i-qr"/></svg>QR</button></div>
+  <div class="orb" id="aOrb">
+   <svg viewBox="0 0 226 226"><circle class="track" cx="113" cy="113" r="102"/><circle class="val" id="aRing" cx="113" cy="113" r="102" stroke-dasharray="640.9" stroke-dashoffset="166"/></svg>
+   <div><div class="n" id="aN">74</div><div class="u">пульс</div></div>
+  </div>
+  <svg class="ecg" viewBox="0 0 310 34" preserveAspectRatio="none"><path d="M0 17H52l6-12 8 26 7-20 5 6H122l6-12 8 26 7-20 5 6H192l6-12 8 26 7-20 5 6H262l6-12 8 26 7-20 5 6H310"/></svg>
+  <div class="step" id="aStep"></div>
+  <div class="week" id="aWeek"></div>
+  <ul class="nx">
+   <li><b>ЧТ 19:00</b><span>Горячий стул · онлайн</span></li>
+   <li><b>СБ 17:00</b><span>Живая встреча · Фрайбург</span></li>
+  </ul>
+ </section>
+ <section class="scr" data-s="ppl">
+  <div class="hd"><span>Люди</span><button class="qrp" data-act="qr"><svg class="i s"><use href="#i-qr"/></svg>QR</button></div>
+  <h1 class="big">Кому<br>помочь?</h1>
+  <div class="two" id="aSeg"><button class="on" data-v="need">Мне нужна помощь</button><button data-v="give">Я могу помочь</button></div>
+  <div id="aList"></div>
+ </section>
+ <section class="scr" data-s="me">
+  <div class="hd"><span>Я · Основатель</span><button class="qrp" data-act="qr"><svg class="i s"><use href="#i-qr"/></svg>QR</button></div>
+  <div class="nm">№07</div>
+  <div style="font-weight:700;font-size:18px">Алексей М.</div>
+  <div style="color:var(--mut);font-size:13px">Дизайн и digital · Фрайбург</div>
+  <div class="path"><i></i><s class="f" style="left:0"></s><s class="f" style="left:calc(33% - 8px)"></s><s style="left:calc(66% - 8px)"></s><s style="left:calc(100% - 16px)"></s></div>
+  <div class="plab"><span>Кандидат</span><span>Участник</span><span>Партнёр</span><span>Совет</span></div>
+  <div class="rings" id="aRings"></div>
+  <div class="sec">Кто мне помог — и кому помог я</div>
+  <div class="story"><p>«Помог разобрать письмо от Finanzamt, срок был через 2 дня. Всё успел.»</p><span>№12 · изменило мою ситуацию</span></div>
+  <div class="story"><p>«Познакомил с человеком, который нашёл мне первого клиента.»</p><span>№04 · серьёзно</span></div>
+ </section>
+ <nav><button class="on" data-go="now"><svg class="i"><use href="#i-bolt"/></svg>Сейчас</button><button data-go="ppl"><svg class="i"><use href="#i-users"/></svg>Люди</button><button data-go="me"><svg class="i"><use href="#i-user"/></svg>Я</button></nav>
+ <div class="sheetw"><div class="scrim" data-act="close"></div><div class="sheet"></div></div>
+ <div class="ptoast"></div>
+</div>
+</template>
+
+<!-- ========== B ========== -->
+<template id="tB">
+<div class="ph B" id="phB">
+ <section class="scr on" data-s="map" style="overflow:hidden">
+  <svg class="sky" viewBox="0 0 350 720" id="bSky"></svg>
+  <div class="top"><div><h2>Твои <b>связи</b></h2><small>8 из 20 знакомы</small></div><div class="pls">Пульс<b id="bP">74</b></div></div>
+  <div class="leg"><span><i style="background:#9ec5ff;box-shadow:0 0 8px #9ec5ff"></i>знакомы</span><span><i style="border:1px dashed #6a739d"></i>ещё нет</span></div>
+  <button class="nudge" data-act="nudge"><svg class="i s"><use href="#i-star"/></svg>Новая связь месяца · №26</button>
+  <button class="fab" data-act="qr"><svg class="i"><use href="#i-qr"/></svg></button>
+  <div class="info" id="bInfo"></div>
+ </section>
+ <section class="scr pg" data-s="fire">
+  <h1>Огни <b>клуба</b></h1>
+  <p class="lead">Каждый запрос — огонёк. Отзовись, и он загорится зелёным.</p>
+  <div id="bFires"></div>
+ </section>
+ <section class="scr pg" data-s="me">
+  <div class="starbig"><b>07</b></div>
+  <div style="text-align:center;font-weight:700;font-size:18px">Алексей М.</div>
+  <div style="text-align:center;color:var(--mut);font-size:13px;margin-bottom:22px">Основатель · Дизайн и digital · Фрайбург</div>
+  <div class="ln"><div class="l"><span>Движение</span><b>20 / 25</b></div><div class="t"><i style="width:80%"></i></div></div>
+  <div class="ln"><div class="l"><span>Связи</span><b>21 / 30</b></div><div class="t"><i style="width:70%"></i></div></div>
+  <div class="ln"><div class="l"><span>Вклад</span><b>33 / 45</b></div><div class="t"><i style="width:73%"></i></div></div>
+  <div class="sh2">Путь</div>
+  <div class="cons"><s class="f"></s><u class="f"></u><s class="f"></s><u></u><s></s><u></u><s></s></div>
+  <div class="cl"><span>Кандидат</span><span>Участник</span><span>Партнёр</span><span>Совет</span></div>
+  <div class="sh2">Свет от других</div>
+  <div class="light">«Помог разобрать письмо от Finanzamt. Всё успел.»<span>№12 · изменило мою ситуацию</span></div>
+  <div class="light">«Познакомил с человеком, который нашёл мне клиента.»<span>№04 · серьёзно</span></div>
+ </section>
+ <nav><button class="on" data-go="map"><svg class="i"><use href="#i-star"/></svg>Карта</button><button data-go="fire"><svg class="i"><use href="#i-fire"/></svg>Огни</button><button data-go="me"><svg class="i"><use href="#i-user"/></svg>Я</button></nav>
+ <div class="sheetw"><div class="scrim" data-act="close"></div><div class="sheet"></div></div>
+ <div class="ptoast"></div>
+</div>
+</template>
+
+<!-- ========== C ========== -->
+<template id="tC">
+<div class="ph C" id="phC">
+ <section class="scr on" data-s="hall">
+  <div class="plq"><div class="a">NEXT</div><div class="ru"><i></i>ЗАКРЫТЫЙ КЛУБ<i></i></div></div>
+  <div class="key" data-act="qr">
+   <div class="r1"><span>КЛЮЧ-КАРТА</span><span>ОСНОВАТЕЛЬ</span></div>
+   <div class="nm"><small>№</small>07</div>
+   <div class="r2"><span>АЛЕКСЕЙ М.</span><div class="chip"></div></div>
+  </div>
+  <h3 class="rt">Комнаты клуба</h3>
+  <div class="rooms">
+   <button class="room" data-room="board"><svg class="i"><use href="#i-board"/></svg><b>Доска запросов</b><span><i></i>3 отклика</span></button>
+   <button class="room" data-room="lib"><svg class="i"><use href="#i-book"/></svg><b>Библиотека</b><span><i></i>2 новых</span></button>
+   <button class="room" data-room="hall2"><svg class="i"><use href="#i-cal"/></svg><b>Зал встреч</b><span><i></i>сб 18 окт · 17:00</span></button>
+   <button class="room" data-room="fire"><svg class="i"><use href="#i-fire"/></svg><b>Каминная</b><span><i></i>чт · Горячий стул</span></button>
+   <button class="room lk" data-room="council"><svg class="i"><use href="#i-scale"/></svg><b>Совет</b><span><i></i>для Партнёров</span></button>
+   <button class="room" data-room="study"><svg class="i"><use href="#i-user"/></svg><b>Кабинет</b><span><i></i>твой профиль</span></button>
+  </div>
+ </section>
+ <section class="scr" data-s="board">
+  <button class="rh" data-go="hall"><svg class="i"><use href="#i-back"/></svg>Холл</button>
+  <h1 class="rtl">Доска запросов</h1>
+  <p class="sub">Прикрепи просьбу — откликнутся те, кто может. Выбираешь ты.</p>
+  <div class="board" id="cBoard"></div>
+  <div class="lock" style="margin-top:14px"><svg class="i s"><use href="#i-lock"/></svg>У каждого одна записка. Новую — после того, как старая закрыта.</div>
+ </section>
+ <section class="scr" data-s="study">
+  <button class="rh" data-go="hall"><svg class="i"><use href="#i-back"/></svg>Холл</button>
+  <div class="plate"><b>№ 07 · АЛЕКСЕЙ М.</b><span>ОСНОВАТЕЛЬ · ФРАЙБУРГ</span></div>
+  <svg class="gauge" viewBox="0 0 240 150"><path d="M30 130 A90 90 0 0 1 210 130" fill="none" stroke="#1d3c2d" stroke-width="14" stroke-linecap="round"/><path id="cArc" d="M30 130 A90 90 0 0 1 210 130" fill="none" stroke="#e2c283" stroke-width="14" stroke-linecap="round" stroke-dasharray="283" stroke-dashoffset="74"/><text x="120" y="118">74</text><text class="s" x="120" y="140" style="font-size:10px">ПУЛЬС</text></svg>
+  <h3 class="rt">Ключи доступа</h3>
+  <div class="keys">
+   <div class="f"><svg class="i"><use href="#i-key"/></svg>Кандидат</div>
+   <div class="f"><svg class="i"><use href="#i-key"/></svg>Участник</div>
+   <div><svg class="i"><use href="#i-lock"/></svg>Партнёр</div>
+   <div><svg class="i"><use href="#i-lock"/></svg>Совет</div>
+  </div>
+  <h3 class="rt">Письма благодарности</h3>
+  <div class="letter"><p>«Помог разобрать письмо от Finanzamt, срок был через 2 дня. Всё успел.»</p><span>от №12 · изменило мою ситуацию</span></div>
+  <div class="letter"><p>«Познакомил с человеком, который нашёл мне первого клиента.»</p><span>от №04 · серьёзно</span></div>
+ </section>
+ <nav><button class="on" data-go="hall"><svg class="i"><use href="#i-home"/></svg>Холл</button><button class="kk" data-act="qr"><svg class="i" style="width:28px;height:28px"><use href="#i-key"/></svg></button><button data-go="study"><svg class="i"><use href="#i-user"/></svg>Кабинет</button></nav>
+ <div class="sheetw"><div class="scrim" data-act="close"></div><div class="sheet"></div></div>
+ <div class="ptoast"></div>
+</div>
+</template>
+
+<!-- ========== D ========== -->
+<template id="tD">
+<div class="ph D" id="phD">
+ <div class="dh"><div class="av">N</div><div><b>Консьерж NEXT</b><small>онлайн · знает всех в клубе</small></div><button class="mn" data-act="menu"><svg class="i"><use href="#i-menu"/></svg></button></div>
+ <div class="feed" id="dFeed"></div>
+ <div class="bottom">
+  <div class="qc" id="dChips"></div>
+  <div class="inp"><input id="dIn" placeholder="Напиши или нажми кнопку выше"><button id="dSend"><svg class="i"><use href="#i-send"/></svg></button></div>
+ </div>
+ <div class="sheetw"><div class="scrim" data-act="close"></div><div class="sheet"></div></div>
+ <div class="ptoast"></div>
+</div>
+</template>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ic=(n,c='i s')=>`<svg class="${c}"><use href="#i-${n}"/></svg>`;
+const person=n=>'№'+String(n).padStart(2,'0');
+function toast(ph,m){const t=$('.ptoast',ph);t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2400)}
+function sheet(ph,html){const w=$('.sheetw',ph);$('.sheet',w).innerHTML='<div class="grab"></div>'+html;w.classList.add('on')}
+function closeSheet(ph){$('.sheetw',ph).classList.remove('on')}
+function show(ph,id){$$('.scr',ph).forEach(s=>s.classList.toggle('on',s.dataset.s===id));$$('nav [data-go]',ph).forEach(b=>b.classList.toggle('on',b.dataset.go===id));const s=$('.scr.on',ph);if(s)s.scrollTop=0}
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function drawQR(cv,seed,fg='#0a0a0b',bg='#ece7dd'){const N=25,c=cv.getContext('2d'),s=cv.width/N,r=rng(seed);c.fillStyle=bg;c.fillRect(0,0,cv.width,cv.height);
+ const fin=(x,y)=>{c.fillStyle=fg;c.fillRect(x*s,y*s,7*s,7*s);c.fillStyle=bg;c.fillRect((x+1)*s,(y+1)*s,5*s,5*s);c.fillStyle=fg;c.fillRect((x+2)*s,(y+2)*s,3*s,3*s)};
+ c.fillStyle=fg;for(let y=0;y<N;y++)for(let x=0;x<N;x++){const f=(x<8&&y<8)||(x>N-9&&y<8)||(x<8&&y>N-9);if(!f&&r()>.52)c.fillRect(x*s,y*s,s,s)}
+ fin(0,0);fin(N-7,0);fin(0,N-7)}
+function qrSheet(ph,opts){
+ const {fg,bg,wrap,title,cls}=opts;
+ sheet(ph,`<h2 style="margin-bottom:4px">${title}</h2><div style="opacity:.65;font-size:13px;text-align:center">Покажи другому участнику. QR меняется каждые 30 секунд — скриншот не сработает.</div><div class="${wrap}"><canvas width="250" height="250"></canvas></div><div style="text-align:center;font-size:13px;opacity:.7" class="qt">Обновится через 30 с</div>`);
+ const cv=$('canvas',ph);let left=30;drawQR(cv,Math.floor(Math.random()*1e6),fg,bg);
+ clearInterval(ph._qi);ph._qi=setInterval(()=>{if(!$('.sheetw',ph).classList.contains('on')||!cv.isConnected){clearInterval(ph._qi);return}left--;if(left<=0){left=30;drawQR(cv,Math.floor(Math.random()*1e6),fg,bg)}const t=$('.qt',ph);if(t)t.textContent='Обновится через '+left+' с'},1000);
+}
+const REQS=[
+ {id:'r1',t:'Нужен перевод письма от Jobcenter на русский',sph:'Бумаги',due:'до 14 окт',by:12,n:2,urgent:true},
+ {id:'r2',t:'Ищу Steuerberater во Фрайбурге для Gewerbe',sph:'Бизнес',due:'до 20 окт',by:3,n:4},
+ {id:'r3',t:'Нужен логотип для стартапа — оплата по клубным условиям',sph:'Дизайн и digital',due:'до 25 окт',by:21,n:1}
+];
+const OFFERS=[
+ {id:'o1',t:'Резюме на немецком + 30 минут разбора собеседования',sph:'Работа',by:9},
+ {id:'o2',t:'Видео и монтаж для соцсетей — клубная скидка 20%',sph:'Дизайн и digital',by:15},
+ {id:'o3',t:'Помогу с Anmeldung и поиском квартиры во Фрайбурге',sph:'Переезд',by:4}
+];
+const RESP=[{n:12,why:'Переводил такие письма, сделаю сегодня',niche:'Бумаги и переводы'},{n:4,why:'Знаю, как это обычно просят',niche:'Переезд и жильё'},{n:26,why:'Могу вычитать и оформить',niche:'Дизайн и digital'}];
+
+/* =============== A · ПУЛЬС =============== */
+function initA(ph){
+ const S={p:74,step:0,seg:'need',resp:new Set(),today:false};
+ const STEPS=[
+  {t:'Отметь шаг недели',d:'«Отправить 5 предложений клиентам по Gewerbe»',b:'Сделал',pts:3,m:'Движение +3'},
+  {t:'Ответь на запрос встречи',d:'№18 просит 30 минут: «Выход на рынок Австрии». Отказаться нельзя, перенести можно.',b:'Назначить время',pts:0,m:'Встреча назначена: вт 14 окт, 18:00'},
+  {t:'Подтверди полученную помощь',d:'№12 помог тебе с письмом от Finanzamt. Скажи, насколько это было важно.',b:'Подтвердить',pts:0,m:'Спасибо! Пульс №12 вырос'}
+ ];
+ const C=2*Math.PI*102;
+ const ring=()=>{$('#aRing',ph).style.strokeDashoffset=C*(1-S.p/100);$('#aN',ph).textContent=S.p};
+ const renderStep=()=>{
+  const el=$('#aStep',ph),i=S.step;
+  if(i>=STEPS.length){el.innerHTML=`<div class="lb"><span>ВСЁ НА СЕГОДНЯ</span></div><h3>Ты в движении.</h3><p>Три шага закрыты. Следующее в клубе — «Горячий стул» в четверг, он по желанию.</p><button class="ghost" data-act="reset" style="margin-top:14px">Показать заново</button>`;return}
+  const s=STEPS[i];
+  el.innerHTML=`<div class="lb"><span>СЛЕДУЮЩИЙ ШАГ</span><span class="dots">${STEPS.map((_,k)=>`<i class="${k<i?'f':''}"></i>`).join('')}</span></div><h3>${s.t}</h3><p>${s.d}</p><button class="go" data-act="step">${s.b}</button><button class="ghost" data-act="later">Позже</button>`;
+ };
+ const renderWeek=()=>{
+  const d=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  $('#aWeek',ph).innerHTML=d.map((x,k)=>`<div class="${k<3?'done ':''}${k===3?'today '+(S.today?'done':''):''}">${x}<i>${(k<3||(k===3&&S.today))?ic('check','i s'):''}</i></div>`).join('');
+ };
+ const mini=(v,max,label)=>{const c=2*Math.PI*34;return `<div><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="34" fill="none" stroke="#241a16" stroke-width="7"/><circle cx="42" cy="42" r="34" fill="none" stroke="url(#ag)" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-v/max)}" transform="rotate(-90 42 42)"/></svg><b>${v}</b>${label}</div>`};
+ $('#aRings',ph).innerHTML=mini(20,25,'Движение')+mini(21,30,'Связи')+mini(33,45,'Вклад');
+ const renderList=()=>{
+  const L=$('#aList',ph);
+  if(S.seg==='need'){
+   L.innerHTML=`<div class="rq pair"><div class="tg"><span class="u">Пара месяца</span><span>бот свёл</span></div><h4>${person(26)} · Дизайн и digital · Фрайбург</h4><div class="mt">Вы ещё не знакомы. Новая связь в месяц — закон №2.</div><button data-act="pair">Договориться о встрече</button></div>`+
+   REQS.map(r=>{const on=S.resp.has(r.id);return `<div class="rq"><div class="tg"><span>${r.sph}</span>${r.urgent?'<span class="u">срочно</span>':''}</div><h4>${r.t}</h4><div class="mt">${person(r.by)} · ${r.due} · откликов ${r.n+(on?1:0)}</div><button class="${on?'on':''}" data-act="resp" data-id="${r.id}">${on?'Вы откликнулись ✓':'Откликнуться'}</button></div>`}).join('');
+  }else{
+   L.innerHTML=OFFERS.map(r=>{const on=S.resp.has(r.id);return `<div class="rq"><div class="tg"><span>${r.sph}</span></div><h4>${r.t}</h4><div class="mt">${person(r.by)}</div><button class="${on?'on':''}" data-act="resp" data-id="${r.id}">${on?'Вы написали ✓':'Написать'}</button></div>`}).join('')+`<div class="rq" style="border-style:dashed"><div class="tg"><span>Моё предложение</span></div><h4>Дизайн: логотип и айдентика для стартапов — клубные условия</h4><div class="mt">Одно активное предложение на человека</div></div>`;
+  }
+ };
+ ph.addEventListener('click',e=>{
+  const g=e.target.closest('nav [data-go]');if(g){show(ph,g.dataset.go);return}
+  const sg=e.target.closest('#aSeg button');if(sg){S.seg=sg.dataset.v;$$('#aSeg button',ph).forEach(b=>b.classList.toggle('on',b===sg));renderList();return}
+  const a=e.target.closest('[data-act]');if(!a)return;
+  switch(a.dataset.act){
+   case 'close':closeSheet(ph);break;
+   case 'step':{const s=STEPS[S.step];S.p=Math.min(100,S.p+s.pts);if(S.step===0){S.today=true;renderWeek()}S.step++;ring();$('#aOrb',ph).classList.remove('pop');void $('#aOrb',ph).offsetWidth;$('#aOrb',ph).classList.add('pop');toast(ph,s.m);renderStep()}break;
+   case 'later':S.step=Math.min(S.step+1,STEPS.length);renderStep();break;
+   case 'reset':S.step=0;S.p=74;S.today=false;ring();renderWeek();renderStep();break;
+   case 'resp':S.resp.has(a.dataset.id)?S.resp.delete(a.dataset.id):S.resp.add(a.dataset.id);renderList();if(S.resp.has(a.dataset.id))toast(ph,'Отклик отправлен. Автор выберет помощника');break;
+   case 'pair':toast(ph,'Запрос на встречу отправлен '+person(26)+'. Ответ — в течение 2 недель');break;
+   case 'qr':qrSheet(ph,{fg:'#0a0605',bg:'#f4ece6',wrap:'qrx',title:'Мой QR',cls:'A'});$('.qrx',ph).style.cssText='background:#f4ece6;padding:14px;border-radius:24px;width:max-content;margin:18px auto 10px';$('.qrx canvas',ph).style.cssText='display:block;width:210px;height:210px;image-rendering:pixelated';break;
+  }
+ });
+ ring();renderWeek();renderStep();renderList();
+ show(ph,'now');
+}
+
+/* =============== B · СОЗВЕЗДИЕ =============== */
+function initB(ph){
+ const S={resp:new Set(),wait:new Set(),sel:null};
+ const ME=[175,330];
+ const NODES={
+  12:{p:[110,238],k:1,n:'Бумаги и переводы',st:'Партнёр',m:2},4:{p:[240,222],k:1,n:'Переезд и жильё',st:'Участник',m:1},21:{p:[178,176],k:1,n:'Дизайн и логотипы',st:'Участник',m:1},
+  9:{p:[70,334],k:1,n:'Работа и резюме',st:'Партнёр',m:3},3:{p:[284,338],k:1,n:'Бизнес и налоги',st:'Партнёр',m:2},15:{p:[116,438],k:1,n:'Видео и монтаж',st:'Участник',m:1},
+  18:{p:[236,444],k:1,n:'Стартапы',st:'Участник',m:1},35:{p:[176,478],k:1,n:'Маркетинг',st:'Участник',m:1},
+  26:{p:[302,186],k:0,n:'Дизайн и digital',st:'Участник'},31:{p:[44,222],k:0,n:'Логистика',st:'Участник'},33:{p:[314,440],k:0,n:'Финансы',st:'Партнёр'},
+  40:{p:[48,520],k:0,n:'Фото',st:'Участник'},41:{p:[286,536],k:0,n:'Юриспруденция',st:'Участник'},44:{p:[170,590],k:0,n:'Музыка',st:'Участник'}
+ };
+ const EDGES=[[12,21],[21,4],[9,12],[3,4],[15,35],[35,18],[9,15],[3,18]];
+ const draw=()=>{
+  const r=rng(42);let h='<defs><radialGradient id="bg1"><stop offset="0" stop-color="#fff"/><stop offset=".25" stop-color="#9ec5ff"/><stop offset="1" stop-color="#9ec5ff" stop-opacity="0"/></radialGradient><filter id="gl"><feGaussianBlur stdDeviation="3"/></filter></defs>';
+  for(let i=0;i<80;i++){h+=`<circle class="tw" cx="${r()*350}" cy="${r()*720}" r="${r()*1.1+.3}" fill="#cdd9ff" opacity="${.3+r()*.6}" style="animation-delay:${r()*3.5}s"/>`}
+  h+=`<ellipse cx="177" cy="352" rx="150" ry="170" fill="rgba(158,197,255,.04)" stroke="rgba(158,197,255,.3)" stroke-dasharray="3 6"/><text x="177" y="514" text-anchor="middle" style="font:700 9px Manrope;fill:#7f89b5;letter-spacing:.2em">КРУГ · ФРАЙБУРГ</text>`;
+  Object.entries(NODES).forEach(([n,o])=>{if(o.k)h+=`<line x1="${ME[0]}" y1="${ME[1]}" x2="${o.p[0]}" y2="${o.p[1]}" stroke="rgba(158,197,255,.38)" stroke-width="1"/>`});
+  EDGES.forEach(([a,b])=>h+=`<line x1="${NODES[a].p[0]}" y1="${NODES[a].p[1]}" x2="${NODES[b].p[0]}" y2="${NODES[b].p[1]}" stroke="rgba(158,197,255,.14)"/>`);
+  h+=`<circle cx="${ME[0]}" cy="${ME[1]}" r="60" fill="url(#bg1)" opacity=".6"/><circle cx="${ME[0]}" cy="${ME[1]}" r="21" fill="#0a0a26" stroke="#fff" stroke-width="2"/><text x="${ME[0]}" y="${ME[1]+4}" text-anchor="middle" style="font:800 12px Manrope;fill:#fff">07</text>`;
+  Object.entries(NODES).forEach(([n,o])=>{const k=o.k,w=S.wait.has(+n);
+   h+=`<g class="nd ${k?'':'un'}" data-n="${n}">${(k||w)?`<circle class="halo" cx="${o.p[0]}" cy="${o.p[1]}" r="15" fill="${w?'rgba(184,164,255,.4)':'rgba(158,197,255,.28)'}" filter="url(#gl)"/>`:''}<circle class="o" cx="${o.p[0]}" cy="${o.p[1]}" r="${k?15:13}" fill="${k?'rgba(14,16,70,.9)':'rgba(8,8,34,.8)'}" stroke="${w?'#b8a4ff':k?'#9ec5ff':'#4f5883'}" stroke-width="${k?1.5:1}" ${k||w?'':'stroke-dasharray="2 3"'}/><text x="${o.p[0]}" y="${o.p[1]+3.5}">${String(n).padStart(2,'0')}</text><circle cx="${o.p[0]}" cy="${o.p[1]}" r="24" fill="transparent"/></g>`});
+  $('#bSky',ph).innerHTML=h;
+ };
+ const info=n=>{
+  const o=NODES[n],w=S.wait.has(+n),el=$('#bInfo',ph);S.sel=n;
+  el.innerHTML=`<button class="x" data-act="x">×</button><h3><b>${person(n)}</b> · ${o.st}</h3><div class="sb">${o.n} · ${o.k?'вы знакомы, встречались '+o.m+' раз(а)':w?'запрос отправлен, ответ в течение 2 недель':'вы ещё не знакомы'}</div>${o.k?`<button class="bt o" data-act="x">Закрыть</button>`:w?`<button class="bt o" data-act="x">Ждём ответа</button>`:`<button class="bt" data-act="meet" data-n="${n}">Попросить о встрече</button>`}`;
+  el.classList.add('on');
+ };
+ const fires=()=>{
+  const all=[{id:'m',mine:1,t:'Нужна помощь с договором аренды — перевод и проверка',sph:'Бумаги',due:'до 16 окт',n:3},...REQS];
+  $('#bFires',ph).innerHTML=all.map(r=>{const on=S.resp.has(r.id);
+   return `<div class="fire ${on?'on':''} ${r.mine?'mine':''}"><div class="dot"></div><div class="cd"><div class="tg">${r.mine?'Мой огонь':r.sph}${r.urgent?' · срочно':''}</div><h4>${r.t}</h4><div class="mt">${r.mine?'откликнулись трое':person(r.by)+' · '+r.due+' · откликов '+(r.n+(on?1:0))}</div>${r.mine?`<button class="r" data-act="pick">Выбрать помощника</button>`:`<button class="r" data-act="resp" data-id="${r.id}">${on?'Вы откликнулись ✓':'Откликнуться'}</button>`}</div></div>`}).join('');
+ };
+ ph.addEventListener('click',e=>{
+  const g=e.target.closest('nav [data-go]');if(g){$('#bInfo',ph).classList.remove('on');show(ph,g.dataset.go);return}
+  const nd=e.target.closest('.nd');if(nd){info(+nd.dataset.n);return}
+  const a=e.target.closest('[data-act]');if(!a)return;
+  switch(a.dataset.act){
+   case 'close':closeSheet(ph);break;
+   case 'x':$('#bInfo',ph).classList.remove('on');break;
+   case 'nudge':info(26);break;
+   case 'meet':S.wait.add(+a.dataset.n);draw();info(+a.dataset.n);toast(ph,'Запрос отправлен '+person(a.dataset.n));break;
+   case 'resp':S.resp.has(a.dataset.id)?S.resp.delete(a.dataset.id):S.resp.add(a.dataset.id);fires();if(S.resp.has(a.dataset.id))toast(ph,'Огонёк загорелся. Автор выберет помощника');break;
+   case 'pick':sheet(ph,`<h2 style="font:300 26px Manrope;margin-bottom:4px">Кто откликнулся</h2><div style="color:#7f89b5;font-size:13px;margin-bottom:14px">Выбери, кому доверить задачу</div>${RESP.map(r=>`<div class="row2" data-act="trust" data-n="${r.n}"><div class="av2">${String(r.n).padStart(2,'0')}</div><div style="flex:1"><div style="font-weight:700">${person(r.n)} · ${r.niche}</div><div style="font-size:12.5px;color:#7f89b5">«${r.why}»</div></div></div>`).join('')}`);break;
+   case 'trust':closeSheet(ph);toast(ph,'Задача у '+person(a.dataset.n)+'. Остальным — «спасибо за отклик»');break;
+   case 'qr':qrSheet(ph,{fg:'#07082a',bg:'#e4ecff',wrap:'qrx',title:'Мой свет',cls:'B'});$('.qrx',ph).style.cssText='background:#e4ecff;padding:14px;border-radius:26px;width:max-content;margin:18px auto 10px;box-shadow:0 0 40px rgba(158,197,255,.5)';$('.qrx canvas',ph).style.cssText='display:block;width:210px;height:210px;image-rendering:pixelated';break;
+  }
+ });
+ draw();fires();show(ph,'map');
+}
+
+/* =============== C · ДОМ КЛУБА =============== */
+function initC(ph){
+ const S={resp:new Set()};
+ const notes=[
+  {id:'m',mine:1,t:'Нужна помощь с договором аренды — перевод и проверка',sph:'Бумаги',due:'до 16 окт · 3 отклика',r:-1.2},
+  ...REQS.map((r,i)=>({id:r.id,t:r.t,sph:r.sph,due:`${person(r.by)} · ${r.due}`,u:r.urgent,r:[1.4,-1.8,1.1][i]}))
+ ];
+ const board=()=>{$('#cBoard',ph).innerHTML=notes.map(n=>{const on=S.resp.has(n.id);return `<div class="note ${n.mine?'mine':''} ${on?'on':''}" style="--r:${n.r}deg"><div class="tg">${n.sph}${n.u?' · <span class="u">срочно</span>':''}${n.mine?' · мой':''}</div><h4>${n.t}</h4><div class="mt">${n.due}</div>${n.mine?`<button data-act="pick">Выбрать помощника</button>`:`<button data-act="resp" data-id="${n.id}">${on?'Отозвался':'Откликнуться'}</button>`}</div>`}).join('')};
+ const ROOMS={
+  lib:`<h2>Библиотека</h2><div style="color:#8da193;font-size:13px;margin:4px 0 8px">Выбор Совета · бесплатно для участников</div><div class="li">Письмо от Finanzamt: что отвечать и в какой срок<span>6 мин · от №12</span></div><div class="li">Gewerbeanmeldung за один визит<span>8 мин · от №03</span></div><div class="li">Резюме на немецком: чем отличается<span>7 мин · от №09</span></div>`,
+  hall2:`<h2>Зал встреч</h2><div style="color:#8da193;font-size:13px;margin:4px 0 8px">Ближайшее</div><div class="li">Сб 18 окт · 17:00 · Фрайбург<span>Спорт и «круг запросов»: каждый называет один запрос и одно предложение</span></div><div class="li">Вт 14 окт · 18:00 · онлайн<span>Встреча с №18 «Выход на рынок Австрии»</span></div><button class="btn" data-act="sign">Записаться на субботу</button>`,
+  fire:`<h2>Каминная</h2><div style="color:#8da193;font-size:13px;margin:4px 0 8px">Четверг · «Горячий стул» · онлайн</div><div class="li">Один участник выносит свою ситуацию, остальные 45 минут дают решения и контакты<span>По желанию, не обязательно</span></div><button class="btn" data-act="sign">Напомнить мне в четверг</button>`,
+  council:`<h2>Совет</h2><div class="lock" style="margin-top:12px"><svg class="i s"><use href="#i-lock"/></svg>Комната для Партнёров и выше. Твой следующий ключ — «Партнёр»: нужен Пульс 80+ и серьёзная помощь.</div>`
+ };
+ ph.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]');if(g){show(ph,g.dataset.go);return}
+  const rm=e.target.closest('[data-room]');
+  if(rm){const k=rm.dataset.room;if(k==='board'){show(ph,'board')}else if(k==='study'){show(ph,'study')}else sheet(ph,ROOMS[k]);return}
+  const a=e.target.closest('[data-act]');if(!a)return;
+  switch(a.dataset.act){
+   case 'close':closeSheet(ph);break;
+   case 'resp':S.resp.has(a.dataset.id)?S.resp.delete(a.dataset.id):S.resp.add(a.dataset.id);board();if(S.resp.has(a.dataset.id))toast(ph,'Записка отмечена. Автор выберет помощника');break;
+   case 'pick':sheet(ph,`<h2>Кто откликнулся</h2><div style="color:#8da193;font-size:13px;margin:4px 0 6px">Выбери, кому доверить задачу</div>${RESP.map(r=>`<div class="li" data-act="trust" data-n="${r.n}" style="cursor:pointer"><b style="font:500 17px 'Playfair Display'">${person(r.n)}</b> · ${r.niche}<span>«${r.why}»</span></div>`).join('')}`);break;
+   case 'trust':closeSheet(ph);toast(ph,'Задача у '+person(a.dataset.n)+'. Остальным — «спасибо за отклик»');break;
+   case 'sign':closeSheet(ph);toast(ph,'Готово. Напомним заранее');break;
+   case 'qr':qrSheet(ph,{fg:'#2a1d08',bg:'#f3e9d2',wrap:'qrw',title:'Ключ-карта №07',cls:'C'});break;
+  }
+ });
+ board();show(ph,'hall');
+}
+
+/* =============== D · КОНСЬЕРЖ =============== */
+function initD(ph){
+ const S={mode:null,pulse:74,mine:'open',tmp:{},qrs:[]};
+ const feed=$('#dFeed',ph),inp=$('#dIn',ph),chips=$('#dChips',ph);
+ const down=()=>{feed.scrollTop=feed.scrollHeight};
+ const me=t=>{const d=document.createElement('div');d.className='m u';d.textContent=t;feed.appendChild(d);down()};
+ async function say(html,wide){
+  const ty=document.createElement('div');ty.className='m c ty';ty.innerHTML='<i></i><i></i><i></i>';feed.appendChild(ty);down();
+  await sleep(wide?350:500);ty.remove();
+  const d=document.createElement('div');d.className=wide?'w':'m c';d.innerHTML=html;feed.appendChild(d);down();return d;
+ }
+ const setChips=()=>{
+  const c=[['Нужна помощь','help'],['Могу помочь','give'],['Мой QR','qr'],['Мой Пульс','pulse'],['Профиль','prof'],['Библиотека','lib']];
+  if(S.mine==='work')c.unshift(['Подтвердить помощь','confirm']);
+  chips.innerHTML=c.map(([t,k],i)=>`<button data-c="${k}" class="${k==='confirm'?'hot':''}">${t}</button>`).join('');
+ };
+ const tasks=()=>`<div class="ttl">Сегодня · 3 дела</div>
+  <div class="tk" id="tk1"><div class="tt">Фокус недели не задан<span>Одна задача на неделю</span></div><button class="sb" data-d="focus">Задать</button></div>
+  <div class="tk" id="tk2"><div class="tt">№18 просит встречу<span>«Выход на рынок Австрии» · осталось 12 дней</span></div><button class="sb" data-d="meet">Принять</button></div>
+  <div class="tk" id="tk3"><div class="tt">На твой запрос откликнулись трое<span>Выбери, кому доверить</span></div><button class="sb" data-d="pick">Выбрать</button></div>`;
+ async function intro(){
+  await say('Добрый вечер, Алексей. Я консьерж клуба: скажи, что нужно, и я всё сделаю. Вот что ждёт тебя сегодня.');
+  await say(tasks(),true);
+ }
+ const ringW=p=>{const c=2*Math.PI*30;return `<div class="rg"><svg viewBox="0 0 70 70"><circle cx="35" cy="35" r="30" fill="none" stroke="#e6ecf1" stroke-width="7"/><circle cx="35" cy="35" r="30" fill="none" stroke="#2aabee" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-p/100)}" transform="rotate(-90 35 35)"/></svg><b>${p}</b></div>`};
+ const flows={
+  async focus(){me('Задать фокус недели');await say('Что главное на этой неделе? Напиши одной строкой, например: «Отправить 5 предложений клиентам».');S.mode='focus';inp.placeholder='Твоя задача недели…';inp.focus()},
+  async meet(){me('Принять встречу');await say('Встреча с №18 · Стартапы, минимум 30 минут. Выбери время:<br>'+['Вт 14 окт · 18:00','Ср 15 окт · 12:30','Пт 17 окт · 19:00'].map(s=>`<button class="qb" data-slot="${s}">${s}</button>`).join(''))},
+  async pick(){me('Выбрать помощника');await say('Откликнулись трое. Кому доверить задачу «договор аренды: перевод и проверка»?',false);
+   await say(`<div class="ttl">Откликнулись</div>`+RESP.map(r=>`<div class="tk"><div class="tt">${person(r.n)} · ${r.niche}<span>«${r.why}»</span></div><button class="sb" data-trust="${r.n}">Доверить</button></div>`).join(''),true)},
+  async help(){me('Нужна помощь');
+   if(S.mine!=='closed'){await say(S.mine==='open'?'У тебя уже есть активный запрос про договор аренды. Новый можно создать, когда старый закрыт. Давай сначала выберем помощника?':'Запрос про договор аренды сейчас в работе. Когда помощь будет получена, нажми «Подтвердить помощь» — и сможешь создать новый.');if(S.mine==='open')await say('<button class="qb" data-d="pick">Выбрать помощника</button>');return}
+   await say('Хорошо. В какой это сфере?<br>'+['Работа','Бумаги','Переезд','Бизнес','Дизайн и digital','Знания'].map(s=>`<button class="qb" data-sph="${s}">${s}</button>`).join(''))},
+  async give(){me('Могу помочь');await say('Вот что клубу сейчас нужно. Откликнись на то, в чём можешь помочь:');
+   await say(REQS.map(r=>`<div class="tk"><div class="tt">${r.t}<span>${person(r.by)} · ${r.due}</span></div><button class="sb o" data-resp="${r.id}">Помогу</button></div>`).join(''),true)},
+  async qr(){me('Мой QR');const d=await say('Покажи этот код участнику, с которым встречаешься. Он живой и меняется каждые 30 секунд.<div class="qrc"><canvas width="250" height="250"></canvas><small>Обновится через <b class="qs">30</b> с</small></div>',false);
+   const cv=$('canvas',d);drawQR(cv,Math.floor(Math.random()*1e6),'#10161c','#ffffff');S.qrs.push({cv,left:30,d})},
+  async pulse(){me('Мой Пульс');await say(`<div class="ttl">Пульс</div><div style="display:flex;gap:14px;align-items:center">${ringW(S.pulse)}<div style="flex:1"><div class="bb"><div class="l"><span>Движение</span><b>${S.pulse>=77?23:20}/25</b></div><div class="t"><i style="width:${S.pulse>=77?92:80}%"></i></div></div><div class="bb"><div class="l"><span>Связи</span><b>21/30</b></div><div class="t"><i style="width:70%"></i></div></div><div class="bb"><div class="l"><span>Вклад</span><b>33/45</b></div><div class="t"><i style="width:73%"></i></div></div></div></div>`,true)},
+  async prof(){me('Профиль');await say(`<div class="ttl">Профиль</div><div style="display:flex;gap:14px;align-items:center"><div style="font:900 44px 'Unbounded';letter-spacing:-.05em">№07</div><div><b>Алексей М.</b><div style="font-size:12.5px;color:#7d8c98">Основатель · Участник<br>Дизайн и digital · Фрайбург</div></div></div><div style="margin-top:10px;font-size:13px;color:#5d6c78">До «Партнёра»: Пульс ${S.pulse}/80 и серьёзная помощь 2/3.</div>`,true)},
+  async lib(){me('Библиотека');await say('Выбор Совета на этой неделе:');await say(['Письмо от Finanzamt: что отвечать и в какой срок · 6 мин','Gewerbeanmeldung за один визит · 8 мин','Резюме на немецком · 7 мин'].map(t=>`<div class="tk"><div class="tt">${t}</div><button class="sb o">Читать</button></div>`).join(''),true)},
+  async confirm(){me('Подтвердить помощь');await say('Как важна была помощь от '+person(S.tmp.helper||12)+'?<br>'+['Мелочь','Серьёзно','Изменило мою ситуацию'].map(s=>`<button class="qb" data-rate="${s}">${s}</button>`).join(''))}
+ };
+ async function send(t){
+  t=t.trim();if(!t)return;inp.value='';me(t);
+  if(S.mode==='focus'){S.mode=null;inp.placeholder='Напиши или нажми кнопку выше';
+   await say(`Записал: «${esc(t)}». Напомню в пятницу.`);
+   await say(`<div class="ttl">Фокус недели</div><div class="tk"><div class="tt">${esc(t)}<span>Отметь шаг, когда сделаешь</span></div><button class="sb" data-done="1">Сделал</button></div>`,true);
+   const k=$('#tk1',feed);if(k){k.classList.add('dn');$('.sb',k).remove()}return}
+  if(S.mode==='ask'){S.mode=null;S.mine='open';inp.placeholder='Напиши или нажми кнопку выше';
+   await say('Опубликовал на доске в сфере «'+esc(S.tmp.sph)+'». Если 48 часов тишины — сам позову подходящих участников и твоего поручителя.');return}
+  await say('Я лучше всего понимаю кнопки внизу — выбери, что нужно.');
+ }
+ feed.addEventListener('click',async e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.d){b.disabled=true;flows[b.dataset.d]();return}
+  if(b.dataset.slot){me(b.dataset.slot);const k=$('#tk2',feed);if(k){k.classList.add('dn');$('.sb',k).remove()}await say('Назначил: '+b.dataset.slot+'. Формат: онлайн или общественное место. После встречи покажите друг другу QR — тогда она засчитается.<br><button class="qb" data-d="qr">Показать мой QR</button>');return}
+  if(b.dataset.trust){me('Доверить '+person(b.dataset.trust));S.mine='work';S.tmp.helper=b.dataset.trust;const k=$('#tk3',feed);if(k){k.classList.add('dn');$('.sb',k).remove()}setChips();await say('Готово: задача у '+person(b.dataset.trust)+'. Остальным отправил «спасибо за отклик». Когда помощь будет сделана, нажми «Подтвердить помощь» внизу — Пульс растёт только у тех, кто реально помог.');return}
+  if(b.dataset.resp){b.textContent='Отправлено ✓';b.disabled=true;me('Помогу с запросом «'+REQS.find(r=>r.id===b.dataset.resp).t.slice(0,30)+'…»');await say('Отклик отправлен. Автор сам выберет помощника.');return}
+  if(b.dataset.sph){S.tmp.sph=b.dataset.sph;me(b.dataset.sph);S.mode='ask';inp.placeholder='Что нужно? Одна-две строки…';await say('Опиши запрос одной-двумя строками. Срок и «срочно» уточню после.');inp.focus();return}
+  if(b.dataset.rate){me(b.dataset.rate);S.mine='closed';setChips();await say('Спасибо. Помощь подтверждена, Пульс '+person(S.tmp.helper||12)+' вырос, запрос закрыт. Теперь можно создать новый — нажми «Нужна помощь».');return}
+  if(b.dataset.done){b.disabled=true;b.textContent='Отмечено ✓';me('Сделал');S.pulse=Math.min(100,S.pulse+3);await say('Шаг отмечен. Движение +3, Пульс теперь '+S.pulse+'.');return}
+ });
+ chips.addEventListener('click',e=>{const b=e.target.closest('button');if(b)flows[b.dataset.c]()});
+ $('#dSend',ph).onclick=()=>send(inp.value);
+ inp.addEventListener('keydown',e=>{if(e.key==='Enter')send(inp.value)});
+ ph.addEventListener('click',e=>{
+  const a=e.target.closest('[data-act]');if(!a)return;
+  if(a.dataset.act==='close')closeSheet(ph);
+  if(a.dataset.act==='menu')sheet(ph,`<h2>Что умеет консьерж</h2><div class="mg">${[['Нужна помощь','help','chat'],['Могу помочь','give','heart'],['Мой QR','qr','qr'],['Мой Пульс','pulse','bolt'],['Профиль','prof','user'],['Библиотека','lib','book']].map(([t,k,i])=>`<button data-m="${k}"><svg class="i"><use href="#i-${i}"/></svg>${t}</button>`).join('')}</div>`);
+  const m=e.target.closest('[data-m]');if(m){closeSheet(ph);flows[m.dataset.m]()}
+ });
+ setInterval(()=>{S.qrs=S.qrs.filter(q=>q.cv.isConnected);S.qrs.forEach(q=>{q.left--;if(q.left<=0){q.left=30;drawQR(q.cv,Math.floor(Math.random()*1e6),'#10161c','#ffffff')}const s=$('.qs',q.d);if(s)s.textContent=q.left})},1000);
+ setChips();intro();
+}
+
+/* =============== СТРАНИЦА =============== */
+const CONC=[
+ {k:'A',n:'1',name:'Пульс',init:initA,
+  idea:'Клуб — это движение. Приложение всегда говорит одно: что сделать прямо сейчас.',
+  style:'Тёплый чёрный и огненный градиент: цвета живого пульса. Кольцо «дышит» как сердцебиение, линия кардиограммы бежит. Одна большая кнопка и ничего лишнего.',
+  why:'Открыл — видишь ровно один шаг и одну кнопку. Не надо искать, куда идти.',
+  try:'Нажми «Сделал» 3 раза и смотри на кольцо. Потом вкладка «Люди» и кнопка QR вверху.'},
+ {k:'B',n:'2',name:'Созвездие',init:initB,
+  idea:'Клуб — это люди. Твоя сила — твои связи, и их видно как карту звёзд.',
+  style:'Ночное небо: каждый участник — звезда. Светятся те, кого ты знаешь, тусклые — кого ещё нет. Круг Фрайбурга обведён, как созвездие. Минимум текста, мягкое свечение.',
+  why:'Сразу видно, с кем ты знаком, а с кем нет. Хочешь познакомиться — тапни по звезде.',
+  try:'Нажми любую звезду и «Попросить о встрече». Плашка «Новая связь месяца» внизу. Вкладка «Огни».'},
+ {k:'C',n:'3',name:'Дом клуба',init:initC,
+  idea:'Закрытый клуб — это место. У него есть холл, комнаты и ключ-карта.',
+  style:'Тёмно-зелёное сукно, латунь, кожа и дерево, серифы, как в лобби частного клуба. У каждой функции своя комната, у членства своя карта.',
+  why:'Все знают, как устроен дом: зашёл в нужную комнату. Библиотека, доска, совет, кабинет — по названию понятно.',
+  try:'Нажми «Доска запросов», потом «Кабинет». Латунная кнопка внизу показывает QR ключ-карты.'},
+ {k:'D',n:'4',name:'Консьерж',init:initD,
+  idea:'Не надо учить интерфейс. Скажи клубу, что нужно, и он сделает.',
+  style:'Светлый мессенджер в духе Telegram, внутри которого и живёт приложение. Пузыри, кнопки-ответы, карточки прямо в переписке. Ничего нового учить не надо.',
+  why:'Все умеют переписываться. Любое действие — это кнопка в ответ или фраза в чат.',
+  try:'В карточке «Сегодня» нажми «Задать». Потом внизу «Нужна помощь»: консьерж напомнит про правило одного запроса.'}
+];
+CONC.forEach(c=>{
+ const o=document.createElement('div');o.className='opt';o.dataset.k=c.k;
+ o.innerHTML=$('#t'+c.k).innerHTML+`<div class="cap"><div class="n">КОНЦЕПЦИЯ ${c.n}</div><h2>${c.name}</h2>
+ <div class="row"><b>Идея</b><span>${c.idea}</span></div>
+ <div class="row"><b>Стиль вытекает из идеи</b><span>${c.style}</span></div>
+ <div class="row"><b>Почему понятно без объяснений</b><span>${c.why}</span></div>
+ <div class="try"><b style="color:#c9c5ba">Что нажать:</b> ${c.try}</div>
+ <button class="pickbtn">Эта идея мне ближе</button></div>`;
+ $('#grid').appendChild(o);
+ c.init($('.ph',o));
+ $('.pickbtn',o).onclick=()=>choose(c.k);
+});
+let chosen=null;
+function choose(k){
+ chosen=chosen===k?null:k;
+ $$('.opt').forEach(o=>{o.classList.toggle('chosen',o.dataset.k===chosen);$('.pickbtn',o).textContent=o.dataset.k===chosen?'✓ Выбрано':'Эта идея мне ближе'});
+ const c=CONC.find(x=>x.k===chosen);
+ $('#cur').innerHTML=c?`Концепция ${c.n}: «${c.name}»<small>Можно дописать комментарий и скопировать</small>`:'Пока не выбрано<small>Нажми «Эта идея мне ближе» под телефоном</small>';
+ $('#go').disabled=!c;
+}
+function gtoast(m){const t=$('#gt');t.textContent=m;t.classList.add('on');clearTimeout(gtoast.t);gtoast.t=setTimeout(()=>t.classList.remove('on'),2200)}
+$('#go').onclick=async()=>{
+ const c=CONC.find(x=>x.k===chosen);if(!c)return;
+ const n=$('#note').value.trim();
+ const t=`ВЫБОР КОНЦЕПЦИИ NEXT: концепция ${c.n} — «${c.name}»`+(n?`\nКомментарий: ${n}`:'');
+ try{await navigator.clipboard.writeText(t);gtoast('Скопировано. Отправь мне в чат')}
+ catch(_){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');gtoast('Скопировано. Отправь мне в чат')}catch(__){gtoast(t)}a.remove()}
+};
+</script>
+</body>
+</html>

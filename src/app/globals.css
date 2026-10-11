@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+/*
+  Стиль «Графит» (тёплый тёмный) — единственное место, где живут цвета проекта.
+  Чтобы сменить оформление, меняем только эти переменные.
+  Основа — тёмная тема Claude: тёплые графитовые поверхности и терракотовый акцент.
+*/
+@theme {
+  /* поверхности: от самой глубокой к самой высокой */
+  --color-void: #0e0e0d; /* за пределами экрана приложения (на компьютере) */
+  --color-nav: #0f0f0f; /* нижнее меню */
+  --color-bg: #151515; /* фон экрана */
+  --color-field: #1a1a19; /* поля ввода */
+  --color-card: #20201f; /* карточки */
+  --color-card-2: #272726; /* вложенное в карточку: аватары, плашки */
+  --color-hover: #313130; /* нажатие и наведение */
+
+  /* текст */
+  --color-fg: #f0efec; /* основной */
+  --color-accent-2: #c3c2b7; /* второй уровень: ссылки «назад», тихие акценты */
+  --color-mute: #93918b; /* подписи и пояснения */
+
+  /* границы */
+  --color-line: #323231; /* обычная граница и разделитель */
+  --color-line-strong: #67665f; /* граница поля ввода (читается на тёмном) */
+
+  /* акцент и текст на нём */
+  --color-accent: #d97757; /* терракотовый: главное действие, активное состояние */
+  --color-ink: #17120f; /* текст и значки поверх акцента */
+
+  /* статусы */
+  --color-ok: #4fb477;
+  --color-warn: #db9202;
+  --color-danger: #f55143;
+  --color-info: #6ea6dc;
+
+  --font-sans: var(--font-text), system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    color-scheme: dark; /* родные полосы прокрутки и поля — тёмные */
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--color-accent) 35%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  body {
+    font-family: var(--font-sans);
+    font-variant-numeric: lining-nums;
+  }
+  /* единый вид прокрутки внутри экрана */
+  .scroll-clean {
+    scrollbar-width: none;
+  }
+  .scroll-clean::-webkit-scrollbar {
+    display: none;
+  }
+}

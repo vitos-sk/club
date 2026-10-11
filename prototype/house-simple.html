@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXT — «Дом клуба» проще</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e1f18;--pn:#163226;--pn2:#1d3c2d;--br:#c59a55;--br2:#e2c283;--fg:#f0e6cf;--mut:#8da193;--line:rgba(197,154,85,.35);--serif:'Playfair Display',Georgia,serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0a0b;color:#ece9e2;font:15px/1.45 'Onest',system-ui,sans-serif;min-height:100dvh;padding-bottom:130px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* ---------- страница ---------- */
+.head{max-width:1280px;margin:0 auto;padding:34px 24px 6px}
+.head h1{font:800 32px/1.1 'Onest';letter-spacing:-.02em}
+.head p{color:#9a968c;margin-top:10px;max-width:820px}
+.vrow{max-width:1280px;margin:46px auto 0;padding:0 24px}
+.vrow .meta{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap;margin-bottom:22px}
+.vrow .txt{flex:1;min-width:300px}
+.vrow .n{font:700 12px 'Onest';color:#6e6a62;letter-spacing:.16em}
+.vrow h2{font:800 26px/1.2 'Onest';margin:3px 0 8px}
+.vrow p{color:#c9c5ba;font-size:14.5px;max-width:700px}
+.vrow p b{color:#ece9e2}
+.pickbtn{padding:13px 26px;border-radius:14px;border:1.5px solid #34343b;font-weight:700;font-size:15px;transition:.15s;white-space:nowrap}
+.pickbtn:hover{border-color:#8a8a95}
+.vrow.chosen .pickbtn{background:#4cc3ff;border-color:#4cc3ff;color:#04202c}
+.shots{display:flex;gap:26px;flex-wrap:wrap}
+.shot{width:304px}
+.shot .lb{margin-top:12px;font-size:12.5px;color:#7a766d;text-align:center}
+.shot .ph{cursor:zoom-in}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#101012ee;backdrop-filter:blur(14px);border-top:1px solid #26262b;padding:14px 24px;z-index:80}
+.bar .in{max-width:1280px;margin:0 auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.bar .cur{font-weight:700;min-width:240px}
+.bar .cur small{display:block;font-weight:400;color:#6e6a62;font-size:12px}
+.bar input{flex:1;min-width:240px;background:#0a0a0b;border:1px solid #2a2a30;border-radius:12px;padding:12px 14px;color:inherit;font:inherit;outline:none}
+.bar input:focus{border-color:#4cc3ff}
+.bar .go{background:#4cc3ff;color:#04202c;font-weight:700;padding:12px 22px;border-radius:12px}
+.bar .go[disabled]{opacity:.4;pointer-events:none}
+.gtoast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(10px);background:#4cc3ff;color:#04202c;font-weight:600;padding:10px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:95}
+.gtoast.on{opacity:1;transform:translateX(-50%)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.86);z-index:90;display:none;align-items:center;justify-content:center;padding:20px;overflow:auto;cursor:zoom-out}
+.ov.on{display:flex}
+.ov .ph{zoom:1;cursor:default}
+
+/* ---------- экран (язык «Дома клуба») ---------- */
+.ph{position:relative;width:380px;height:790px;border-radius:42px;overflow:hidden;background:var(--bg);color:var(--fg);font-family:'Onest',sans-serif;line-height:1.45;box-shadow:0 0 0 7px #121214,0 20px 50px #0009;zoom:.8;isolation:isolate;flex:none}
+.ph *{box-sizing:border-box}
+.ph h1,.ph h2,.ph h3,.ph h4,.ph p{margin:0}
+.ph::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 22px,rgba(255,255,255,.012) 22px 23px);pointer-events:none}
+.stb{position:absolute;top:0;left:0;right:0;height:44px;display:flex;justify-content:space-between;align-items:center;padding:8px 28px 0;font-size:13px;font-weight:600;color:#c9b58f;z-index:6}
+.ct{position:absolute;top:44px;bottom:78px;left:0;right:0;overflow:hidden;padding:14px 24px 0;z-index:1}
+.plq{text-align:center}
+.plq .a{font:700 28px var(--serif);letter-spacing:.34em;color:var(--br2);padding-left:.34em}
+.plq .ru{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:6px;font-size:10px;letter-spacing:.24em;color:var(--mut)}
+.plq .ru i{height:1px;width:34px;background:var(--br)}
+.key{margin-top:26px;border-radius:16px;padding:18px 20px;background:linear-gradient(135deg,#d7b574,#a77d3a 55%,#d2ae6a);color:#2a1d08;position:relative;box-shadow:0 14px 30px #0008,inset 0 1px 0 #fff6;overflow:hidden}
+.key::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 10px,rgba(255,255,255,.06) 10px 11px)}
+.key .r1{display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:.2em;font-weight:800;position:relative}
+.key .nm{font:700 62px/1 var(--serif);margin:14px 0 12px;letter-spacing:-.02em;position:relative}
+.key .nm small{font-size:20px;margin-right:4px}
+.key .r2{display:flex;justify-content:space-between;align-items:flex-end;font-size:12.5px;font-weight:700;position:relative}
+.key .r2 small{display:block;font-weight:600;opacity:.7;margin-top:2px}
+.key .qrh{display:flex;align-items:center;gap:7px;padding:9px 13px;border-radius:10px;background:rgba(42,29,8,.88);color:var(--br2);font-size:12px;font-weight:700}
+.key .qrh .i{width:18px;height:18px}
+.keyc{margin-top:22px;border-radius:14px;padding:14px 18px;background:linear-gradient(135deg,#d7b574,#a77d3a 55%,#d2ae6a);color:#2a1d08;display:flex;align-items:center;gap:16px;box-shadow:0 12px 26px #0008,inset 0 1px 0 #fff6;position:relative;overflow:hidden}
+.keyc::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 10px,rgba(255,255,255,.06) 10px 11px)}
+.keyc .n{font:700 40px/1 var(--serif);position:relative}
+.keyc .n small{font-size:15px;margin-right:3px}
+.keyc .x{flex:1;position:relative;font-size:13.5px;font-weight:800}
+.keyc .x small{display:block;font-weight:600;opacity:.7;font-size:11.5px;margin-top:1px}
+.keyc .qrh{position:relative;display:flex;align-items:center;gap:6px;padding:9px 12px;border-radius:10px;background:rgba(42,29,8,.88);color:var(--br2);font-size:12px;font-weight:700}
+.keyc .qrh .i{width:17px;height:17px}
+h3.rt{font:500 21px var(--serif);margin:34px 0 14px;display:flex;align-items:center;gap:14px}
+h3.rt::after{content:"";flex:1;height:1px;background:var(--line);order:1}
+h3.rt small{font:600 12.5px 'Onest';color:var(--mut);order:2}
+.tk{display:flex;gap:16px;align-items:center;padding:16px 2px;border-bottom:1px solid var(--line)}
+.tk:last-child{border:0}
+.tk .bx{width:22px;height:22px;border:1.5px solid var(--br);transform:rotate(45deg) scale(.78);display:grid;place-items:center;flex:none;color:transparent}
+.tk .bx .i{width:13px;height:13px;transform:rotate(-45deg);stroke-width:3}
+.tk.d .bx{background:var(--br);color:#1a1405}
+.tk .tt{flex:1;font-size:16px;font-weight:600;line-height:1.3}
+.tk .tt span{display:block;font-size:13px;color:var(--mut);font-weight:400;margin-top:3px}
+.tk.d .tt{opacity:.5;text-decoration:line-through}
+.tk .go{font:700 10px 'Onest';letter-spacing:.14em;color:var(--br2);border:1px solid var(--line);padding:5px 9px;border-radius:3px}
+.guide{margin-top:26px;border:1px solid var(--br);border-radius:8px;padding:24px 22px 22px;background:linear-gradient(160deg,#1f4130,#163226);outline:1px solid rgba(197,154,85,.18);outline-offset:-6px}
+.guide .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;font:700 11px 'Onest';letter-spacing:.18em;color:var(--br2)}
+.guide .dots{display:flex;gap:5px}.guide .dots i{width:16px;height:4px;border-radius:3px;background:rgba(197,154,85,.25)}.guide .dots i.f{background:var(--br2)}
+.guide h2{font:500 31px/1.12 var(--serif);margin-bottom:10px}
+.guide p{font-size:15.5px;color:#cfd8c9;margin-bottom:22px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;border-radius:6px;background:var(--br2);color:#2a1d08;font-weight:800;font-size:15.5px;text-align:center}
+.btn.o{background:transparent;color:var(--br2);border:1px solid var(--br)}
+.rowx{display:flex;align-items:center;gap:16px;padding:18px 16px;border:1px solid var(--line);outline:1px solid rgba(197,154,85,.16);outline-offset:-5px;border-radius:6px;background:var(--pn);margin-bottom:12px}
+.rowx .ic{width:30px;height:30px;color:var(--br2);flex:none;display:grid;place-items:center}
+.rowx .ic .i{width:28px;height:28px}
+.rowx .tx{flex:1;font:500 20px/1.15 var(--serif)}
+.rowx .tx span{display:block;font:400 13px 'Onest';color:var(--mut);margin-top:4px}
+.rowx .cv{color:var(--mut)}
+.rowx .cv .i{width:18px;height:18px}
+.rowx .dotc{width:9px;height:9px;border-radius:50%;background:#d98062;box-shadow:0 0 8px #d98062;flex:none}
+.act{display:flex;align-items:center;gap:18px;padding:22px 18px;border:1px solid var(--line);outline:1px solid rgba(197,154,85,.16);outline-offset:-5px;border-radius:6px;background:var(--pn);margin-bottom:14px}
+.act.hi{border-color:var(--br);background:linear-gradient(160deg,#1f4130,#163226)}
+.act .ic{color:var(--br2);flex:none}
+.act .ic .i{width:32px;height:32px}
+.act .tx{flex:1;font:500 23px/1.12 var(--serif)}
+.act .tx span{display:block;font:400 13.5px 'Onest';color:var(--mut);margin-top:5px}
+.rh{display:flex;align-items:center;gap:8px;font-size:14.5px;color:var(--br2);font-weight:600;margin-bottom:18px}
+.rh .i{width:18px;height:18px}
+h1.t{font:500 36px/1.1 var(--serif)}
+.lead{color:var(--mut);font-size:15px;margin:10px 0 24px}
+.board{background:#2a1d12;border:6px solid #4a3220;border-radius:10px;padding:20px 14px 6px;box-shadow:inset 0 0 40px #0009}
+.note{position:relative;background:#f3e9d2;color:#2a2118;border-radius:3px;padding:22px 16px 16px;margin-bottom:22px;box-shadow:0 6px 14px #0007;transform:rotate(var(--r,0deg))}
+.note::before{content:"";position:absolute;top:-6px;left:50%;margin-left:-7px;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff8a7a,#a8261a);box-shadow:0 3px 4px #0006}
+.note .tg{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#8a6a2c}
+.note .u{color:#b3361f}
+.note h4{font:700 16.5px/1.25 'Onest';margin:6px 0}
+.note .mt{font:500 19px/1 'Caveat';color:#5b4b30;margin-bottom:12px}
+.note .nb{display:inline-block;padding:11px 16px;border-radius:4px;background:#2a1d08;color:var(--br2);font-weight:700;font-size:14px}
+.note.mine{background:#f6e3a8}
+.note.blank{background:transparent;border:2px dashed rgba(226,194,131,.55);color:var(--fg);box-shadow:none;padding:26px 18px 20px}
+.note.blank .tg{color:var(--br2)}.note.blank .mt{color:var(--mut)}.note.blank h4{font:500 26px/1.15 var(--serif)}
+.note.blank::before{background:radial-gradient(circle at 35% 30%,#e2c283,#8a6a2c)}
+.fld{width:100%;background:#0b1812;border:1px solid var(--line);border-radius:6px;padding:16px;font-size:17px;line-height:1.4;min-height:140px;color:var(--fg)}
+.chipsx{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.chp{padding:9px 15px;border-radius:20px;border:1px solid var(--line);font-size:13.5px;font-weight:600;color:var(--mut)}
+.chp.on{background:var(--br);border-color:var(--br);color:#241606}
+.hintx{font-size:13.5px;color:var(--mut);margin-top:16px;text-align:center}
+.ev{display:flex;gap:16px;align-items:center;padding:16px 2px;border-bottom:1px solid var(--line)}
+.ev:last-child{border:0}
+.ev .d{width:52px;text-align:center;flex:none}
+.ev .d b{display:block;font:500 30px/1 var(--serif);color:var(--br2)}
+.ev .d span{font-size:10px;letter-spacing:.14em;color:var(--mut);font-weight:700}
+.ev .x{flex:1;font-size:15.5px;font-weight:600;line-height:1.3}.ev .x span{display:block;font-size:13px;color:var(--mut);font-weight:400;margin-top:3px}
+.qrw{background:#f3e9d2;padding:16px;border-radius:6px;width:max-content;margin:6px auto 0}
+.qrw canvas{display:block;width:176px;height:176px;image-rendering:pixelated}
+.card{background:var(--pn);border:1px solid var(--line);border-radius:6px;padding:20px 18px;margin-bottom:14px;outline:1px solid rgba(197,154,85,.14);outline-offset:-5px}
+.card .tg{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:8px}
+.card h4{font:500 22px/1.2 var(--serif)}
+.card .mt{font-size:13.5px;color:var(--mut);margin:8px 0 16px}
+.bigno{text-align:center;padding-top:4px}
+.bigno .n{font:500 84px/1 var(--serif);color:var(--br2);letter-spacing:-.03em}
+.bigno .n small{font-size:26px;opacity:.7;margin-right:5px}
+.bigno h2{font:500 26px var(--serif);margin-top:6px}
+.bigno .s{color:var(--mut);font-size:14px;margin-top:4px}
+.bar3 .l{display:flex;justify-content:space-between;font-size:14.5px;margin-bottom:9px;font-weight:600}
+.bar3 .t{height:6px;border-radius:6px;background:rgba(197,154,85,.18)}.bar3 .t i{display:block;height:100%;background:var(--br);border-radius:6px}
+.setrow{display:flex;align-items:center;gap:12px;padding:18px 2px;border-bottom:1px solid var(--line);font-size:16px;font-weight:600}
+.setrow:last-child{border:0}
+.setrow span{flex:1}.setrow .i{width:18px;height:18px;color:var(--mut)}
+.nav{position:absolute;left:0;right:0;bottom:0;height:78px;display:grid;grid-template-columns:1fr 84px 1fr;align-items:center;background:#0a1712;border-top:1px solid var(--line);z-index:5}
+.nav div{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:#5e7567}
+.nav .on{color:var(--br2)}
+.nav .kk{width:64px;height:64px;margin:-24px auto 0;border-radius:50%;background:linear-gradient(135deg,#e2c283,#a77d3a);color:#2a1d08;display:grid;place-items:center;box-shadow:0 8px 22px #000a,0 0 0 5px #0a1712}
+.nav .kk .i{width:28px;height:28px}
+.nav3{grid-template-columns:repeat(5,1fr)}
+.nav3 div{padding-bottom:6px}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+ <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+ <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M16 7l3 3M14 9l2 2"/></symbol>
+ <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
+ <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+ <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19a2 2 0 0 0 2 2h13"/></symbol>
+ <symbol id="i-board" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="1.5"/><path d="M8 9h8M8 13h5M12 18v3"/></symbol>
+ <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+ <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h3M20 17v4"/></symbol>
+ <symbol id="i-hand" viewBox="0 0 24 24"><path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z"/></symbol>
+ <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+</svg>
+
+<div class="head">
+ <h1>«Дом клуба» проще: 3 идеи</h1>
+ <p>Тот же вид, что в <b style="color:#ece9e2">club-house.html</b>: табличка NEXT, золотая карточка, засечки, латунные линии, много воздуха. Убрал только лишнее. Три степени «проще»: от мягкой до самой простой. Это картинки: нажми на экран, чтобы открыть крупно.</p>
+</div>
+<div id="rows"></div>
+
+<div class="ov" id="ov"></div>
+<div class="bar"><div class="in">
+ <div class="cur" id="cur">Пока не выбрано<small>Нажми «Беру эту идею» у идеи</small></div>
+ <input id="note" placeholder="Комментарий: что оставить, что убрать, что взять из другой идеи">
+ <button class="go" id="go" disabled>Скопировать выбор</button>
+</div></div>
+<div class="gtoast" id="gt"></div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function drawQR(cv,seed,fg,bg){const N=25,c=cv.getContext('2d'),s=cv.width/N,r=rng(seed);c.fillStyle=bg;c.fillRect(0,0,cv.width,cv.height);
+ const fin=(x,y)=>{c.fillStyle=fg;c.fillRect(x*s,y*s,7*s,7*s);c.fillStyle=bg;c.fillRect((x+1)*s,(y+1)*s,5*s,5*s);c.fillStyle=fg;c.fillRect((x+2)*s,(y+2)*s,3*s,3*s)};
+ c.fillStyle=fg;for(let y=0;y<N;y++)for(let x=0;x<N;x++){const f=(x<8&&y<8)||(x>N-9&&y<8)||(x<8&&y>N-9);if(!f&&r()>.52)c.fillRect(x*s,y*s,s,s)}
+ fin(0,0);fin(N-7,0);fin(0,N-7)}
+const ic=n=>`<svg class="i"><use href="#i-${n}"/></svg>`;
+const SB='<div class="stb"><span>9:41</span><span>●●● ▭</span></div>';
+const shell=(inner,nav)=>`<div class="ph">${SB}<div class="ct">${inner}</div>${nav}</div>`;
+const NAV_H=`<div class="nav"><div class="on">${ic('home')}Холл</div><div class="kk">${ic('key')}</div><div>${ic('user')}Кабинет</div></div>`;
+const NAV_P=`<div class="nav"><div>${ic('home')}Холл</div><div class="kk">${ic('key')}</div><div class="on">${ic('user')}Кабинет</div></div>`;
+const plq='<div class="plq"><div class="a">NEXT</div><div class="ru"><i></i>ЗАКРЫТЫЙ КЛУБ<i></i></div></div>';
+const keyFull=`<div class="key"><div class="r1"><span>КЛЮЧ-КАРТА</span><span>ОСНОВАТЕЛЬ</span></div><div class="nm"><small>№</small>07</div><div class="r2"><span>АЛЕКСЕЙ М.<small>Участник · Пульс 74</small></span><span class="qrh">${ic('qr')}Показать QR</span></div></div>`;
+const keyMini=`<div class="keyc"><div class="n"><small>№</small>07</div><div class="x">АЛЕКСЕЙ М.<small>Основатель · Пульс 74</small></div><span class="qrh">${ic('qr')}QR</span></div>`;
+const back=(t='Холл')=>`<div class="rh">${ic('back')}${t}</div>`;
+const dots=(n,t)=>`<span class="dots">${Array.from({length:t},(_,i)=>`<i class="${i<n?'f':''}"></i>`).join('')}</span>`;
+
+/* ===== ИДЕЯ 1: «Один шаг» ===== */
+const A1=()=>shell(`${plq}${keyFull}
+ <div class="guide"><div class="top"><span>ШАГ 1 ИЗ 5</span>${dots(0,5)}</div><h2>Поставь цель на неделю</h2><p>Одно главное дело на неделю. Так ты всегда в движении.</p><div class="btn">Поставить цель</div></div>
+ <h3 class="rt">Разделы</h3>
+ <div class="rowx"><div class="ic">${ic('board')}</div><div class="tx">Запросы<span>попроси или предложи помощь</span></div><span class="cv">${ic('chev')}</span></div>`,NAV_H);
+const A2=()=>shell(`${back()}<h1 class="t">Запросы</h1><p class="lead">Попроси помощи. Откликнутся те, кто может.</p>
+ <div class="board"><div class="note blank" style="--r:-.5deg"><div class="tg">Мой запрос</div><h4>Тебе что-то нужно?</h4><div class="mt">Опиши, что именно, и откликнутся те, кто может помочь</div><div class="nb" style="background:var(--br2);color:#2a1d08">+ Написать запрос</div></div></div>
+ <div class="rowx" style="margin-top:20px"><div class="ic">${ic('hand')}</div><div class="tx">Помочь другим<span>3 запроса ждут отклика</span></div><span class="cv">${ic('chev')}</span></div>`,NAV_H);
+const A3=()=>shell(`<div class="bigno"><div class="n"><small>№</small>07</div><h2>Алексей М.</h2><div class="s">Участник · Фрайбург</div></div>
+ <h3 class="rt">До «Партнёра»</h3><div class="bar3"><div class="l"><span>Активность</span><b>74 из 80</b></div><div class="t"><i style="width:92%"></i></div></div>
+ <h3 class="rt">Ещё</h3>
+ <div class="setrow"><span>Встречи и мой QR</span>${ic('chev')}</div><div class="setrow"><span>Библиотека</span>${ic('chev')}</div><div class="setrow"><span>Правила клуба</span>${ic('chev')}</div><div class="setrow"><span>Пауза</span>${ic('chev')}</div>`,NAV_P);
+
+/* ===== ИДЕЯ 2: «Три действия» ===== */
+const B1=()=>shell(`${plq}${keyFull}
+ <h3 class="rt">Что хочешь сделать?</h3>
+ <div class="act hi"><div class="ic">${ic('hand')}</div><div class="tx">Попросить помощь<span>Напиши, что тебе нужно</span></div></div>
+ <div class="act"><div class="ic">${ic('board')}</div><div class="tx">Помочь другому<span>3 запроса ждут отклика</span></div></div>
+ <div class="act"><div class="ic">${ic('cal')}</div><div class="tx">Встретиться<span>№18 просит встречу</span></div></div>`,NAV_H);
+const B2=()=>shell(`${back()}<h1 class="t">Что тебе нужно?</h1><p class="lead">Напиши одной-двумя строками. Откликнутся те, кто может помочь.</p>
+ <div class="fld">Нужна помощь с договором аренды: перевод и проверка</div>
+ <div class="chipsx"><div class="chp on">Бумаги</div><div class="chp">Работа</div><div class="chp">Переезд</div><div class="chp">Бизнес</div></div>
+ <div class="chipsx" style="margin-bottom:26px"><div class="chp">3 дня</div><div class="chp on">Неделя</div><div class="chp">2 недели</div></div>
+ <div class="btn">Опубликовать</div><div class="hintx">Мы скажем, когда придут отклики</div>`,NAV_H);
+const B3=()=>shell(`${back()}<h1 class="t">Помочь другому</h1><p class="lead">Выбери запрос, в котором можешь помочь.</p>
+ <div class="board"><div class="note" style="--r:1.2deg"><div class="tg">Бумаги · <span class="u">срочно</span></div><h4>Нужен перевод письма от Jobcenter на русский</h4><div class="mt">№12 · до 14 окт</div><div class="nb">Могу помочь</div></div>
+ <div class="note" style="--r:-1.6deg"><div class="tg">Бизнес</div><h4>Ищу Steuerberater во Фрайбурге для Gewerbe</h4><div class="mt">№03 · до 20 окт</div><div class="nb">Могу помочь</div></div></div>`,NAV_H);
+
+/* ===== ИДЕЯ 3: «Сегодня» ===== */
+const C1=()=>shell(`${plq}${keyMini}
+ <h3 class="rt">Сегодня<small>0 из 3</small></h3>
+ <div class="tk"><div class="bx">${ic('check')}</div><div class="tt">Задать цель недели<span>Одно главное действие</span></div><span class="go">ЗАДАТЬ</span></div>
+ <div class="tk"><div class="bx">${ic('check')}</div><div class="tt">Попросить о помощи<span>Напиши, что тебе нужно</span></div><span class="go">ИДТИ</span></div>
+ <div class="tk"><div class="bx">${ic('check')}</div><div class="tt">Ответить на запрос встречи<span>№18 · осталось 12 дней</span></div><span class="go">ИДТИ</span></div>
+ <h3 class="rt">Скоро</h3>
+ <div class="ev"><div class="d"><b>16</b><span>ЧТ</span></div><div class="x">Горячий стул<span>19:00 · онлайн</span></div></div>
+ <div class="ev"><div class="d"><b>18</b><span>СБ</span></div><div class="x">Живая встреча<span>17:00 · Фрайбург</span></div></div>`,NAV_H);
+const C2=()=>shell(`${back()}<h1 class="t">Запросы</h1><p class="lead">Попроси помощи или помоги другому.</p>
+ <div class="board"><div class="note mine" style="--r:-1.2deg"><div class="tg">Мой запрос · <span class="u">3 отклика</span></div><h4>Нужна помощь с договором аренды</h4><div class="mt">до 16 окт · Бумаги</div><div class="nb">Выбрать помощника</div></div>
+ <div class="note" style="--r:1.4deg"><div class="tg">Бумаги · <span class="u">срочно</span></div><h4>Нужен перевод письма от Jobcenter</h4><div class="mt">№12 · до 14 окт</div><div class="nb">Могу помочь</div></div></div>`,NAV_H);
+const C3=()=>shell(`${back()}<h1 class="t">Встречи</h1><p class="lead">Раз в месяц — новое знакомство.</p>
+ <div class="card"><div class="tg">Тебя просят о встрече</div><h4>№18 · «Выход на рынок Австрии»</h4><div class="mt">Выбери время. Осталось 12 дней.</div><div class="btn o" style="margin-bottom:10px">Вт 14 окт · 18:00</div><div class="btn o">Ср 15 окт · 12:30</div></div>
+ <div class="card" style="text-align:center"><div class="tg">Мой QR · покажи после встречи</div><div class="qrw"><canvas class="qrc" width="200" height="200"></canvas></div></div>`,NAV_H);
+
+const V=[
+ {k:'A',n:'1',name:'Один шаг',scr:[A1,A2,A3],lbs:['Холл','Запросы','Кабинет'],
+  txt:'<b>Мягкое упрощение.</b> Холл остаётся: табличка, золотая карточка. Вместо списка дел и сетки из шести комнат одна большая карточка «Шаг 1 из 5» с одной кнопкой. Приложение само ведёт по шагам. Ниже один раздел «Запросы». Остальное (встречи, библиотека, правила) спрятано в Кабинете. Кабинет стал короче: номер, одна шкала и четыре строки.'},
+ {k:'B',n:'2',name:'Три действия',scr:[B1,B2,B3],lbs:['Холл','Попросить помощь','Помочь другому'],
+  txt:'<b>Самое простое для понимания.</b> Холл показывает карточку и три крупные кнопки-действия: «Попросить помощь», «Помочь другому», «Встретиться». Без разделов и комнат: человек выбирает, что хочет сделать, а не где это лежит. Каждое действие открывает один простой экран с одной задачей.'},
+ {k:'C',n:'3',name:'Сегодня',scr:[C1,C2,C3],lbs:['Холл','Запросы','Встречи'],
+  txt:'<b>Ближе всего к твоему скриншоту.</b> Холл как сейчас, но без сетки комнат: табличка, компактная золотая карта (номер, QR), три дела «Сегодня» с ромбиками и блок «Скоро». Дела ведут на простые экраны. Шрифты и отступы крупнее и свободнее.'}
+];
+V.forEach(v=>{
+ const r=document.createElement('section');r.className='vrow';r.dataset.k=v.k;
+ r.innerHTML=`<div class="meta"><div class="txt"><div class="n">ИДЕЯ ${v.n}</div><h2>${v.name}</h2><p>${v.txt}</p></div><button class="pickbtn">Беру эту идею</button></div><div class="shots">${v.scr.map((f,i)=>`<div class="shot">${f()}<div class="lb">${v.lbs[i]}</div></div>`).join('')}</div>`;
+ $('#rows').appendChild(r);
+ $('.pickbtn',r).onclick=()=>choose(v.k);
+});
+$$('canvas.qrc').forEach((c,i)=>drawQR(c,4242+i,'#2a1d08','#f3e9d2'));
+$$('.shot .ph').forEach(p=>p.addEventListener('click',()=>{const o=$('#ov');o.innerHTML='';const c=p.cloneNode(true);o.appendChild(c);$$('canvas.qrc',c).forEach((cv,i)=>{cv.getContext('2d').drawImage($$('canvas.qrc',p)[i],0,0)});o.classList.add('on')}));
+$('#ov').onclick=()=>$('#ov').classList.remove('on');
+let chosen=null;
+function choose(k){
+ chosen=chosen===k?null:k;
+ $$('.vrow').forEach(o=>{o.classList.toggle('chosen',o.dataset.k===chosen);$('.pickbtn',o).textContent=o.dataset.k===chosen?'✓ Выбрано':'Беру эту идею'});
+ const c=V.find(x=>x.k===chosen);
+ $('#cur').innerHTML=c?`Идея ${c.n}: «${c.name}»<small>Можно дописать комментарий и скопировать</small>`:'Пока не выбрано<small>Нажми «Беру эту идею» у идеи</small>';
+ $('#go').disabled=!c;
+}
+function gtoast(m){const t=$('#gt');t.textContent=m;t.classList.add('on');clearTimeout(gtoast.t);gtoast.t=setTimeout(()=>t.classList.remove('on'),2200)}
+$('#go').onclick=async()=>{
+ const c=V.find(x=>x.k===chosen);if(!c)return;
+ const n=$('#note').value.trim();
+ const t=`ВЫБОР УПРОЩЕНИЯ «ДОМА КЛУБА»: идея ${c.n} — «${c.name}»`+(n?`\nКомментарий: ${n}`:'');
+ try{await navigator.clipboard.writeText(t);gtoast('Скопировано. Отправь мне в чат')}
+ catch(_){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');gtoast('Скопировано. Отправь мне в чат')}catch(__){gtoast(t)}a.remove()}
+};
+</script>
+</body>
+</html>

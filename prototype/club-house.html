@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NEXT — Дом клуба</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e1f18;--pn:#163226;--pn2:#1d3c2d;--br:#c59a55;--br2:#e2c283;--fg:#f0e6cf;--mut:#8da193;--line:rgba(197,154,85,.35);--warn:#d98062;--ok:#6fbf8a;--pick:#4cc3ff;--serif:'Playfair Display',Georgia,serif}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#050606;color:var(--fg);font:15px/1.45 'Onest',system-ui,sans-serif;min-height:100dvh}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,textarea{font:inherit;color:inherit;outline:none}
+.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.i.s{width:16px;height:16px}
+
+/* ---------- сцена и панель инструментов ---------- */
+.stage{display:flex;justify-content:center;align-items:flex-start;gap:36px;padding:24px}
+.tools{width:340px;position:sticky;top:24px;max-height:calc(100dvh - 48px);overflow:auto;background:#0d0d0f;border:1px solid #26262b;border-radius:20px;padding:18px;scrollbar-width:thin;color:#ece9e2}
+.tools h3{font:700 20px/1.2 var(--serif);margin-bottom:6px}
+.tools p.how{font-size:13px;color:#908c84;margin-bottom:14px}
+.tools .lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#5f5c56;margin:16px 0 8px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#09090a;padding:4px;border-radius:12px;border:1px solid #26262b}
+.modes button{padding:9px 6px;border-radius:9px;font-size:13px;color:#908c84;font-weight:500}
+.modes button.on{background:rgba(197,154,85,.14);color:var(--br2)}
+.modes button.on.pk{background:rgba(76,195,255,.14);color:var(--pick)}
+.scrs{display:grid;gap:6px}
+.scrs button{display:flex;align-items:center;gap:10px;text-align:left;padding:9px 11px;border-radius:10px;border:1px solid #26262b;font-size:13.5px;color:#908c84}
+.scrs button.on{border-color:var(--br);color:#ece9e2;background:rgba(197,154,85,.1)}
+.scrs button b{font:700 13px var(--serif);color:var(--br);width:14px}
+.selitem{border:1px solid #26262b;border-radius:12px;padding:10px;margin-bottom:8px;background:#09090a}
+.selitem .p{font-size:12.5px;line-height:1.35}
+.selitem .t{font-size:12px;color:#908c84;margin-top:3px}
+.selitem .vs{display:flex;gap:4px;margin-top:8px}
+.selitem .vs button{flex:1;padding:5px 2px;border-radius:7px;font-size:12px;border:1px solid #26262b;color:#908c84}
+.selitem .vs button.on[data-v="Оставить"]{border-color:#6fbf8a;color:#6fbf8a;background:rgba(111,191,138,.1)}
+.selitem .vs button.on[data-v="Изменить"]{border-color:var(--br);color:var(--br2);background:rgba(197,154,85,.12)}
+.selitem .vs button.on[data-v="Убрать"]{border-color:#d98062;color:#d98062;background:rgba(217,128,98,.1)}
+.selitem input{width:100%;margin-top:7px;background:#121214;border:1px solid #26262b;border-radius:8px;padding:7px 9px;font-size:12.5px}
+.selitem .x{float:right;color:#5f5c56;font-size:18px;line-height:1;padding:0 2px}
+.empty{font-size:13px;color:#5f5c56;padding:10px 0}
+.tools textarea{width:100%;min-height:54px;background:#09090a;border:1px solid #26262b;border-radius:10px;padding:9px 11px;font-size:13px;resize:vertical}
+.tbtn{display:block;width:100%;padding:12px;border-radius:12px;font-weight:600;font-size:14px;text-align:center;margin-top:10px}
+.tbtn.main{background:var(--pick);color:#04202c}
+.tbtn.sec{border:1px solid #26262b;color:#908c84}
+.fab{display:none;position:fixed;right:14px;bottom:88px;z-index:90;align-items:center;gap:8px;padding:11px 15px;border-radius:30px;background:var(--pick);color:#04202c;font-weight:700;font-size:13px;box-shadow:0 8px 24px #000a}
+.tclose{display:none;float:right;color:#908c84;font-size:22px}
+
+/* ---------- телефон ---------- */
+.phone{position:relative;width:390px;height:min(844px,calc(100dvh - 48px));background:var(--bg);border:1px solid #2f2f36;border-radius:42px;overflow:hidden;box-shadow:0 30px 80px #000c,0 0 0 8px #0c0c0e;flex:none;isolation:isolate}
+.phone::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 22px,rgba(255,255,255,.012) 22px 23px);pointer-events:none;z-index:0}
+.screen{position:absolute;top:0;bottom:72px;left:0;right:0;overflow-y:auto;padding:22px 18px 34px;display:none;overscroll-behavior:contain;scrollbar-width:none;z-index:1}
+.screen::-webkit-scrollbar{display:none}
+.screen.on{display:block;animation:in .28s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+@keyframes fade{from{opacity:0}}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@keyframes pop{30%{transform:scale(1.08)}}
+
+/* --- общие элементы --- */
+.plq{text-align:center;padding-top:6px}
+.plq .a{font:700 28px var(--serif);letter-spacing:.34em;color:var(--br2);padding-left:.34em}
+.plq .ru{display:flex;align-items:center;gap:10px;justify-content:center;margin:6px 0 0;font-size:10px;letter-spacing:.24em;color:var(--mut)}
+.plq .ru i{height:1px;width:34px;background:var(--br)}
+.key{margin:20px 0 0;border-radius:16px;padding:16px 18px;background:linear-gradient(135deg,#d7b574,#a77d3a 55%,#d2ae6a);color:#2a1d08;position:relative;box-shadow:0 14px 30px #0008,inset 0 1px 0 #fff6;cursor:pointer;overflow:hidden}
+.key::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 10px,rgba(255,255,255,.06) 10px 11px);pointer-events:none}
+.key .r1{display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:.2em;font-weight:800;position:relative}
+.key .nm{font:700 56px/1 var(--serif);margin:12px 0 10px;letter-spacing:-.02em;position:relative}
+.key .nm small{font-size:18px;margin-right:4px}
+.key .r2{display:flex;justify-content:space-between;align-items:flex-end;font-size:12px;font-weight:700;position:relative}
+.key .r2 span small{display:block;font-weight:600;opacity:.7;margin-top:2px}
+.key .qrh{display:flex;align-items:center;gap:6px;padding:7px 11px;border-radius:10px;background:rgba(42,29,8,.88);color:var(--br2);font-size:11.5px;font-weight:700}
+h3.rt{font:500 19px var(--serif);margin:26px 0 12px;display:flex;align-items:center;gap:12px}
+h3.rt::after{content:"";flex:1;height:1px;background:var(--line)}
+h3.rt small{font:600 12px 'Onest';color:var(--mut);order:2}
+h3.rt::after{order:1}
+.tk{display:flex;gap:13px;align-items:center;padding:13px 2px;border-bottom:1px solid var(--line);cursor:pointer}
+.tk:last-of-type{border:0}
+.tk .bx{width:22px;height:22px;border:1.5px solid var(--br);transform:rotate(45deg) scale(.78);display:grid;place-items:center;flex:none;color:transparent}
+.tk .bx .i{width:13px;height:13px;transform:rotate(-45deg);stroke-width:3}
+.tk.d .bx{background:var(--br);color:#1a1405}
+.tk .tt{flex:1;font-size:14.5px;font-weight:600;line-height:1.3}
+.tk .tt span{display:block;font-size:12.5px;color:var(--mut);font-weight:400;margin-top:2px}
+.tk.d .tt{opacity:.5;text-decoration:line-through}
+.tk .go{font:700 10px 'Onest';letter-spacing:.14em;color:var(--br2);border:1px solid var(--line);padding:4px 8px;border-radius:3px}
+.rooms{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.room{padding:15px 13px 14px;background:var(--pn);border:1px solid var(--line);outline:1px solid rgba(197,154,85,.18);outline-offset:-5px;border-radius:6px;text-align:left;position:relative;transition:.15s}
+.room:active{transform:scale(.98);background:var(--pn2)}
+.room .i{color:var(--br2);width:26px;height:26px;margin-bottom:12px}
+.room b{display:block;font:500 17px var(--serif);margin-bottom:4px}
+.room span{font-size:12px;color:var(--mut);display:flex;align-items:center;gap:6px}
+.room span i{width:6px;height:6px;border-radius:50%;background:var(--br2);box-shadow:0 0 8px var(--br2);flex:none}
+.room.lk span i{background:#6d7d72;box-shadow:none}
+.room .dot{position:absolute;right:12px;top:12px;width:9px;height:9px;border-radius:50%;background:var(--warn);box-shadow:0 0 8px var(--warn)}
+.rh{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--br2);font-weight:600;margin-bottom:14px;padding:2px 0}
+.rh .i{width:18px;height:18px}
+h1.rtl{font:500 32px/1.1 var(--serif)}
+.sub{color:var(--mut);font-size:13.5px;margin:6px 0 18px}
+.sgm{display:flex;gap:22px;border-bottom:1px solid var(--line);margin:0 0 18px;font:700 11px 'Onest';letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.sgm button{padding:10px 0}
+.sgm .on{color:var(--br2);border-bottom:2px solid var(--br);margin-bottom:-1px}
+.chips{display:flex;gap:7px;overflow-x:auto;margin:0 -18px 14px;padding:0 18px 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chp{flex:none;padding:8px 14px;border-radius:20px;border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--mut)}
+.chp.on{background:var(--br);border-color:var(--br);color:#241606}
+.board{background:#2a1d12;border:6px solid #4a3220;border-radius:10px;padding:16px 12px 4px;box-shadow:inset 0 0 40px #0009;background-image:radial-gradient(circle at 20% 10%,rgba(255,255,255,.04),transparent 40%)}
+.note{position:relative;background:#f3e9d2;color:#2a2118;border-radius:3px;padding:18px 14px 14px;margin-bottom:18px;box-shadow:0 6px 14px #0007;transform:rotate(var(--r,0deg))}
+.note::before{content:"";position:absolute;top:-6px;left:50%;margin-left:-7px;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff8a7a,#a8261a);box-shadow:0 3px 4px #0006}
+.note .tg{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#8a6a2c}
+.note .u{color:#b3361f}
+.note h4{font:700 16px/1.25 'Onest';margin:5px 0}
+.note .mt{font:500 19px/1 'Caveat';color:#5b4b30;margin-bottom:10px}
+.note .nb{padding:9px 15px;border-radius:4px;background:#2a1d12;color:var(--br2);font-weight:700;font-size:13px}
+.note.mine{background:#f6e3a8}
+.note.blank{background:transparent;border:2px dashed rgba(226,194,131,.55);color:var(--fg);box-shadow:none}
+.note.blank .tg{color:var(--br2)}.note.blank .mt{color:var(--mut)}
+.note.blank::before{background:radial-gradient(circle at 35% 30%,#e2c283,#8a6a2c)}
+.nb[disabled]{pointer-events:none}
+.note.on .nb{background:#2e6a45;color:#fff}
+.note.cl{background:#e0d8c4;opacity:.7}
+.lockbox{display:flex;gap:10px;align-items:center;border:1px dashed var(--line);border-radius:6px;padding:12px;color:var(--mut);font-size:12.5px;margin:14px 0 0}
+.card{background:var(--pn);border:1px solid var(--line);border-radius:6px;padding:15px;margin-bottom:12px;outline:1px solid rgba(197,154,85,.15);outline-offset:-5px}
+.card.hl{border-color:var(--br)}
+.card .tg{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:700;margin-bottom:7px}
+.card .tg b{color:var(--br2)}
+.card h4{font:500 18px/1.25 var(--serif)}
+.card .mt{font-size:12.5px;color:var(--mut);margin:7px 0 12px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:5px;background:var(--br2);color:#2a1d08;font-weight:800;font-size:14.5px;text-align:center;transition:.15s}
+.btn:active{transform:scale(.985)}
+.btn.o{background:transparent;color:var(--br2);border:1px solid var(--br)}
+.btn.on{background:#2e6a45;color:#fff;border-color:#2e6a45}
+.btn.dis{opacity:.45;pointer-events:none}
+.btn.sm{width:auto;display:inline-flex;padding:9px 14px;font-size:13px}
+.li{display:flex;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.li:last-child{border:0}
+.li .ic{width:42px;height:42px;border-radius:8px;background:var(--pn2);border:1px solid var(--line);display:grid;place-items:center;flex:none;font:700 13px 'Onest';color:var(--br2)}
+.li .tx{flex:1;font-size:14.5px;font-weight:600;line-height:1.3}
+.li .tx span{display:block;font-size:12.5px;color:var(--mut);font-weight:400;margin-top:2px}
+.fld{width:100%;background:#0b1812;border:1px solid var(--line);border-radius:6px;padding:12px 13px;font-size:15px}
+.fld:focus{border-color:var(--br2)}
+textarea.fld{min-height:86px;resize:none}
+.hint{font-size:12.5px;color:var(--mut);margin-top:8px}
+.bar3{margin:13px 0}.bar3 .l{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px;font-weight:600}
+.bar3 .t{height:5px;border-radius:5px;background:rgba(197,154,85,.18)}.bar3 .t i{display:block;height:100%;background:var(--br);border-radius:5px;transition:width .6s}
+.qrw{background:#f3e9d2;padding:14px;border-radius:6px;width:max-content;margin:6px auto 4px}
+.qrw canvas{display:block;width:190px;height:190px;image-rendering:pixelated}
+.qrb2{height:4px;border-radius:4px;background:rgba(197,154,85,.2);margin:12px auto 6px;width:218px;overflow:hidden}
+.qrb2 i{display:block;height:100%;background:var(--br2);transition:width 1s linear}
+.scanbox{position:relative;height:130px;border-radius:6px;background:#0b1812;border:1px solid var(--line);display:grid;place-items:center;margin-bottom:12px}
+.scanbox::before,.scanbox::after{content:"";position:absolute;width:28px;height:28px;border:3px solid var(--br2)}
+.scanbox::before{left:16px;top:16px;border-right:0;border-bottom:0}
+.scanbox::after{right:16px;bottom:16px;border-left:0;border-top:0}
+.scanbox span{font-size:13px;color:var(--mut);text-align:center;padding:0 70px}
+.plate{margin:4px auto 18px;width:max-content;max-width:100%;background:linear-gradient(135deg,#d7b574,#a77d3a 55%,#d2ae6a);color:#2a1d08;padding:11px 22px;border-radius:4px;text-align:center;box-shadow:0 8px 18px #0008,inset 0 1px 0 #fff6}
+.plate b{display:block;font:700 22px var(--serif);letter-spacing:.06em}
+.plate span{font-size:10px;letter-spacing:.22em;font-weight:800}
+.gauge{width:250px;margin:0 auto;display:block}
+.gauge text{font:700 46px var(--serif);fill:var(--br2);text-anchor:middle}
+.gauge .s{font:700 10px 'Onest';fill:var(--mut);letter-spacing:.2em}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;font-size:11px;color:var(--mut)}
+.keys div{padding:12px 4px;border:1px solid var(--line);border-radius:6px}
+.keys .i{width:26px;height:26px;display:block;margin:0 auto 6px;color:#566a5d}
+.keys .f{color:#fff;background:var(--pn)}.keys .f .i{color:var(--br2)}
+.letter{background:#f3e9d2;color:#2a2118;padding:16px 16px 14px;border-radius:3px;margin-bottom:12px;box-shadow:0 5px 12px #0006;position:relative}
+.letter p{font:italic 500 16px/1.35 var(--serif)}
+.letter span{display:block;margin-top:8px;font-size:12px;color:#7a6a4a;font-weight:600}
+.letter::after{content:"";position:absolute;right:12px;top:-10px;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#d6584a,#8e1f16)}
+.setrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px 0;border-bottom:1px solid var(--line)}
+.setrow:last-child{border:0}
+.setrow div{flex:1}.setrow b{display:block;font-size:15px}.setrow span{font-size:12.5px;color:var(--mut)}
+.rit{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
+.rit:last-child{border:0}
+.rit b{width:64px;font:700 11px 'Onest';letter-spacing:.1em;color:var(--br2);flex:none;padding-top:2px}
+.rit div{font-size:14px;font-weight:600}.rit span{display:block;font-size:12.5px;color:var(--mut);font-weight:400;margin-top:2px}
+.pausebn{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:12px 14px;border:1px solid var(--br);border-radius:6px;background:rgba(197,154,85,.1)}
+.pausebn div{flex:1;font-size:13.5px;font-weight:600}.pausebn span{display:block;font-size:12px;color:var(--mut);font-weight:400}
+.nav{position:absolute;left:0;right:0;bottom:0;height:72px;display:grid;grid-template-columns:1fr 84px 1fr;align-items:center;background:#0a1712;border-top:1px solid var(--line);z-index:5}
+.nav button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:#5e7567}
+.nav .on{color:var(--br2)}
+.nav .kk{width:64px;height:64px;margin:-22px auto 0;border-radius:50%;background:linear-gradient(135deg,#e2c283,#a77d3a);color:#2a1d08;display:grid;place-items:center;box-shadow:0 8px 22px #000a,0 0 0 5px #0a1712;justify-self:center}
+.sheetwrap{position:absolute;inset:0;z-index:20;display:none}
+.sheetwrap.on{display:block}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.66);animation:fade .2s}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:90%;overflow:auto;background:#12281e;border-top:2px solid var(--br);border-radius:26px 26px 0 0;padding:10px 20px 28px;animation:up .28s cubic-bezier(.2,.8,.2,1);scrollbar-width:none}
+.grab{width:40px;height:4px;background:var(--line);border-radius:4px;margin:0 auto 14px}
+.sheet h2{font:500 26px var(--serif);margin-bottom:4px}
+.toast{position:absolute;left:16px;right:16px;bottom:88px;background:var(--br2);color:#2a1d08;padding:12px 15px;border-radius:5px;font-weight:700;font-size:14px;z-index:30;opacity:0;transform:translateY(10px);pointer-events:none;transition:.25s;text-align:center}
+.toast.on{opacity:1;transform:none}
+.pulsepop{animation:pop .6s}
+
+/* режим выбора */
+.picking [data-k]{cursor:crosshair!important}
+.picking .phone *{user-select:none}
+.hov{outline:1.5px dashed var(--pick)!important;outline-offset:2px}
+.sel{outline:2px solid var(--pick)!important;outline-offset:2px;background-image:linear-gradient(rgba(76,195,255,.1),rgba(76,195,255,.1))}
+.picking .phone::after{content:"РЕЖИМ ВЫБОРА";position:absolute;top:8px;left:50%;transform:translateX(-50%);background:var(--pick);color:#04202c;font-size:10px;font-weight:700;letter-spacing:.12em;padding:3px 10px;border-radius:20px;z-index:50;pointer-events:none}
+@media (max-width:900px){
+ .stage{display:block;padding:0}
+ .phone{width:100%;height:100dvh;border-radius:0;border:0;box-shadow:none}
+ .tools{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;max-height:80dvh;border-radius:22px 22px 0 0;z-index:100;transform:translateY(105%);transition:transform .3s}
+ .tools.open{transform:none}
+ .fab{display:flex}.tclose{display:block}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+ <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+ <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M16 7l3 3M14 9l2 2"/></symbol>
+ <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+ <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
+ <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+ <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19a2 2 0 0 0 2 2h13"/></symbol>
+ <symbol id="i-board" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="1.5"/><path d="M8 9h8M8 13h5M12 18v3"/></symbol>
+ <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+ <symbol id="i-fire" viewBox="0 0 24 24"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/></symbol>
+ <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18M7 21h10M4 7h16M4 7l-2.5 6a2.8 2.8 0 0 0 5 0zM20 7l-2.5 6a2.8 2.8 0 0 0 5 0z"/></symbol>
+ <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h3M20 17v4"/></symbol>
+ <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+</svg>
+
+<div class="stage">
+ <aside class="tools" id="tools">
+  <button class="tclose" id="tclose">×</button>
+  <h3>Дом клуба · NEXT</h3>
+  <p class="how">Все комнаты работают. Чтобы прислать мне правки: включи «Выбирать», кликай по любым кусочкам экрана, отметь «Оставить / Изменить / Убрать» и нажми «Скопировать».</p>
+  <div class="lbl">Режим</div>
+  <div class="modes" id="modes"><button class="on" data-mode="use">Пользоваться</button><button data-mode="pick" class="pk">Выбирать</button></div>
+  <div class="lbl">Комнаты</div>
+  <div class="scrs" id="scrs">
+   <button data-go="hall" class="on"><b>1</b>Холл (главная)</button>
+   <button data-go="board"><b>2</b>Доска запросов</button>
+   <button data-go="meet"><b>3</b>Зал встреч · QR</button>
+   <button data-go="lib"><b>4</b>Библиотека</button>
+   <button data-go="fire"><b>5</b>Каминная · ритм клуба</button>
+   <button data-go="study"><b>6</b>Кабинет · профиль</button>
+  </div>
+  <div class="lbl">Выбрано: <span id="selCount">0</span></div>
+  <div id="selList"><div class="empty">Пока пусто. Включи «Выбирать» и кликни по элементу на экране.</div></div>
+  <div class="lbl">Общий комментарий</div>
+  <textarea id="gnote" placeholder="Например: убрать табличку, шрифт крупнее, больше воздуха…"></textarea>
+  <button class="tbtn main" id="copyBtn">Скопировать выбранное</button>
+  <button class="tbtn sec" id="clearBtn">Очистить выбор</button>
+  <textarea id="out" readonly style="display:none;margin-top:10px;min-height:120px"></textarea>
+ </aside>
+
+ <main class="phone" id="phone">
+  <section class="screen on" id="s-hall" data-k="Экран «Холл»"></section>
+  <section class="screen" id="s-board" data-k="Экран «Доска запросов»"></section>
+  <section class="screen" id="s-meet" data-k="Экран «Зал встреч»"></section>
+  <section class="screen" id="s-lib" data-k="Экран «Библиотека»"></section>
+  <section class="screen" id="s-fire" data-k="Экран «Каминная»"></section>
+  <section class="screen" id="s-study" data-k="Экран «Кабинет»"></section>
+  <nav class="nav" data-k="Нижнее меню">
+   <button data-go="hall" class="on" data-k="Вкладка «Холл»"><svg class="i"><use href="#i-home"/></svg>Холл</button>
+   <button class="kk" data-act="qr" data-k="Кнопка «Ключ-карта»"><svg class="i" style="width:28px;height:28px"><use href="#i-key"/></svg></button>
+   <button data-go="study" data-k="Вкладка «Кабинет»"><svg class="i"><use href="#i-user"/></svg>Кабинет</button>
+  </nav>
+  <div class="sheetwrap" id="sheetWrap"><div class="scrim" data-act="close"></div><div class="sheet" id="sheet" data-k="Окно (шторка)"></div></div>
+  <div class="toast" id="toast"></div>
+ </main>
+</div>
+<button class="fab" id="fab">Выбор · <span id="fabN">0</span></button>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const phone=$('#phone');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ic=(n,c='i s')=>`<svg class="${c}"><use href="#i-${n}"/></svg>`;
+const person=n=>'№'+String(n).padStart(2,'0');
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function drawQR(cv,seed,fg,bg){if(!cv)return;const N=25,c=cv.getContext('2d'),s=cv.width/N,r=rng(seed);c.fillStyle=bg;c.fillRect(0,0,cv.width,cv.height);
+ const fin=(x,y)=>{c.fillStyle=fg;c.fillRect(x*s,y*s,7*s,7*s);c.fillStyle=bg;c.fillRect((x+1)*s,(y+1)*s,5*s,5*s);c.fillStyle=fg;c.fillRect((x+2)*s,(y+2)*s,3*s,3*s)};
+ c.fillStyle=fg;for(let y=0;y<N;y++)for(let x=0;x<N;x++){const f=(x<8&&y<8)||(x>N-9&&y<8)||(x<8&&y>N-9);if(!f&&r()>.52)c.fillRect(x*s,y*s,s,s)}
+ fin(0,0);fin(N-7,0);fin(0,N-7)}
+
+/* ================= данные ================= */
+const SPH=['Работа','Бумаги','Переезд','Бизнес','Дизайн и digital','Знания','Быт'];
+const REQS=[
+ {id:'r1',t:'Нужен перевод письма от Jobcenter на русский',sph:'Бумаги',due:'до 14 окт',by:12,n:2,urgent:true,r:1.4},
+ {id:'r2',t:'Ищу Steuerberater во Фрайбурге для Gewerbe',sph:'Бизнес',due:'до 20 окт',by:3,n:4,r:-1.8},
+ {id:'r3',t:'Нужен логотип для стартапа — оплата по клубным условиям',sph:'Дизайн и digital',due:'до 25 окт',by:21,n:1,r:1.1}
+];
+const OFFERS=[
+ {id:'o1',t:'Резюме на немецком + 30 минут разбора собеседования',sph:'Работа',by:9,r:-1.2},
+ {id:'o2',t:'Видео и монтаж для соцсетей — клубная скидка 20%',sph:'Дизайн и digital',by:15,r:1.5},
+ {id:'o3',t:'Помогу с Anmeldung и поиском квартиры во Фрайбурге',sph:'Переезд',by:4,r:-1}
+];
+const RESP=[{n:12,why:'Переводил такие письма, сделаю сегодня',niche:'Бумаги и переводы'},{n:4,why:'Знаю, как это обычно просят',niche:'Переезд и жильё'},{n:26,why:'Могу вычитать и оформить',niche:'Дизайн и digital'}];
+const LIB=[
+ {t:'Письмо от Finanzamt: что отвечать и в какой срок',min:6,by:12,tag:'Finanzamt',b:['Не паникуй: в письме важны три вещи — Steuernummer, срок (Frist) и что именно запрашивают.','Если срок короткий — отправь короткое «получил, отвечу до даты», а документы приложи позже.','Внутри — шаблон ответа на немецком и список, что приложить.']},
+ {t:'Gewerbeanmeldung за один визит: что взять с собой',min:8,by:3,tag:'Gewerbe',b:['Список документов и порядок шагов.','Типичные ошибки в анкете.','Что делать после регистрации: Finanzamt, Steuerberater, счёт.']},
+ {t:'Резюме на немецком: чем отличается от привычного',min:7,by:9,tag:'Найм',b:['Структура и длина.','Фразы, которые работают, и фразы, которые режут слух.','Что писать про опыт из Украины и России.']},
+ {t:'Ответ арендодателю: шаблон письма и пакет документов',min:5,by:4,tag:'Квартира',b:['Какие документы просят почти всегда и как собрать их за день.','Как написать первое письмо, чтобы его дочитали.','Что делать, если ответа нет три дня.']},
+ {t:'Три сервиса, которые экономят час в неделю на бумагах',min:3,by:15,tag:'Фишки',b:['Сканер документов с автоматическим именованием.','Напоминания о сроках писем.','Шаблоны ответов на немецком.']}
+];
+const STORIES=[
+ {from:12,rate:'изменило мою ситуацию',txt:'Помог разобрать письмо от Finanzamt, срок был через 2 дня. Всё успел.'},
+ {from:4,rate:'серьёзно',txt:'Познакомил с человеком, который нашёл мне первого клиента.'}
+];
+const PEOPLE={12:'Бумаги и переводы',4:'Переезд и жильё',26:'Дизайн и digital',18:'Стартапы'};
+
+/* ================= состояние ================= */
+const S={screen:'hall',seg:'need',libF:'Все',resp:new Set(),mine:'none',helper:0,myReq:null,respCount:0,slot:'',mon:2,scanI:0,met:{},goal:'',goalDone:false,
+ done:{goal:0,meet:0,help:0},pulse:74,paused:false,signed:false,fire:false,qrLeft:30,qrSeed:7001};
+const PMAX=(()=>({}))();
+const moveV=()=>S.goalDone?23:S.done.goal?20:20;
+
+/* ================= окна ================= */
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2600)}
+function openSheet(html,mount){$('#sheet').innerHTML='<div class="grab"></div>'+html;$('#sheetWrap').classList.add('on');$('#sheet').scrollTop=0;mount&&mount($('#sheet'));reapplySel()}
+function closeSheet(){$('#sheetWrap').classList.remove('on')}
+function goTo(id){
+ S.screen=id;
+ $$('.screen').forEach(s=>s.classList.toggle('on',s.id==='s-'+id));
+ $$('.nav [data-go]').forEach(b=>b.classList.toggle('on',b.dataset.go===id));
+ $$('#scrs button').forEach(b=>b.classList.toggle('on',b.dataset.go===id));
+ $('#s-'+id).scrollTop=0;closeSheet();
+ if(id==='meet')setTimeout(()=>drawQR($('#qrc'),S.qrSeed,'#2a1d08','#f3e9d2'),0);
+}
+
+/* ================= экраны ================= */
+const back=()=>`<button class="rh" data-go="hall" data-k="Кнопка «Назад в холл»">${ic('back','i')}Холл</button>`;
+const doneN=()=>S.done.goal+S.done.meet+(S.mine==='work'||S.mine==='closed'?1:0);
+function rHall(){
+ S.done.help=(S.mine==='work'||S.mine==='closed')?1:0;
+ const helpT=S.mine==='none'?['Попросить о помощи','Прикрепи записку: что тебе нужно']:S.mine==='open'?(S.respCount?['Выбрать помощника','На твою записку откликнулись '+S.respCount]:['Ждём откликов','Откликнутся — скажем']):S.mine==='work'?['Подтвердить помощь','Когда задача будет сделана']:['Помощь подтверждена','Записка закрыта'];
+ const T=[['Задать фокус недели','Одно главное действие · закон №1','act','goal',0],['Ответить на запрос встречи','№18 · осталось 12 дней · Зал встреч','go','meet',1],[helpT[0],helpT[1]+' · Доска','go','board',2]];
+ const K=['goal','meet','help'];
+ const live={board:S.mine==='none'?'прикрепи записку':S.mine==='open'?(S.respCount?S.respCount+' отклика':'ждём откликов'):S.mine==='work'?'задача в работе':'всё закрыто',lib:'2 новых',meet:S.slot?'встреча назначена':'сб 18 окт · 17:00',fire:'чт · Горячий стул',council:'для Партнёров',study:'Пульс '+S.pulse};
+ return `<div class="plq" data-k="Табличка клуба"><div class="a">NEXT</div><div class="ru"><i></i>ЗАКРЫТЫЙ КЛУБ<i></i></div></div>
+ <div class="key" data-act="qr" data-k="Ключ-карта"><div class="r1"><span>КЛЮЧ-КАРТА</span><span>ОСНОВАТЕЛЬ</span></div><div class="nm"><small>№</small>07</div><div class="r2"><span>АЛЕКСЕЙ М.<small>Участник · Пульс ${S.pulse}</small></span><span class="qrh">${ic('qr','i s')}Показать QR</span></div></div>
+ <h3 class="rt" data-k="Заголовок «У стойки»">У стойки<small>${doneN()} из 3</small></h3>
+ <div data-k="Список дел">${T.map(([t,s,ty,to],i)=>`<div class="tk ${S.done[K[i]]?'d':''}" ${ty==='act'?`data-act="goal"`:`data-go="${to}"`} data-k="Дело"><div class="bx">${ic('check','i')}</div><div class="tt">${t}<span>${S.done[K[i]]?'Готово':s}</span></div>${S.done[K[i]]?'':`<span class="go">${ty==='act'?'ЗАДАТЬ':'ИДТИ'}</span>`}</div>`).join('')}</div>
+ <h3 class="rt" data-k="Заголовок «Комнаты клуба»">Комнаты клуба</h3>
+ <div class="rooms" data-k="Комнаты клуба">
+  <button class="room" data-go="board" data-k="Комната «Доска запросов»">${(S.mine==='none'||(S.mine==='open'&&S.respCount))?'<i class="dot"></i>':''}${ic('board','i')}<b>Доска запросов</b><span><i></i>${live.board}</span></button>
+  <button class="room" data-go="lib" data-k="Комната «Библиотека»">${ic('book','i')}<b>Библиотека</b><span><i></i>${live.lib}</span></button>
+  <button class="room" data-go="meet" data-k="Комната «Зал встреч»">${S.slot?'':'<i class="dot"></i>'}${ic('cal','i')}<b>Зал встреч</b><span><i></i>${live.meet}</span></button>
+  <button class="room" data-go="fire" data-k="Комната «Каминная»">${ic('fire','i')}<b>Каминная</b><span><i></i>${live.fire}</span></button>
+  <button class="room lk" data-act="council" data-k="Комната «Совет»">${ic('scale','i')}<b>Совет</b><span><i></i>${live.council}</span></button>
+  <button class="room" data-go="study" data-k="Комната «Кабинет»">${ic('user','i')}<b>Кабинет</b><span><i></i>${live.study}</span></button>
+ </div>`;
+}
+function note(r,own){const on=S.resp.has(r.id);return `<div class="note ${on?'on':''}" style="--r:${r.r||0}deg" data-k="Записка"><div class="tg">${r.sph}${r.urgent?' · <span class="u">срочно</span>':''}</div><h4>${esc(r.t)}</h4><div class="mt">${person(r.by)}${r.due?' · '+r.due:''}${r.n!=null?' · откликов '+(r.n+(on?1:0)):''}</div><button class="nb" data-act="resp" data-id="${r.id}" data-k="Кнопка «Откликнуться»">${on?(S.seg==='give'?'Сообщение отправлено ✓':'Вы откликнулись ✓'):(S.seg==='give'?'Написать':'Откликнуться')}</button></div>`}
+function rBoard(){
+ S.done.help=(S.mine==='work'||S.mine==='closed')?1:0;
+ const mr=S.myReq||{t:'',sph:'',due:''};
+ const mine=S.mine==='none'?`<div class="note blank" style="--r:-.8deg" data-k="Пустая записка"><div class="tg">Твоя записка</div><h4>Тебе что-то нужно?</h4><div class="mt">Опиши, что именно, и откликнутся те, кто может помочь</div><button class="nb" data-act="newreq" data-k="Кнопка «Прикрепить записку»">+ Прикрепить записку</button></div>`
+  :S.mine==='open'?`<div class="note mine" style="--r:-1.2deg" data-k="Моя записка"><div class="tg">Моя записка · ${S.respCount?'<span class="u">'+S.respCount+' отклика</span>':'ждём откликов'}</div><h4>${esc(mr.t)}</h4><div class="mt">${mr.due} · ${mr.sph}</div>${S.respCount?`<button class="nb" data-act="pick" data-k="Кнопка «Выбрать помощника»">Выбрать помощника</button>`:`<button class="nb" disabled style="opacity:.55" data-k="Кнопка «Ждём откликов»">Ждём откликов…</button>`}</div>`
+  :S.mine==='work'?`<div class="note mine" style="--r:-1.2deg" data-k="Моя записка (в работе)"><div class="tg">Моя записка · в работе</div><h4>${esc(mr.t)}</h4><div class="mt">Задачу делает ${person(S.helper)}</div><button class="nb" data-act="tgopen" data-n="${S.helper}" data-k="Кнопка «Написать в Telegram»">Написать в Telegram</button> <button class="nb" data-act="confirm" style="background:var(--br2);color:#2a1d08" data-k="Кнопка «Подтвердить помощь»">Подтвердить помощь</button></div>`
+  :`<div class="note cl" style="--r:-1deg" data-k="Моя записка (закрыта)"><div class="tg">Моя записка · закрыта</div><h4>${esc(mr.t)}</h4><div class="mt">Помощь подтверждена</div></div>`;
+ const newr='';
+ const canNew=S.mine==='closed';
+ return back()+`<h1 class="rtl" data-k="Заголовок">Доска запросов</h1><p class="sub">Прикрепи просьбу — откликнутся те, кто может. Выбираешь ты.</p>
+ <div class="sgm" data-k="Переключатель"><button class="${S.seg==='need'?'on':''}" data-act="seg" data-v="need">Нужна помощь</button><button class="${S.seg==='give'?'on':''}" data-act="seg" data-v="give">Могу помочь</button></div>
+ <div class="board" data-k="Доска">${S.seg==='need'?mine+newr+REQS.map(r=>note(r)).join(''):OFFERS.map(o=>note(o)).join('')}</div>
+ ${S.seg==='need'?(S.mine==='none'?`<div class="lockbox" data-k="Правило одной записки">${ic('lock','i s')}У каждого одна записка. Новую можно прикрепить, когда старая закрыта.</div>`:`<button class="btn ${canNew?'':'o dis'}" style="margin-top:16px" data-act="newreq" data-k="Кнопка «Прикрепить новую записку»">${ic('plus','i')} Прикрепить новую записку</button>${canNew?'':`<div class="lockbox" data-k="Правило одной записки">${ic('lock','i s')}У каждого одна записка. Новую — после того, как старая закрыта.</div>`}`):''}`;
+}
+function rMeet(){
+ const inb=S.slot?`<div class="card" data-k="Встреча назначена"><div class="tg">Встреча назначена</div><h4>${person(18)} · ${S.slot}</h4><div class="mt">После встречи покажите друг другу QR — тогда она засчитается.</div></div>`
+  :`<div class="card hl" data-k="Просят встречу"><div class="tg">Просят встречу · <b>осталось 12 дней</b></div><h4>${person(18)} · «Выход на рынок Австрии»</h4><div class="mt">Минимум 30 минут. Отказаться нельзя, перенести можно один раз. Выбери время:</div>${['Вт 14 окт · 18:00','Ср 15 окт · 12:30','Пт 17 окт · 19:00'].map(s=>`<button class="btn o" style="margin-bottom:8px" data-act="slot" data-s="${s}" data-k="Время встречи">${s}</button>`).join('')}</div>`;
+ return back()+`<h1 class="rtl" data-k="Заголовок">Зал встреч</h1><p class="sub">Закон №2: каждый месяц — новая связь. Встреча засчитывается, когда оба показали друг другу QR.</p>
+ <div class="card" data-k="Счётчик встреч"><div class="tg">В октябре</div><div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font:500 28px var(--serif);color:var(--br2)">${S.mon} из 4</b><span class="hint" style="margin:0">обязательных встреч</span></div><div class="bar3" style="margin:10px 0 0"><div class="t"><i style="width:${S.mon/4*100}%"></i></div></div></div>
+ <div class="card" style="text-align:center" data-k="Мой QR"><div class="tg">Мой QR · покажи другому участнику</div><div class="qrw"><canvas id="qrc" width="250" height="250"></canvas></div><div class="qrb2"><i id="qrbar" style="width:${S.qrLeft/30*100}%"></i></div><div class="hint" style="margin:0" id="qrt">Обновится через ${S.qrLeft} с · скриншот не сработает</div></div>
+ <button class="btn" data-act="scan" style="margin-bottom:12px" data-k="Кнопка «Сканировать»">${ic('qr','i')} Сканировать QR другого</button>
+ ${inb}
+ <div class="card" data-k="Пара месяца"><div class="tg">Пара месяца · бот свёл вас</div><h4>${person(26)} · Дизайн и digital</h4><div class="mt">Вы ещё не знакомы. Новая связь в месяц — закон №2.</div><button class="btn o" data-act="pair" data-k="Кнопка «Договориться»">Договориться о встрече</button></div>
+ <div class="card" data-k="Живая встреча"><div class="tg">Сб 18 окт · 17:00 · Фрайбург</div><h4>Живая встреча клуба</h4><div class="mt">Спорт и «круг запросов»: каждый называет один запрос и одно предложение.</div><button class="btn ${S.signed?'on':'o'}" data-act="sign" data-k="Кнопка «Записаться»">${S.signed?'Вы записаны ✓':'Записаться'}</button></div>`;
+}
+function rLib(){
+ const tags=['Все','Finanzamt','Gewerbe','Найм','Квартира','Фишки'];
+ return back()+`<h1 class="rtl" data-k="Заголовок">Библиотека</h1><p class="sub">Фишки, идеи и разборы, за которые снаружи платят. Для участников бесплатно. Лучшее выбирает Совет.</p>
+ <div class="chips" data-k="Фильтр библиотеки">${tags.map(t=>`<button class="chp ${S.libF===t?'on':''}" data-act="libf" data-v="${t}">${t}</button>`).join('')}</div>
+ <div class="card" style="padding:2px 15px" data-k="Список статей">${LIB.filter(l=>S.libF==='Все'||l.tag===S.libF).map(l=>`<div class="li" data-act="art" data-i="${LIB.indexOf(l)}" data-k="Статья"><div class="ic">${ic('book','i s')}</div><div class="tx">${l.t}<span>${l.tag} · ${l.min} мин · от участника ${person(l.by)}</span></div></div>`).join('')}</div>`;
+}
+function rFire(){
+ return back()+`<h1 class="rtl" data-k="Заголовок">Каминная</h1><p class="sub">Здесь греются у огня и сверяют ритм клуба.</p>
+ <div class="card hl" data-k="Горячий стул"><div class="tg">Четверг · 19:00 · онлайн</div><h4>Горячий стул</h4><div class="mt">Один участник выносит свою ситуацию, остальные 45 минут дают решения и контакты. Участие по желанию.</div><button class="btn ${S.fire?'on':''}" data-act="firego" data-k="Кнопка «Напомнить»">${S.fire?'Напомним за час ✓':'Напомнить мне'}</button></div>
+ <h3 class="rt" data-k="Заголовок «Ритм клуба»">Ритм клуба</h3>
+ <div class="card" style="padding:2px 15px" data-k="Ритм клуба">
+  <div class="rit"><b>ПОНЕДЕЛЬНИК</b><div>Фокус недели<span>Каждый пишет одну главную задачу</span></div></div>
+  <div class="rit"><b>ЧЕТВЕРГ</b><div>Горячий стул<span>45 минут решений и контактов, по желанию</span></div></div>
+  <div class="rit"><b>РАЗ В МЕСЯЦ</b><div>Новая связь, помощь, круг 8–10 человек<span>Встреча один на один, честный разговор в круге, живая встреча клуба</span></div></div>
+  <div class="rit"><b>РАЗ В КВАРТАЛ</b><div>Признание<span>Кто дал клубу больше всех</span></div></div>
+ </div>
+ <div class="lockbox" data-k="Что обязательно">${ic('key','i s')}Обязательны только законы: шаг в неделю, новая связь и помощь в месяц. Всё остальное — по желанию.</div>`;
+}
+function rStudy(){
+ const p=S.pulse,arc=282.7*(1-p/100);
+ const focus=S.goalDone?`<div class="card" data-k="Фокус недели (готово)"><div class="tg">Фокус недели · <b>шаг отмечен ✓</b></div><h4 style="text-decoration:line-through;opacity:.6">${esc(S.goal)}</h4></div>`
+  :S.goal?`<div class="card hl" data-k="Фокус недели"><div class="tg">Фокус недели</div><h4>${esc(S.goal)}</h4><div class="mt">Когда сделаешь — отметь шаг.</div><button class="btn" data-act="gdone" data-k="Кнопка «Отметить шаг»">${ic('check','i')} Отметить шаг</button></div>`
+  :`<div class="card hl" data-k="Фокус недели (не задан)"><div class="tg">Фокус недели</div><h4>Не задан</h4><div class="mt">Одно главное действие на неделю. Закон №1.</div><button class="btn" data-act="goal" data-k="Кнопка «Задать фокус»">Задать фокус</button></div>`;
+ return back()+(S.paused?`<div class="pausebn" data-k="Баннер паузы"><div>Пауза включена<span>До 11 ноября · Пульс не тает, статус сохраняется</span></div><button class="btn sm o" data-act="unpause">Выйти</button></div>`:'')+
+ `<div class="plate" data-k="Табличка участника"><b>№ 07 · АЛЕКСЕЙ М.</b><span>ОСНОВАТЕЛЬ · ФРАЙБУРГ</span></div>
+ ${focus}
+ <svg class="gauge ${''}" viewBox="0 0 250 140" data-k="Пульс (шкала)"><path d="M25 125 A100 100 0 0 1 225 125" fill="none" stroke="#1d3c2d" stroke-width="14" stroke-linecap="round"/><path d="M25 125 A100 100 0 0 1 225 125" fill="none" stroke="#e2c283" stroke-width="14" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="${314*(1-p/100)}" style="transition:stroke-dashoffset .8s"/><text x="125" y="112">${p}</text><text class="s" x="125" y="134">ПУЛЬС · АКТИВНОСТЬ В КЛУБЕ</text></svg>
+ <div data-k="Части Пульса"><div class="bar3"><div class="l"><span>Движение</span><b>${S.goalDone?23:20} / 25</b></div><div class="t"><i style="width:${S.goalDone?92:80}%"></i></div></div><div class="bar3"><div class="l"><span>Связи</span><b>21 / 30</b></div><div class="t"><i style="width:70%"></i></div></div><div class="bar3"><div class="l"><span>Помощь другим</span><b>33 / 45</b></div><div class="t"><i style="width:73%"></i></div></div></div>
+ <h3 class="rt" data-k="Заголовок «Ключи доступа»">Ключи доступа</h3>
+ <div class="keys" data-k="Ключи доступа"><div class="f">${ic('key','i')}Кандидат</div><div class="f">${ic('key','i')}Участник</div><div>${ic('lock','i')}Партнёр</div><div>${ic('lock','i')}Совет</div></div>
+ <div class="hint" data-k="До Партнёра">До «Партнёра»: Пульс 80 (сейчас ${p}) и серьёзная помощь 2 из 3. Партнёр голосует при отборе и поручается за новичков.</div>
+ <h3 class="rt" data-k="Заголовок «Письма благодарности»">Письма благодарности</h3>
+ ${STORIES.map(s=>`<div class="letter" data-k="Письмо благодарности"><p>«${s.txt}»</p><span>от ${person(s.from)} · ${s.rate}</span></div>`).join('')}
+ <h3 class="rt" data-k="Заголовок «Клуб»">Клуб</h3>
+ <div class="card" style="padding:2px 15px" data-k="Настройки">
+  <button class="setrow" data-act="pause" data-k="Строка «Пауза»"><div><b>Пауза</b><span>До 3 месяцев раз в год. Пульс не тает</span></div>${ic('chev','i s')}</button>
+  <button class="setrow" data-act="laws" data-k="Строка «Десять законов»"><div><b>Десять законов клуба</b><span>Устав</span></div>${ic('chev','i s')}</button>
+  <button class="setrow" data-act="oath" data-k="Строка «Видео-клятва»"><div><b>Видео-клятва</b><span>Опубликована в канале «Клятвы»</span></div>${ic('chev','i s')}</button>
+  <button class="setrow" data-act="leave" data-k="Строка «Выйти из клуба»"><div><b style="color:var(--warn)">Выйти из клуба</b><span>В один шаг, личные данные удаляются</span></div></button>
+ </div>`;
+}
+function renderAll(){
+ $('#s-hall').innerHTML=rHall();$('#s-board').innerHTML=rBoard();$('#s-meet').innerHTML=rMeet();$('#s-lib').innerHTML=rLib();$('#s-fire').innerHTML=rFire();$('#s-study').innerHTML=rStudy();
+ if(S.screen==='meet')drawQR($('#qrc'),S.qrSeed,'#2a1d08','#f3e9d2');
+ reapplySel();
+}
+const keep=()=>{const e=$('#s-'+S.screen);const t=e.scrollTop;renderAll();e.scrollTop=t};
+setInterval(()=>{S.qrLeft--;if(S.qrLeft<=0){S.qrLeft=30;S.qrSeed=Math.floor(Math.random()*1e6);drawQR($('#qrc'),S.qrSeed,'#2a1d08','#f3e9d2');drawQR($('#qrs'),S.qrSeed,'#2a1d08','#f3e9d2')}
+ const b=$('#qrbar'),t=$('#qrt');if(b)b.style.width=S.qrLeft/30*100+'%';if(t)t.textContent=`Обновится через ${S.qrLeft} с · скриншот не сработает`;const q=$('#qrst');if(q)q.textContent='Обновится через '+S.qrLeft+' с'},1000);
+
+/* ================= действия ================= */
+const sh2=t=>`<h2 style="font:500 26px var(--serif);margin-bottom:4px">${t}</h2>`;
+phone.addEventListener('click',e=>{
+ if(picking)return;
+ const a=e.target.closest('[data-act]');
+ if(a){act(a);return}
+ const g=e.target.closest('[data-go]');if(g)goTo(g.dataset.go);
+});
+function act(a){
+ const k=a.dataset.act,v=a.dataset.v;
+ switch(k){
+  case 'close':closeSheet();break;
+  case 'qr':openSheet(`${sh2('Ключ-карта №07')}<div class="hint" style="margin:0 0 10px">Покажи другому участнику. QR меняется каждые 30 секунд. Встреча засчитается, когда оба отсканируют друг друга.</div><div class="qrw"><canvas id="qrs" width="250" height="250"></canvas></div><div class="hint" style="text-align:center" id="qrst">Обновится через ${S.qrLeft} с</div><button class="btn o" data-act="close" style="margin-top:14px">Закрыть</button>`,()=>drawQR($('#qrs'),S.qrSeed,'#2a1d08','#f3e9d2'));break;
+  case 'council':openSheet(`${sh2('Совет')}<div class="hint" style="margin:0 0 14px">Комната для Партнёров и выше: анкеты кандидатов, голосование, «Плечо клуба». Твой следующий ключ — «Партнёр».</div><div class="bar3"><div class="l"><span>Пульс</span><b>${S.pulse} / 80</b></div><div class="t"><i style="width:${Math.min(100,S.pulse/80*100)}%"></i></div></div><div class="bar3"><div class="l"><span>Серьёзная помощь</span><b>2 / 3</b></div><div class="t"><i style="width:66%"></i></div></div><button class="btn o" data-act="close" style="margin-top:14px">Понятно</button>`);break;
+  case 'seg':S.seg=v;keep();break;
+  case 'libf':S.libF=v;keep();break;
+  case 'resp':{const id=a.dataset.id;
+   if(S.resp.has(id)){S.resp.delete(id);keep();toast('Отклик отозван');break}
+   if(S.seg==='give'){const o=OFFERS.find(x=>x.id===id);
+    openSheet(`${sh2('Написать '+person(o.by))}<div class="hint" style="margin:0 0 12px">Предложение: «${esc(o.t)}». Дальше вы общаетесь в личном чате Telegram, своего чата в приложении нет.</div><textarea class="fld" id="wm" data-k="Сообщение автору предложения">Привет! Увидел твоё предложение в NEXT. Расскажешь подробнее?</textarea><button class="btn" id="wok" style="margin-top:14px" data-k="Кнопка «Открыть Telegram»">Открыть Telegram</button><div class="hint">Сообщение подставится в чат, останется только нажать «Отправить».</div>`,s=>{$('#wok',s).onclick=()=>{S.resp.add(id);closeSheet();keep();toast('В настоящем приложении откроется чат Telegram с '+person(o.by))}});break}
+   const r=REQS.find(x=>x.id===id);
+   openSheet(`${sh2('Чем ты можешь помочь?')}<div class="hint" style="margin:0 0 12px">Запись «${esc(r.t)}». Автор увидит твоё сообщение и сам выберет, кому доверить. Чат в Telegram откроется только с выбранным.</div><textarea class="fld" id="rm" maxlength="140" placeholder="Одной строкой: что именно можешь сделать" data-k="Сообщение с откликом"></textarea><div class="chips" style="flex-wrap:wrap;margin:10px 0 0;padding:0">${['Могу сделать сегодня','Знаю, как это сделать','Знаю нужного человека'].map(x=>`<button class="chp" data-v="${x}">${x}</button>`).join('')}</div><button class="btn" id="rok" style="margin-top:16px" disabled data-k="Кнопка «Отправить отклик»">Отправить отклик</button>`,s=>{const t=$('#rm',s),b=$('#rok',s);t.oninput=()=>b.disabled=t.value.trim().length<5;$$('.chp',s).forEach(c=>c.onclick=()=>{t.value=c.dataset.v;t.oninput()});b.onclick=()=>{S.resp.add(id);closeSheet();keep();toast('Отклик ушёл автору. Если выберет тебя, бот откроет чат в Telegram')}})}break;
+  case 'tgopen':closeSheet();toast('В настоящем приложении откроется чат Telegram с '+person(a.dataset.n));break;
+  case 'pick':if(!S.respCount){toast('Пока никто не откликнулся');break}openSheet(`${sh2('Кто откликнулся')}<div class="hint" style="margin:0 0 6px">Выбери, кому доверить задачу</div>${RESP.map(r=>`<div class="li" data-act="trust" data-n="${r.n}" data-k="Откликнувшийся"><div class="ic">${String(r.n).padStart(2,'0')}</div><div class="tx">${person(r.n)} · ${r.niche}<span>«${r.why}»</span></div></div>`).join('')}`);break;
+  case 'trust':S.mine='work';S.helper=+a.dataset.n;closeSheet();keep();
+   openSheet(`<div style="text-align:center"><div style="width:62px;height:62px;border-radius:50%;background:rgba(111,191,138,.15);color:var(--ok);display:grid;place-items:center;margin:4px auto 12px">${ic('check','i')}</div>${sh2('Вы на связи с '+person(S.helper))}<div class="hint" style="margin:0 0 6px">Задача доверена. Дальше вы общаетесь напрямую в Telegram.</div></div>
+    <div style="background:#0b1812;border:1px solid var(--line);border-radius:12px;padding:13px 14px;font-size:13.5px;margin:14px 0" data-k="Сообщение бота"><div style="font-size:10.5px;letter-spacing:.16em;color:var(--br2);font-weight:700;margin-bottom:7px">БОТ NEXT · ВАМ ОБОИМ</div>Участник ${person(7)} доверил(а) ${person(S.helper)} задачу «${esc((S.myReq&&S.myReq.t)||'')}». Напишите друг другу в Telegram. Через 3 дня я спрошу, как прошло.</div>
+    <button class="btn" data-act="tgopen" data-n="${S.helper}" data-k="Кнопка «Открыть чат в Telegram»">Открыть чат в Telegram</button><button class="btn o" data-act="close" style="margin-top:8px">Позже</button>
+    <div class="hint" style="text-align:center">Остальным, кто откликнулся, ушло «спасибо за отклик». Чат только с выбранным.</div>`);break;
+  case 'confirm':{let rate='Серьёзно';openSheet(`${sh2('Подтверди помощь')}<div class="hint" style="margin:0 0 12px">От ${person(S.helper)}. Это растит его Пульс.</div><div style="font-size:12.5px;font-weight:700;margin-bottom:8px">Насколько это было важно?</div><div class="chips" style="flex-wrap:wrap;margin:0;padding:0" id="rt">${['Мелочь','Серьёзно','Изменило мою ситуацию'].map(x=>`<button class="chp ${x===rate?'on':''}" data-v="${x}">${x}</button>`).join('')}</div><button class="btn" id="cfok" style="margin-top:18px">Подтвердить</button>`,s=>{$$('#rt .chp',s).forEach(b=>b.onclick=()=>{rate=b.dataset.v;$$('#rt .chp',s).forEach(x=>x.classList.toggle('on',x===b))});$('#cfok',s).onclick=()=>{S.mine='closed';closeSheet();keep();toast('Помощь подтверждена. Записка закрыта')}})}break;
+  case 'newreq':{if(!(S.mine==='none'||S.mine==='closed')){toast('Сначала закрой старую записку');break}
+   let sph='Бумаги',due='Неделя',urg=false;
+   openSheet(`${sh2('Новая записка')}<div class="hint" style="margin:0 0 12px">Напиши конкретно, что нужно. Чем яснее, тем быстрее откликнутся.</div><textarea class="fld" id="nr" maxlength="160" placeholder="Что нужно?" data-k="Поле «Текст записки»"></textarea><div style="font-size:12px;letter-spacing:.12em;color:var(--mut);font-weight:700;margin:14px 0 8px">СФЕРА</div><div class="chips" style="flex-wrap:wrap;margin:0;padding:0" id="ns" data-k="Выбор сферы">${SPH.map(x=>`<button class="chp ${x===sph?'on':''}" data-v="${x}">${x}</button>`).join('')}</div><div style="font-size:12px;letter-spacing:.12em;color:var(--mut);font-weight:700;margin:14px 0 8px">СРОК</div><div class="chips" style="flex-wrap:wrap;margin:0;padding:0" id="nd" data-k="Выбор срока">${['3 дня','Неделя','2 недели','Месяц'].map(x=>`<button class="chp ${x===due?'on':''}" data-v="${x}">${x}</button>`).join('')}</div><button class="setrow" id="nu" style="margin-top:8px" data-k="Переключатель «Срочно»"><div><b>Срочно</b><span>Можно раз в месяц, чтобы пометка не обесценилась</span></div><span id="nus" style="width:44px;height:26px;border-radius:20px;background:#244033;position:relative;flex:none"><i style="position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:var(--mut);transition:.2s"></i></span></button><button class="btn" id="nok" style="margin-top:14px" disabled data-k="Кнопка «Прикрепить»">Прикрепить на доску</button>`,s=>{
+    $('#nr',s).oninput=e2=>{$('#nok',s).disabled=e2.target.value.trim().length<10};
+    $$('#ns .chp',s).forEach(b=>b.onclick=()=>{sph=b.dataset.v;$$('#ns .chp',s).forEach(x=>x.classList.toggle('on',x===b))});
+    $$('#nd .chp',s).forEach(b=>b.onclick=()=>{due=b.dataset.v;$$('#nd .chp',s).forEach(x=>x.classList.toggle('on',x===b))});
+    $('#nu',s).onclick=()=>{urg=!urg;const t=$('#nus',s);t.style.background=urg?'var(--br2)':'#244033';t.firstChild.style.left=urg?'21px':'3px';t.firstChild.style.background=urg?'#2a1d08':'var(--mut)'};
+    $('#nok',s).onclick=()=>{const req={t:$('#nr',s).value.trim(),sph,due:'срок: '+due.toLowerCase()+(urg?' · срочно':'')};S.myReq=req;S.mine='open';S.respCount=0;S.resp=new Set(S.resp);closeSheet();keep();toast('Записка на доске. Ждём откликов…');
+     setTimeout(()=>{if(S.mine==='open'&&S.myReq===req){S.respCount=3;keep();toast('На твою записку откликнулись 3 человека')}},4000)}})}break;
+  case 'slot':S.slot=a.dataset.s;S.done.meet=1;keep();toast('Встреча назначена: '+a.dataset.s);break;
+  case 'sign':S.signed=!S.signed;keep();toast(S.signed?'Записал. Напомним за день':'Запись отменена');break;
+  case 'firego':S.fire=!S.fire;keep();toast(S.fire?'Напомним в четверг за час':'Напоминание снято');break;
+  case 'pair':openSheet(`${sh2('Встреча с '+person(26))}<div class="hint" style="margin:0 0 12px">Участник обязан встретиться в течение двух недель.</div><input class="fld" id="pt" placeholder="Зачем? Одной строкой"><button class="btn" id="pok" style="margin-top:12px">Отправить запрос</button>`,s=>{$('#pok',s).onclick=()=>{closeSheet();toast('Запрос отправлен '+person(26))}});break;
+  case 'scan':{const seq=[12,26,12,12],n=seq[S.scanI++%seq.length],m=S.met[n]||0,pts=[4,2,0][Math.min(m,2)];S.met[n]=m+1;if(m===0)S.mon=Math.min(4,S.mon+1);S.pulse=Math.min(100,S.pulse+pts);keep();
+   openSheet(`<div style="text-align:center"><div style="width:62px;height:62px;border-radius:50%;background:rgba(111,191,138,.15);color:var(--ok);display:grid;place-items:center;margin:4px auto 12px">${ic('check','i')}</div>${sh2('Встреча засчитана')}<div class="hint">${person(n)} · ${PEOPLE[n]}</div><div style="margin:12px 0;font-weight:700;color:var(--br2)">Связи ${pts?'+'+pts:'+0'}</div><div class="hint">${m===0?'Первая встреча с этим человеком: полные баллы.':m===1?'Повторная встреча: баллы меньше.':'Повторных встреч уже достаточно: баллов нет.'}</div></div><input class="fld" id="scn" placeholder="О чём договорились (по желанию, +1 бонус)" style="margin-top:14px"><button class="btn" id="scok" style="margin-top:12px">Готово</button>`,s=>{$('#scok',s).onclick=()=>{const t=$('#scn',s).value.trim();closeSheet();if(t.length>2&&pts){S.pulse=Math.min(100,S.pulse+1);keep();toast('Записал. Бонус +1')}else toast('Готово')}})}break;
+  case 'art':{const l=LIB[+a.dataset.i];openSheet(`<span style="font-size:11px;letter-spacing:.14em;color:var(--br2);font-weight:700">${l.tag.toUpperCase()}</span><h2 style="font:500 24px/1.2 var(--serif);margin:8px 0 4px">${l.t}</h2><div class="hint" style="margin:0 0 12px">${l.min} мин · от участника ${person(l.by)}</div>${l.b.map(p=>`<p style="margin-bottom:10px">${p}</p>`).join('')}<div class="hint">Пример наполнения.</div><button class="btn o" data-act="close" style="margin-top:14px">Закрыть</button>`)}break;
+  case 'goal':openSheet(`${sh2('Главное на этой неделе')}<div class="hint" style="margin:0 0 12px">Одно действие к твоей цели. Конкретно и проверяемо.</div><textarea class="fld" id="gl" maxlength="120" placeholder="Например: отправить 5 предложений клиентам" data-k="Поле «Цель недели»"></textarea><div class="chips" style="margin:10px 0 0;padding:0;flex-wrap:wrap">${['Записаться на Gewerbe-термин','Провести 2 созвона','Сделать первый экран сайта'].map(x=>`<button class="chp" data-v="${x}">${x}</button>`).join('')}</div><button class="btn" id="glok" style="margin-top:16px" disabled>Зафиксировать</button>`,s=>{const t=$('#gl',s),b=$('#glok',s);t.oninput=()=>b.disabled=t.value.trim().length<8;$$('.chp',s).forEach(c=>c.onclick=()=>{t.value=c.dataset.v;t.oninput()});b.onclick=()=>{S.goal=t.value.trim();S.done.goal=1;closeSheet();keep();toast('Фокус недели зафиксирован. Отметь шаг в Кабинете')}});break;
+  case 'gdone':S.goalDone=true;S.pulse=Math.min(100,S.pulse+3);keep();toast('Шаг отмечен · Движение +3, Пульс '+S.pulse);break;
+  case 'pause':openSheet(`${sh2('Пауза')}<div class="hint" style="margin:0 0 14px">Болезнь, ребёнок, экзамены, большое событие. До трёх месяцев раз в год. Пульс не тает, статус сохраняется.</div><button class="btn" data-act="pauseok">Включить паузу на 1 месяц</button>`);break;
+  case 'pauseok':S.paused=true;closeSheet();keep();toast('Пауза включена до 11 ноября');break;
+  case 'unpause':S.paused=false;keep();toast('Пауза завершена');break;
+  case 'oath':openSheet(`${sh2('Видео-клятва')}<p style="margin:8px 0 14px;font:italic 500 17px/1.4 var(--serif)">«Меня зовут Алексей, я участник NEXT №07. Я принимаю десять законов клуба. Я отдаю раньше, чем прошу, держу слово и не стою на месте.»</p><div class="hint">Видео в закрытом канале «Клятвы». При выходе из клуба удаляется.</div><button class="btn o" data-act="close" style="margin-top:14px">Закрыть</button>`);break;
+  case 'laws':{const L=['Каждую неделю — шаг к своей цели','Каждый месяц — новая связь','Каждый месяц — помощь другому участнику','Сначала отдаёшь, потом просишь','Что сказано в клубе, остаётся в клубе','Правила одни для всех, включая создателя','Статус не покупается, его можно только заработать','Политика остаётся за дверью','Обман участника — выход навсегда','Кто остановился — уходит. Клуб никого не выгоняет'];openSheet(`${sh2('Десять законов')}${L.map((l,i)=>`<div class="li" style="cursor:default"><div class="ic">${i+1}</div><div class="tx">${l}</div></div>`).join('')}`)}break;
+  case 'leave':openSheet(`${sh2('Выйти из клуба?')}<p style="margin:8px 0 16px;color:var(--mut)">Уйти можно в любой момент, без объяснений. Личные данные удаляются из приложения. Вернуться можно через обычный отбор.</p><button class="btn o" data-act="close">Остаться</button><button class="btn o" style="margin-top:8px;color:var(--warn);border-color:var(--warn)" data-act="close">Выйти (в прототипе отключено)</button>`);break;
+ }
+}
+
+/* ================= режим выбора ================= */
+let picking=false,hovEl=null;const sel=new Map();
+const pathOf=el=>{const p=[];let n=el;while(n&&n!==phone){if(n.dataset&&n.dataset.k)p.unshift(n.dataset.k);n=n.parentElement}return p.join(' › ')};
+const textOf=el=>(el.innerText||el.textContent||'').replace(/\s+/g,' ').trim().slice(0,70);
+const keyOf=el=>pathOf(el)+'|'+textOf(el);
+function reapplySel(){$$('[data-k]',phone).forEach(e=>e.classList.toggle('sel',sel.has(keyOf(e))))}
+function setMode(m){picking=m==='pick';document.body.classList.toggle('picking',picking);$$('#modes button').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));if(hovEl){hovEl.classList.remove('hov');hovEl=null}}
+$$('#modes button').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+phone.addEventListener('click',e=>{
+ if(!picking)return;
+ const el=e.target.closest('[data-k]');
+ e.preventDefault();e.stopPropagation();if(!el)return;
+ const key=keyOf(el);
+ if(sel.has(key)){sel.delete(key);el.classList.remove('sel')}else{sel.set(key,{path:pathOf(el),text:textOf(el),v:'Оставить',note:''});el.classList.add('sel')}
+ renderSel();
+},true);
+phone.addEventListener('mousedown',e=>{if(picking)e.preventDefault()},true);
+phone.addEventListener('mouseover',e=>{if(!picking)return;const el=e.target.closest('[data-k]');if(hovEl&&hovEl!==el)hovEl.classList.remove('hov');hovEl=el;if(el)el.classList.add('hov')});
+phone.addEventListener('mouseleave',()=>{if(hovEl){hovEl.classList.remove('hov');hovEl=null}});
+function renderSel(){
+ const L=$('#selList');$('#selCount').textContent=sel.size;$('#fabN').textContent=sel.size;
+ if(!sel.size){L.innerHTML='<div class="empty">Пока пусто. Включи «Выбирать» и кликни по элементу на экране.</div>';return}
+ L.innerHTML=[...sel.entries()].map(([k,s],i)=>`<div class="selitem" data-key="${esc(k)}"><button class="x" data-x="1">×</button><div class="p">${i+1}. ${esc(s.path)}</div><div class="t">«${esc(s.text)}»</div><div class="vs">${['Оставить','Изменить','Убрать'].map(v=>`<button data-v="${v}" class="${s.v===v?'on':''}">${v}</button>`).join('')}</div><input placeholder="Комментарий (необязательно)" value="${esc(s.note)}"/></div>`).join('');
+}
+$('#selList').addEventListener('click',e=>{const it=e.target.closest('.selitem');if(!it)return;const k=it.dataset.key,s=sel.get(k);if(!s)return;if(e.target.dataset.x){sel.delete(k);renderSel();reapplySel();return}const b=e.target.closest('.vs button');if(b){s.v=b.dataset.v;$$('.vs button',it).forEach(x=>x.classList.toggle('on',x===b))}});
+$('#selList').addEventListener('input',e=>{const it=e.target.closest('.selitem');if(it&&sel.get(it.dataset.key))sel.get(it.dataset.key).note=e.target.value});
+function buildOut(){const g=$('#gnote').value.trim();let t='ВЫБОР ПО «ДОМУ КЛУБА» (club-house.html)\n';if(g)t+='\nОбщий комментарий: '+g+'\n';t+='\n';[...sel.values()].forEach((s,i)=>{t+=`${i+1}) ${s.v.toUpperCase()} — ${s.path}\n   Текст на элементе: «${s.text}»\n`+(s.note?`   Комментарий: ${s.note}\n`:'')+'\n'});return t.trim()}
+$('#copyBtn').onclick=async()=>{
+ if(!sel.size&&!$('#gnote').value.trim()){toast('Сначала выбери хотя бы один элемент');return}
+ const t=buildOut(),o=$('#out');o.value=t;
+ try{await navigator.clipboard.writeText(t);o.style.display='none';toast('Скопировано. Отправь мне в чат')}
+ catch(_){o.style.display='block';o.select();try{document.execCommand('copy');toast('Скопировано. Отправь мне в чат')}catch(__){toast('Выдели текст ниже и скопируй вручную')}}
+};
+$('#clearBtn').onclick=()=>{sel.clear();renderSel();reapplySel();$('#out').style.display='none'};
+$('#fab').onclick=()=>$('#tools').classList.add('open');
+$('#tclose').onclick=()=>$('#tools').classList.remove('open');
+$('#scrs').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){goTo(b.dataset.go);if(innerWidth<=900)$('#tools').classList.remove('open')}});
+
+renderAll();renderSel();
+</script>
+</body>
+</html>

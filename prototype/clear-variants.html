@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXT — 3 понятные версии</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Nunito:wght@600;700;800;900&family=Lora:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#0a0a0b;color:#ece9e2;font:15px/1.45 'Onest',system-ui,sans-serif;min-height:100dvh;padding-bottom:140px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,textarea{font:inherit;color:inherit;outline:none}
+.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.i.s{width:16px;height:16px}
+
+/* ---------- страница выбора ---------- */
+.head{max-width:1500px;margin:0 auto;padding:34px 24px 6px}
+.head h1{font:800 34px/1.1 'Onest';letter-spacing:-.02em}
+.head p{color:#9a968c;margin-top:10px;max-width:780px}
+.grid{max-width:1500px;margin:26px auto 0;padding:0 24px;display:flex;flex-wrap:wrap;gap:50px 40px;justify-content:center}
+.opt{width:396px}
+.cap{margin-top:26px}
+.cap .n{font:700 12px 'Onest';color:#6e6a62;letter-spacing:.16em}
+.cap h2{font:800 24px/1.2 'Onest';margin:4px 0 12px}
+.cap .row{margin-bottom:10px}
+.cap .row b{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6e6a62;margin-bottom:2px;font-weight:700}
+.cap .row span{color:#c9c5ba;font-size:14px}
+.cap .try{margin:12px 0 14px;padding:10px 12px;border:1px dashed #34343b;border-radius:12px;font-size:13px;color:#9a968c}
+.pickbtn{width:100%;padding:14px;border-radius:14px;border:1.5px solid #34343b;font-weight:700;font-size:15px;transition:.15s}
+.pickbtn:hover{border-color:#8a8a95}
+.opt.chosen .pickbtn{background:#4cc3ff;border-color:#4cc3ff;color:#04202c}
+.opt.chosen .ph{box-shadow:0 0 0 3px #4cc3ff,0 0 0 11px #0c0c0e,0 24px 60px #0008}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#101012ee;backdrop-filter:blur(14px);border-top:1px solid #26262b;padding:14px 24px;z-index:80}
+.bar .in{max-width:1500px;margin:0 auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.bar .cur{font-weight:700;min-width:240px}
+.bar .cur small{display:block;font-weight:400;color:#6e6a62;font-size:12px}
+.bar input{flex:1;min-width:240px;background:#0a0a0b;border:1px solid #2a2a30;border-radius:12px;padding:12px 14px;color:inherit}
+.bar input:focus{border-color:#4cc3ff}
+.bar .go{background:#4cc3ff;color:#04202c;font-weight:700;padding:12px 22px;border-radius:12px}
+.bar .go[disabled]{opacity:.4;pointer-events:none}
+.gtoast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(10px);background:#4cc3ff;color:#04202c;font-weight:600;padding:10px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:90}
+.gtoast.on{opacity:1;transform:translateX(-50%)}
+
+/* ---------- каркас приложения (общий для всех) ---------- */
+.ph{position:relative;width:380px;height:790px;border-radius:42px;overflow:hidden;box-shadow:0 0 0 8px #101012,0 24px 60px #0008;margin:0 auto;font-size:15px;line-height:1.4;isolation:isolate;background:var(--bg);color:var(--fg);font-family:var(--fb)}
+.ph *{box-sizing:border-box}
+.ph h1,.ph h2,.ph h3,.ph h4,.ph p,.ph ul{margin:0}
+.ph ul{list-style:none;padding:0}
+.stb{position:absolute;top:0;left:0;right:0;height:34px;display:flex;justify-content:space-between;align-items:center;padding:6px 26px 0;font-size:12px;font-weight:700;z-index:4;color:var(--mut)}
+.scr{position:absolute;top:34px;bottom:74px;left:0;right:0;overflow-y:auto;padding:12px 18px 28px;display:none;scrollbar-width:none}
+.scr::-webkit-scrollbar{display:none}
+.scr.on{display:block;animation:in .28s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@keyframes pop{30%{transform:scale(1.12)}}
+.tabs{position:absolute;left:0;right:0;bottom:0;height:74px;display:grid;grid-template-columns:repeat(5,1fr);z-index:5;padding:6px 4px 10px}
+.tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10.5px;font-weight:700;color:var(--mut);position:relative}
+.tabs button.on{color:var(--acc)}
+.tabs .bd{position:absolute;top:6px;left:calc(50% + 6px);min-width:16px;height:16px;border-radius:8px;background:var(--warn);color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center;padding:0 4px}
+.sheetw{position:absolute;inset:0;z-index:40;display:none}
+.sheetw.on{display:block}
+.sheetw .scrim{position:absolute;inset:0;background:rgba(0,0,0,.55)}
+.sheetw .sheet{position:absolute;left:0;right:0;bottom:0;max-height:90%;overflow:auto;padding:10px 20px 28px;border-radius:26px 26px 0 0;animation:up .28s cubic-bezier(.2,.8,.2,1);scrollbar-width:none;background:var(--card);color:var(--fg)}
+.grab{width:38px;height:4px;border-radius:4px;background:currentColor;opacity:.2;margin:0 auto 14px}
+.ptoast{position:absolute;left:16px;right:16px;bottom:88px;padding:12px 14px;border-radius:14px;font-weight:700;font-size:13.5px;z-index:60;opacity:0;transform:translateY(10px);pointer-events:none;transition:.25s;text-align:center;background:var(--fg);color:var(--bg)}
+.ptoast.on{opacity:1;transform:none}
+
+/* типографика и элементы */
+.ph .eb{font-size:12.5px;color:var(--mut);font-weight:600}
+.ph h1{font:var(--h1)}
+.ph .lead{color:var(--mut);font-size:14px;margin-top:6px}
+.ph .sec{display:flex;justify-content:space-between;align-items:baseline;margin:24px 0 10px;font:var(--h2)}
+.ph .sec small{font:600 12.5px var(--fb);color:var(--mut)}
+.ph .card{background:var(--card);border:var(--bd);border-radius:var(--r);padding:15px;margin-bottom:12px;box-shadow:var(--sh)}
+.ph .card.hl{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc),var(--sh)}
+.ph .tg{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px;font-size:11.5px;font-weight:700;color:var(--mut)}
+.ph .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;background:var(--chip);font-size:11.5px;font-weight:700;color:var(--fg)}
+.ph .badge.w{background:var(--warnbg);color:var(--warn)}
+.ph .badge.g{background:var(--accbg);color:var(--acc)}
+.ph .badge.ok{background:var(--okbg);color:var(--ok)}
+.ph .card h4{font-size:16px;font-weight:700;line-height:1.28}
+.ph .mt{font-size:12.5px;color:var(--mut);margin:7px 0 12px}
+.ph .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:var(--rb);background:var(--acc);color:var(--accfg);font-weight:800;font-size:15px;text-align:center;transition:.15s}
+.ph .btn:active{transform:scale(.985)}
+.ph .btn.o{background:transparent;color:var(--fg);border:1.5px solid var(--line)}
+.ph .btn.on{background:var(--ok);color:#fff}
+.ph .btn.sm{width:auto;padding:9px 15px;font-size:13px;display:inline-flex}
+.ph .btn[disabled],.ph .btn.dis{opacity:.45;pointer-events:none}
+.ph .seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--chip);border-radius:calc(var(--rb) + 4px);margin:16px 0 4px}
+.ph .seg button{padding:11px 4px;border-radius:var(--rb);font-weight:700;font-size:14px;color:var(--mut)}
+.ph .seg button.on{background:var(--card);color:var(--fg);box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.ph .chips{display:flex;gap:7px;overflow-x:auto;margin:14px -18px 0;padding:0 18px 4px;scrollbar-width:none}
+.ph .chips::-webkit-scrollbar{display:none}
+.ph .chip{flex:none;padding:8px 14px;border-radius:20px;background:var(--chip);font-size:13px;font-weight:700;color:var(--mut)}
+.ph .chip.on{background:var(--acc);color:var(--accfg)}
+.ph .li{display:flex;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.ph .li:last-child{border:0}
+.ph .li .ic{width:42px;height:42px;border-radius:13px;background:var(--accbg);color:var(--acc);display:grid;place-items:center;flex:none;font-weight:800;font-size:13px}
+.ph .li .tx{flex:1;font-size:14.5px;font-weight:600;line-height:1.3}
+.ph .li .tx span{display:block;font-size:12.5px;color:var(--mut);font-weight:500;margin-top:2px}
+.ph .field{width:100%;background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;font-size:15px}
+.ph .field:focus{border-color:var(--acc)}
+.ph textarea.field{min-height:92px;resize:none}
+.ph .hint{font-size:12.5px;color:var(--mut);margin-top:8px}
+.ph .bar3{margin:13px 0}.ph .bar3 .l{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px;font-weight:600}
+.ph .bar3 .t{height:8px;border-radius:8px;background:var(--chip)}.ph .bar3 .t i{display:block;height:100%;background:var(--acc);border-radius:8px;transition:width .5s}
+.ph .qrbox{background:#fff;padding:12px;border-radius:16px;width:max-content;margin:0 auto}
+.ph .qrbox canvas{display:block;width:176px;height:176px;image-rendering:pixelated}
+.ph .qrbar{height:5px;border-radius:5px;background:var(--chip);margin:12px auto 6px;width:176px;overflow:hidden}
+.ph .qrbar i{display:block;height:100%;background:var(--acc);transition:width 1s linear}
+.ph .steps{display:flex;margin:14px 0 6px}
+.ph .st{flex:1;text-align:center;position:relative;font-size:11.5px;font-weight:700;padding-top:26px;color:var(--mut)}
+.ph .st i{position:absolute;top:0;left:50%;width:20px;height:20px;margin-left:-10px;border-radius:50%;background:var(--bg);border:2.5px solid var(--line);display:grid;place-items:center}
+.ph .st::before{content:"";position:absolute;top:9px;left:-50%;width:100%;height:3px;background:var(--line)}
+.ph .st:first-child::before{display:none}
+.ph .st.d,.ph .st.c{color:var(--fg)}
+.ph .st.d::before,.ph .st.c::before{background:var(--acc)}
+.ph .st.d i{background:var(--acc);border-color:var(--acc);color:var(--accfg)}
+.ph .st.c i{border-color:var(--acc)}
+.ph .st i .i{width:11px;height:11px;stroke-width:3.4}
+.ph .story{padding:14px 0;border-bottom:1px solid var(--line)}.ph .story:last-child{border:0}
+.ph .story p{font-size:15.5px;line-height:1.38;margin:9px 0 6px;font-weight:500}
+.ph .setrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:15px 0;border-bottom:1px solid var(--line)}
+.ph .setrow:last-child{border:0}
+.ph .setrow div{flex:1}.ph .setrow b{display:block;font-size:15px}.ph .setrow span{font-size:12.5px;color:var(--mut)}
+.ph .scanbox{position:relative;height:150px;border-radius:var(--r);background:var(--chip);display:grid;place-items:center;overflow:hidden;margin-bottom:12px}
+.ph .scanbox::before,.ph .scanbox::after{content:"";position:absolute;width:30px;height:30px;border:3px solid var(--acc)}
+.ph .scanbox::before{left:18px;top:18px;border-right:0;border-bottom:0;border-radius:10px 0 0 0}
+.ph .scanbox::after{right:18px;bottom:18px;border-left:0;border-top:0;border-radius:0 0 10px 0}
+.ph .scanbox span{font-size:13px;color:var(--mut);font-weight:600;text-align:center;padding:0 60px}
+
+/* =========================================================
+   ВЕРСИЯ 1 · «ТЁПЛЫЙ» — светлый, спокойный, крупный
+   ========================================================= */
+.T1{--bg:#f6efe2;--card:#fffdf8;--fg:#2a2118;--mut:#8a7b66;--line:#e6dbc6;--chip:#efe5d2;--acc:#c2562f;--accfg:#fff;--accbg:#f8e5db;--ok:#3f7a4a;--okbg:#e0efe0;--warn:#c2562f;--warnbg:#f8e5db;--r:22px;--rb:16px;--bd:1px solid #eadfca;--sh:0 2px 0 #eadfca;--fb:'Onest',sans-serif;--h1:800 32px/1.08 'Onest';--h2:800 19px 'Onest'}
+.T1 .tabs{background:#fffdf8;border-top:1px solid var(--line)}
+.T1 .key{position:relative;margin-top:16px;border-radius:26px;padding:18px 18px 16px;color:#fff;background:linear-gradient(140deg,#c2562f,#9d3f1f);overflow:hidden;box-shadow:0 14px 28px rgba(194,86,47,.32)}
+.T1 .key::before{content:"";position:absolute;right:-50px;top:-50px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.1)}
+.T1 .key::after{content:"";position:absolute;right:30px;bottom:-70px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.07)}
+.T1 .key .r1{display:flex;justify-content:space-between;font-size:11.5px;font-weight:700;letter-spacing:.14em;opacity:.9;position:relative}
+.T1 .key .num{font:800 72px/1 'Onest';letter-spacing:-.05em;margin:10px 0 8px;position:relative}
+.T1 .key .num small{font-size:26px;margin-right:4px;opacity:.7}
+.T1 .key .r2{display:flex;justify-content:space-between;align-items:center;position:relative}
+.T1 .key .r2 b{font-size:15px}
+.T1 .key .qr{display:flex;align-items:center;gap:8px;padding:10px 15px;border-radius:14px;background:#fff;color:#9d3f1f;font-weight:800;font-size:14px}
+.T1 .task{display:flex;gap:12px;align-items:center;padding:14px;border-radius:20px;background:var(--card);border:var(--bd);box-shadow:var(--sh);margin-bottom:10px}
+.T1 .task .cb{width:26px;height:26px;border-radius:50%;border:2.5px solid #d7c8aa;display:grid;place-items:center;flex:none;color:transparent}
+.T1 .task.d .cb{background:var(--ok);border-color:var(--ok);color:#fff}
+.T1 .task .tx{flex:1;font-weight:700;font-size:15px;line-height:1.25}
+.T1 .task .tx span{display:block;font-size:12.5px;color:var(--mut);font-weight:500;margin-top:2px}
+.T1 .task.d .tx{opacity:.5;text-decoration:line-through}
+.T1 .grid4{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.T1 .grid4 button{padding:16px 14px;border-radius:20px;background:var(--card);border:var(--bd);box-shadow:var(--sh);text-align:left;font-weight:800;font-size:15px;line-height:1.2}
+.T1 .grid4 button .i{width:28px;height:28px;color:var(--acc);margin-bottom:10px;display:block}
+.T1 .grid4 button span{display:block;font-size:12px;font-weight:500;color:var(--mut);margin-top:3px}
+
+/* =========================================================
+   ВЕРСИЯ 2 · «ЛЕНТА» — тёмный премиум, главное — что нового
+   ========================================================= */
+.T2{--bg:#0d1a14;--card:#14281f;--fg:#f2ead6;--mut:#8fa396;--line:#244034;--chip:#1b3428;--acc:#d4ac5b;--accfg:#1d1706;--accbg:rgba(212,172,91,.14);--ok:#5ab57f;--okbg:rgba(90,181,127,.15);--warn:#e8866a;--warnbg:rgba(232,134,106,.15);--r:18px;--rb:14px;--bd:1px solid #244034;--sh:none;--fb:'Onest',sans-serif;--h1:700 30px/1.1 'Playfair Display';--h2:700 20px 'Playfair Display'}
+.T2 .tabs{background:#0a1510;border-top:1px solid var(--line)}
+.T2 .top2{display:flex;align-items:center;gap:12px}
+.T2 .av{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#e6c479,#a6802f);color:#1d1706;display:grid;place-items:center;font:700 17px 'Playfair Display';flex:none;box-shadow:0 0 0 3px rgba(212,172,91,.25)}
+.T2 .top2 .nm{flex:1}.T2 .top2 .nm b{display:block;font-size:17px}.T2 .top2 .nm span{font-size:12.5px;color:var(--mut)}
+.T2 .top2 .qrb{display:flex;align-items:center;gap:7px;padding:10px 14px;border-radius:14px;background:var(--acc);color:var(--accfg);font-weight:800;font-size:13.5px}
+.T2 .pulse{display:flex;gap:12px;margin-top:16px}
+.T2 .pulse div{flex:1;padding:13px 14px;border-radius:16px;background:var(--card);border:var(--bd)}
+.T2 .pulse b{display:block;font:700 26px 'Playfair Display';color:var(--acc)}
+.T2 .pulse span{font-size:12px;color:var(--mut)}
+.T2 .feed{border-left:2px solid var(--line);margin-left:6px;padding-left:18px;position:relative}
+.T2 .fi{position:relative;margin-bottom:14px}
+.T2 .fi::before{content:"";position:absolute;left:-26px;top:16px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:3px solid var(--acc)}
+.T2 .fi.read::before{border-color:var(--line)}
+.T2 .fi .when{font-size:11.5px;color:var(--mut);font-weight:600;margin-bottom:6px;display:block}
+.T2 .fi .card{margin:0}
+.T2 .fi h4{font-size:15.5px}
+
+/* =========================================================
+   ВЕРСИЯ 3 · «ДЕЛА НА СЕГОДНЯ» — яркий и дружелюбный
+   ========================================================= */
+.T3{--bg:#f1f3ff;--card:#fff;--fg:#1a1b3a;--mut:#7a7da6;--line:#dfe2f7;--chip:#e6e9fb;--acc:#5b5bf0;--accfg:#fff;--accbg:#e8e8ff;--ok:#12b886;--okbg:#d9f5ec;--warn:#ff6b5b;--warnbg:#ffe6e2;--r:26px;--rb:18px;--bd:0;--sh:0 6px 0 #dfe2f7;--fb:'Nunito',sans-serif;--h1:900 31px/1.05 'Nunito';--h2:900 20px 'Nunito'}
+.T3 .tabs{left:12px;right:12px;bottom:12px;height:64px;border-radius:32px;background:#fff;box-shadow:0 10px 30px rgba(60,60,160,.22);padding:4px 6px}
+.T3 .tabs button.on{color:#fff}
+.T3 .tabs button.on::before{content:"";position:absolute;inset:3px 4px;border-radius:26px;background:var(--acc);z-index:-1}
+.T3 .scr{bottom:90px}
+.T3 .ptoast{bottom:96px}
+.T3 .hero3{display:flex;align-items:center;gap:16px;margin-top:16px;padding:18px;border-radius:30px;background:linear-gradient(135deg,#5b5bf0,#8a5bf0);color:#fff;box-shadow:0 8px 0 #4545c9}
+.T3 .hero3 .rg{position:relative;width:92px;height:92px;flex:none}
+.T3 .hero3 .rg svg{width:100%;height:100%}
+.T3 .hero3 .rg b{position:absolute;inset:0;display:grid;place-items:center;font:900 28px 'Nunito'}
+.T3 .hero3 .tx b{display:block;font:900 20px/1.15 'Nunito'}
+.T3 .hero3 .tx span{font-size:13px;opacity:.85;font-weight:600}
+.T3 .hero3 .qr{margin-top:10px;display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:14px;background:#fff;color:#4545c9;font-weight:900;font-size:13px}
+.T3 .task{display:flex;gap:14px;align-items:center;padding:15px;border-radius:26px;margin-bottom:12px;color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.18);cursor:pointer;transition:.15s}
+.T3 .task:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.T3 .task.c1{background:#ff6b5b}.T3 .task.c2{background:#12b886}.T3 .task.c3{background:#ffa826;color:#3a2200}
+.T3 .task .ic{width:48px;height:48px;border-radius:16px;background:rgba(255,255,255,.28);display:grid;place-items:center;flex:none}
+.T3 .task .tx{flex:1;font-weight:900;font-size:16px;line-height:1.2}
+.T3 .task .tx span{display:block;font-size:12.5px;font-weight:700;opacity:.85;margin-top:2px}
+.T3 .task .go{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.3);display:grid;place-items:center;flex:none}
+.T3 .task.d{background:#c9ccee;color:#fff;box-shadow:0 6px 0 #aeb2dc}
+.T3 .task.d .tx{text-decoration:line-through;opacity:.8}
+.T3 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.T3 .row2 button{padding:16px;border-radius:24px;background:#fff;box-shadow:var(--sh);text-align:left;font-weight:900;font-size:15.5px;line-height:1.2}
+.T3 .row2 button .i{width:26px;height:26px;color:var(--acc);display:block;margin-bottom:8px}
+.T3 .ph-h1{font-weight:900}
+.T3 .li .ic{border-radius:16px}
+.T3 .btn{box-shadow:0 5px 0 rgba(0,0,0,.2)}
+.T3 .btn.o{box-shadow:none}
+.T3 .btn.on{box-shadow:0 5px 0 rgba(0,0,0,.2)}
+.T3 .btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.T3 .card.hl{box-shadow:0 0 0 3px var(--acc),var(--sh)}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+ <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+ <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+ <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19a2 2 0 0 0 2 2h13"/></symbol>
+ <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+ <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h3M20 17v4"/></symbol>
+ <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
+ <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+ <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></symbol>
+ <symbol id="i-hand" viewBox="0 0 24 24"><path d="M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6-8 11-8 11z"/></symbol>
+ <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14a6.5 6.5 0 0 1 3.5 6"/></symbol>
+ <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+</svg>
+
+<div class="head">
+ <h1>3 понятные версии приложения</h1>
+ <p>В этих версиях нет загадок и метафор: внизу пять обычных вкладок с подписями («Главная», «Запросы», «Встречи», «Библиотека», «Профиль»), на каждом экране крупно написано, что это и что нажать. Дом клуба остаётся в стиле: ключ-карта с номером и тёплое «клубное» настроение. Отличаются версии тем, что человек видит сразу при открытии, и внешним видом.</p>
+</div>
+<div class="grid" id="grid"></div>
+
+<div class="bar"><div class="in">
+ <div class="cur" id="cur">Пока не выбрано<small>Нажми «Беру эту версию» под телефоном</small></div>
+ <input id="note" placeholder="Комментарий: что понравилось, что поменять, что убрать">
+ <button class="go" id="go" disabled>Скопировать выбор</button>
+</div></div>
+<div class="gtoast" id="gt"></div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ic=(n,c='i s')=>`<svg class="${c}"><use href="#i-${n}"/></svg>`;
+const person=n=>'№'+String(n).padStart(2,'0');
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function drawQR(cv,seed,fg,bg){const N=25,c=cv.getContext('2d'),s=cv.width/N,r=rng(seed);c.fillStyle=bg;c.fillRect(0,0,cv.width,cv.height);
+ const fin=(x,y)=>{c.fillStyle=fg;c.fillRect(x*s,y*s,7*s,7*s);c.fillStyle=bg;c.fillRect((x+1)*s,(y+1)*s,5*s,5*s);c.fillStyle=fg;c.fillRect((x+2)*s,(y+2)*s,3*s,3*s)};
+ c.fillStyle=fg;for(let y=0;y<N;y++)for(let x=0;x<N;x++){const f=(x<8&&y<8)||(x>N-9&&y<8)||(x<8&&y>N-9);if(!f&&r()>.52)c.fillRect(x*s,y*s,s,s)}
+ fin(0,0);fin(N-7,0);fin(0,N-7)}
+
+const SPH=['Работа','Бумаги','Переезд','Бизнес','Дизайн и digital','Знания','Быт'];
+const REQS=[
+ {id:'r1',t:'Нужен перевод письма от Jobcenter на русский',sph:'Бумаги',due:'до 14 окт',by:12,n:2,urgent:true},
+ {id:'r2',t:'Ищу Steuerberater во Фрайбурге для Gewerbe',sph:'Бизнес',due:'до 20 окт',by:3,n:4},
+ {id:'r3',t:'Нужен логотип для стартапа — оплата по клубным условиям',sph:'Дизайн и digital',due:'до 25 окт',by:21,n:1}
+];
+const OFFERS=[
+ {id:'o1',t:'Резюме на немецком + 30 минут разбора собеседования',sph:'Работа',by:9},
+ {id:'o2',t:'Видео и монтаж для соцсетей — клубная скидка 20%',sph:'Дизайн и digital',by:15},
+ {id:'o3',t:'Помогу с Anmeldung и поиском квартиры во Фрайбурге',sph:'Переезд',by:4}
+];
+const RESP=[{n:12,why:'Переводил такие письма, сделаю сегодня',niche:'Бумаги и переводы'},{n:4,why:'Знаю, как это обычно просят',niche:'Переезд и жильё'},{n:26,why:'Могу вычитать и оформить',niche:'Дизайн и digital'}];
+const LIB=[
+ {t:'Письмо от Finanzamt: что отвечать и в какой срок',min:6,by:12,tag:'Finanzamt',b:['Не паникуй: в письме важны три вещи — Steuernummer, срок (Frist) и что именно запрашивают.','Если срок короткий — отправь короткое «получил, отвечу до даты», а документы приложи позже.','Внутри — шаблон ответа на немецком и список, что приложить.']},
+ {t:'Gewerbeanmeldung за один визит: что взять с собой',min:8,by:3,tag:'Gewerbe',b:['Список документов и порядок шагов.','Типичные ошибки в анкете.','Что делать после регистрации: Finanzamt, Steuerberater, счёт.']},
+ {t:'Резюме на немецком: чем отличается от привычного',min:7,by:9,tag:'Найм',b:['Структура и длина.','Фразы, которые работают, и фразы, которые режут слух.','Что писать про опыт из Украины и России.']},
+ {t:'Ответ арендодателю: шаблон письма и пакет документов',min:5,by:4,tag:'Квартира',b:['Какие документы просят почти всегда и как собрать их за день.','Как написать первое письмо, чтобы его дочитали.','Что делать, если ответа нет три дня.']},
+ {t:'Три сервиса, которые экономят час в неделю на бумагах',min:3,by:15,tag:'Фишки',b:['Сканер документов с автоматическим именованием.','Напоминания о сроках писем.','Шаблоны ответов на немецком.']}
+];
+const STORIES=[
+ {from:12,cat:'Экспертиза',rate:'Изменило мою ситуацию',txt:'Помог разобрать письмо от Finanzamt, срок был через 2 дня. Всё успел.'},
+ {from:4,cat:'Связи',rate:'Серьёзно',txt:'Познакомил с человеком, который нашёл мне первого клиента.'}
+];
+const PEOPLE={12:'Бумаги и переводы',4:'Переезд и жильё',26:'Дизайн и digital',18:'Стартапы'};
+
+/* =============== сборка одного приложения =============== */
+function makeApp(ph,cfg){
+ const S={tab:'home',seg:'need',libF:'Все',resp:new Set(),mine:'open',newReqs:[],slot:'',mon:2,scanI:0,met:{},goal:'',done:{goal:0,meet:0,help:0},pulse:74,qr:{left:30}};
+ const TABS=[['home','Главная','home'],['req','Запросы','chat'],['meet','Встречи','cal'],['lib','Библиотека','book'],['prof','Профиль','user']];
+ ph.innerHTML=`<div class="stb"><span>9:41</span><span>NEXT</span></div>`+TABS.map(([id])=>`<section class="scr" data-s="${id}"></section>`).join('')+
+  `<nav class="tabs">${TABS.map(([id,l,i])=>`<button data-tab="${id}">${ic(i,'i')}${l}${id==='req'?'<span class="bd" id="bdq">3</span>':id==='meet'?'<span class="bd" id="bdm">1</span>':''}</button>`).join('')}</nav>
+  <div class="sheetw"><div class="scrim" data-act="close"></div><div class="sheet"></div></div><div class="ptoast"></div>`;
+ const toast=m=>{const t=$('.ptoast',ph);t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2500)};
+ const sheet=html=>{$('.sheet',ph).innerHTML='<div class="grab"></div>'+html;$('.sheetw',ph).classList.add('on')};
+ const closeS=()=>$('.sheetw',ph).classList.remove('on');
+ const doneN=()=>S.done.goal+S.done.meet+S.done.help;
+
+ /* --- экраны --- */
+ const reqCard=r=>{const on=S.resp.has(r.id);return `<div class="card"><div class="tg"><span class="badge">${r.sph}</span>${r.urgent?'<span class="badge w">Срочно</span>':''}</div><h4>${esc(r.t)}</h4><div class="mt">${person(r.by)} · ${r.due} · откликов: ${r.n+(on?1:0)}</div><button class="btn ${on?'on':''}" data-act="resp" data-id="${r.id}">${on?'Вы откликнулись ✓':'Откликнуться'}</button></div>`};
+ const reqScreen=()=>{
+  const mine=S.mine==='open'?`<div class="card hl"><div class="tg"><span class="badge g">Мой запрос</span><span class="badge w">3 отклика</span></div><h4>Нужна помощь с договором аренды — перевод и проверка</h4><div class="mt">до 16 окт · Бумаги</div><button class="btn" data-act="pick">Выбрать помощника</button></div>`
+   :S.mine==='work'?`<div class="card hl"><div class="tg"><span class="badge g">Мой запрос</span><span class="badge">В работе</span></div><h4>Нужна помощь с договором аренды</h4><div class="mt">Задачу делает ${person(S.helper)}. Когда всё готово, подтверди помощь.</div><button class="btn" data-act="confirm">Подтвердить помощь</button></div>`
+   :`<div class="card"><div class="tg"><span class="badge ok">Закрыт</span></div><h4 style="opacity:.55">Договор аренды — помощь подтверждена</h4></div>`;
+  const newr=S.newReqs.map(r=>`<div class="card hl"><div class="tg"><span class="badge g">Мой запрос</span><span class="badge">${r.sph}</span></div><h4>${esc(r.t)}</h4><div class="mt">опубликован только что · откликов: 0</div></div>`).join('');
+  const canNew=S.mine==='closed'&&!S.newReqs.length;
+  const list=S.seg==='need'?REQS.map(reqCard).join(''):OFFERS.map(o=>{const on=S.resp.has(o.id);return `<div class="card"><div class="tg"><span class="badge">${o.sph}</span></div><h4>${o.t}</h4><div class="mt">${person(o.by)}</div><button class="btn ${on?'on':'o'}" data-act="resp" data-id="${o.id}">${on?'Сообщение отправлено ✓':'Написать'}</button></div>`}).join('');
+  return `<h1>Запросы</h1><p class="lead">Попроси помощи или помоги другому. Откликаются те, кто может, выбираешь ты.</p>
+  <div class="seg"><button class="${S.seg==='need'?'on':''}" data-act="seg" data-v="need">Нужна помощь</button><button class="${S.seg==='give'?'on':''}" data-act="seg" data-v="give">Могу помочь</button></div>
+  <div style="margin-top:14px">${S.seg==='need'?mine+newr:''}${list}</div>
+  ${S.seg==='need'?`<button class="btn ${canNew?'':'o dis'}" data-act="newreq">${ic('plus','i')} Новый запрос</button>${canNew?'':'<div class="hint" style="text-align:center">У каждого один активный запрос. Новый можно создать, когда старый закрыт.</div>'}`:''}`;
+ };
+ const meetScreen=()=>{
+  const inb=S.slot?`<div class="card"><div class="tg"><span class="badge ok">Встреча назначена</span></div><h4>${person(18)} · ${S.slot}</h4><div class="mt">После встречи покажите друг другу QR — тогда она засчитается.</div></div>`
+   :`<div class="card hl"><div class="tg"><span class="badge g">Просят встречу</span><span class="badge w">осталось 12 дней</span></div><h4>${person(18)} · Стартапы</h4><div class="mt">«Выход на рынок Австрии». Минимум 30 минут. Отказаться нельзя, перенести можно один раз. Выбери время:</div>${['Вт 14 окт · 18:00','Ср 15 окт · 12:30','Пт 17 окт · 19:00'].map(s=>`<button class="btn o" style="margin-bottom:8px" data-act="slot" data-s="${s}">${s}</button>`).join('')}</div>`;
+  return `<h1>Встречи</h1><p class="lead">Каждый месяц — одна новая связь. Встреча засчитывается, когда вы оба показали друг другу QR.</p>
+  <div class="card" style="margin-top:14px"><div class="tg"><span>В октябре</span></div><div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font:var(--h2);font-size:24px">${S.mon} из 4</b><span class="hint" style="margin:0">обязательных встреч</span></div><div class="bar3" style="margin:10px 0 0"><div class="t"><i style="width:${S.mon/4*100}%"></i></div></div></div>
+  <div class="card" style="text-align:center"><div class="tg" style="justify-content:center">Мой QR · покажи другому участнику</div><div class="qrbox"><canvas id="qrc" width="250" height="250"></canvas></div><div class="qrbar"><i id="qrbar" style="width:${S.qr.left/30*100}%"></i></div><div class="hint" style="margin:0" id="qrt">Обновится через ${S.qr.left} с · скриншот не сработает</div></div>
+  <button class="btn" data-act="scan" style="margin-bottom:12px">${ic('qr','i')} Сканировать QR другого</button>
+  ${inb}
+  <div class="card"><div class="tg"><span class="badge">Пара месяца · бот свёл</span></div><h4>${person(26)} · Дизайн и digital</h4><div class="mt">Вы ещё не знакомы. Предложи встречу.</div><button class="btn o" data-act="pair">Договориться о встрече</button></div>`;
+ };
+ const libScreen=()=>{
+  const tags=['Все','Finanzamt','Gewerbe','Найм','Квартира','Фишки'];
+  return `<h1>Библиотека</h1><p class="lead">Фишки, идеи и разборы, за которые снаружи платят. Для участников бесплатно.</p>
+  <div class="chips">${tags.map(t=>`<button class="chip ${S.libF===t?'on':''}" data-act="libf" data-v="${t}">${t}</button>`).join('')}</div>
+  <div class="card" style="padding:2px 15px;margin-top:14px">${LIB.filter(l=>S.libF==='Все'||l.tag===S.libF).map((l,i)=>`<div class="li" data-act="art" data-i="${LIB.indexOf(l)}"><div class="ic">${ic('book','i s')}</div><div class="tx">${l.t}<span>${l.tag} · ${l.min} мин · от ${person(l.by)}</span></div></div>`).join('')}</div>`;
+ };
+ const profScreen=()=>`<div style="text-align:center;padding-top:6px"><div style="font:var(--h1);font-size:68px;letter-spacing:-.04em;color:var(--acc)"><small style="font-size:24px;opacity:.6;margin-right:3px">№</small>07</div><h2 style="font:var(--h2);font-size:22px;margin-top:2px">Алексей М.</h2><div class="lead">Дизайн и digital · Фрайбург</div><div style="margin-top:10px"><span class="badge g">★ Основатель</span> <span class="badge">Законы подписаны 14.09.2026</span></div></div>
+  <div class="sec"><span>Твой путь</span><small>сейчас: Участник</small></div>
+  <div class="card"><div class="steps"><div class="st d"><i>${ic('check','i')}</i>Кандидат</div><div class="st c"><i></i>Участник</div><div class="st"><i></i>Партнёр</div><div class="st"><i></i>Совет</div></div>
+  <div class="hint" style="margin-top:12px">До «Партнёра» осталось: Пульс до 80 (сейчас ${S.pulse}) и одна серьёзная помощь (2 из 3). Партнёр голосует при отборе и может поручаться за новичков.</div></div>
+  <div class="sec"><span>Пульс</span><small>твоя активность в клубе</small></div>
+  <div class="card"><div style="display:flex;align-items:baseline;gap:8px"><b style="font:var(--h1);font-size:40px;color:var(--acc)" id="pv">${S.pulse}</b><span class="hint" style="margin:0">из 100 · растёт от шагов, встреч и помощи</span></div>
+  <div class="bar3"><div class="l"><span>Движение</span><b>${S.done.goal?23:20} / 25</b></div><div class="t"><i style="width:${S.done.goal?92:80}%"></i></div></div><div class="bar3"><div class="l"><span>Связи</span><b>21 / 30</b></div><div class="t"><i style="width:70%"></i></div></div><div class="bar3"><div class="l"><span>Помощь другим</span><b>33 / 45</b></div><div class="t"><i style="width:73%"></i></div></div></div>
+  <div class="sec"><span>Мне помогли</span></div>
+  <div class="card" style="padding:2px 15px">${STORIES.map(s=>`<div class="story"><div class="tg"><span class="badge ${s.rate.startsWith('Изменило')?'g':''}">${s.rate}</span><span class="badge">${s.cat}</span></div><p>«${s.txt}»</p><div class="hint" style="margin:0">от участника ${person(s.from)}</div></div>`).join('')}</div>
+  <div class="sec"><span>Настройки</span></div>
+  <div class="card" style="padding:2px 15px"><button class="setrow" data-act="pause"><div><b>Пауза</b><span>До 3 месяцев раз в год. Пульс не тает</span></div>${ic('chev','i s')}</button><button class="setrow" data-act="laws"><div><b>Десять законов клуба</b><span>Устав</span></div>${ic('chev','i s')}</button><button class="setrow" data-act="leave"><div><b style="color:var(--warn)">Выйти из клуба</b><span>В один шаг, личные данные удаляются</span></div></button></div>`;
+
+ const render=()=>{
+  const sc={home:cfg.home(S,{ic,esc,person,doneN}),req:reqScreen(),meet:meetScreen(),lib:libScreen(),prof:profScreen()};
+  TABS.forEach(([id])=>{const e=$(`.scr[data-s="${id}"]`,ph);const keep=e.scrollTop;e.innerHTML=sc[id];e.scrollTop=keep});
+  $$('.scr',ph).forEach(s=>s.classList.toggle('on',s.dataset.s===S.tab));
+  $$('.tabs button',ph).forEach(b=>b.classList.toggle('on',b.dataset.tab===S.tab));
+  const cv=$('#qrc',ph);if(cv)drawQR(cv,S.qr.seed||(S.qr.seed=7001),cfg.qrfg,'#ffffff');
+ };
+ const go=t=>{S.tab=t;if(t==='req'){const b=$('#bdq',ph);b&&(b.style.display='none')}if(t==='meet'){const b=$('#bdm',ph);b&&(b.style.display='none')}render();$(`.scr[data-s="${t}"]`,ph).scrollTop=0;closeS()};
+ const qrTimer=setInterval(()=>{if(!ph.isConnected){clearInterval(qrTimer);return}S.qr.left--;if(S.qr.left<=0){S.qr.left=30;S.qr.seed=Math.floor(Math.random()*1e6);const cv=$('#qrc',ph);if(cv)drawQR(cv,S.qr.seed,cfg.qrfg,'#ffffff')}const b=$('#qrbar',ph),t=$('#qrt',ph);if(b)b.style.width=S.qr.left/30*100+'%';if(t)t.textContent=`Обновится через ${S.qr.left} с · скриншот не сработает`},1000);
+
+ /* --- действия --- */
+ ph.addEventListener('click',e=>{
+  const tb=e.target.closest('[data-tab]');if(tb){go(tb.dataset.tab);return}
+  const gt=e.target.closest('[data-go]');if(gt){go(gt.dataset.go);return}
+  const a=e.target.closest('[data-act]');if(!a)return;
+  const v=a.dataset.v,k=a.dataset.act;
+  switch(k){
+   case 'close':closeS();break;
+   case 'qr':sheet(`<h2 style="font:var(--h2);font-size:22px">Ключ-карта №07</h2><div class="hint" style="margin-bottom:12px">Покажи другому участнику. QR меняется каждые 30 секунд. Встреча засчитается, когда оба отсканируют друг друга.</div><div class="qrbox"><canvas id="qrs" width="250" height="250"></canvas></div><button class="btn o" data-act="close" style="margin-top:16px">Закрыть</button>`);drawQR($('#qrs',ph),S.qr.seed||7001,cfg.qrfg,'#ffffff');break;
+   case 'seg':S.seg=v;render();break;
+   case 'libf':S.libF=v;render();break;
+   case 'resp':S.resp.has(a.dataset.id)?S.resp.delete(a.dataset.id):S.resp.add(a.dataset.id);render();if(S.resp.has(a.dataset.id))toast('Отправлено. Автор выберет помощника');break;
+   case 'pick':sheet(`<h2 style="font:var(--h2);font-size:22px">Кто откликнулся</h2><div class="hint" style="margin-bottom:6px">Выбери, кому доверить задачу</div>${RESP.map(r=>`<div class="li" data-act="trust" data-n="${r.n}"><div class="ic">${String(r.n).padStart(2,'0')}</div><div class="tx">${person(r.n)} · ${r.niche}<span>«${r.why}»</span></div></div>`).join('')}`);break;
+   case 'trust':S.mine='work';S.helper=+a.dataset.n;S.done.help=1;closeS();render();toast('Задача у '+person(S.helper)+'. Остальным придёт «спасибо за отклик»');break;
+   case 'confirm':{let rate='Серьёзно';sheet(`<h2 style="font:var(--h2);font-size:22px">Подтверди помощь</h2><div class="hint" style="margin-bottom:12px">От ${person(S.helper)}. Это растит его Пульс.</div><div class="lbl" style="font-size:12.5px;font-weight:700;margin-bottom:8px">Насколько это было важно?</div><div class="chips" style="flex-wrap:wrap;margin:0;padding:0" id="rt">${['Мелочь','Серьёзно','Изменило мою ситуацию'].map(x=>`<button class="chip ${x===rate?'on':''}" data-v="${x}">${x}</button>`).join('')}</div><button class="btn" id="cfok" style="margin-top:18px">Подтвердить</button>`);
+    $$('#rt .chip',ph).forEach(b=>b.onclick=()=>{rate=b.dataset.v;$$('#rt .chip',ph).forEach(x=>x.classList.toggle('on',x===b))});
+    $('#cfok',ph).onclick=()=>{S.mine='closed';closeS();render();toast('Помощь подтверждена. Запрос закрыт')}}break;
+   case 'newreq':if(!(S.mine==='closed'&&!S.newReqs.length)){toast('Сначала закрой старый запрос');break}
+    {let sph='Бумаги';sheet(`<h2 style="font:var(--h2);font-size:22px">Новый запрос</h2><div class="hint" style="margin-bottom:12px">Напиши конкретно, что нужно и до какого срока.</div><textarea class="field" id="nr" maxlength="160" placeholder="Что нужно?"></textarea><div class="chips" style="flex-wrap:wrap;margin:12px 0 0;padding:0" id="ns">${SPH.map(x=>`<button class="chip ${x===sph?'on':''}" data-v="${x}">${x}</button>`).join('')}</div><button class="btn" id="nok" style="margin-top:16px" disabled>Опубликовать</button>`);
+     $('#nr',ph).oninput=e2=>{$('#nok',ph).disabled=e2.target.value.trim().length<10};
+     $$('#ns .chip',ph).forEach(b=>b.onclick=()=>{sph=b.dataset.v;$$('#ns .chip',ph).forEach(x=>x.classList.toggle('on',x===b))});
+     $('#nok',ph).onclick=()=>{S.newReqs.push({t:$('#nr',ph).value.trim(),sph});closeS();render();toast('Запрос опубликован на доске')}}break;
+   case 'slot':S.slot=a.dataset.s;S.done.meet=1;render();toast('Встреча назначена: '+a.dataset.s);break;
+   case 'scan':{const seq=[12,26,12,12],n=seq[S.scanI++%seq.length],m=S.met[n]||0,pts=[4,2,0][Math.min(m,2)];S.met[n]=m+1;if(m===0){S.mon=Math.min(4,S.mon+1)}S.pulse=Math.min(100,S.pulse+pts);render();
+    sheet(`<div style="text-align:center"><div style="width:64px;height:64px;border-radius:50%;background:var(--okbg);color:var(--ok);display:grid;place-items:center;margin:4px auto 12px">${ic('check','i')}</div><h2 style="font:var(--h2);font-size:22px">Встреча засчитана</h2><div class="hint">${person(n)} · ${PEOPLE[n]}</div><div style="margin:12px 0"><span class="badge g">Связи ${pts?'+'+pts:'+0'}</span></div><div class="hint">${m===0?'Первая встреча с этим человеком: полные баллы.':m===1?'Повторная встреча: баллы меньше.':'Повторных встреч уже достаточно: баллов нет.'}</div></div><input class="field" id="scn" placeholder="О чём договорились (по желанию, +1 бонус)" style="margin-top:14px"><button class="btn" id="scok" style="margin-top:12px">Готово</button>`);
+    $('#scok',ph).onclick=()=>{const t=$('#scn',ph).value.trim();closeS();if(t.length>2&&pts){S.pulse=Math.min(100,S.pulse+1);render();toast('Записал. Бонус +1')}else toast('Готово')}}break;
+   case 'pair':sheet(`<h2 style="font:var(--h2);font-size:22px">Встреча с ${person(26)}</h2><div class="hint" style="margin-bottom:12px">Участник обязан встретиться в течение двух недель.</div><input class="field" id="pt" placeholder="Зачем? Одной строкой"><button class="btn" id="pok" style="margin-top:12px">Отправить запрос</button>`);$('#pok',ph).onclick=()=>{closeS();toast('Запрос отправлен '+person(26))};break;
+   case 'art':{const l=LIB[+a.dataset.i];sheet(`<span class="badge g">${l.tag}</span><h2 style="font:var(--h2);font-size:21px;line-height:1.2;margin:10px 0 4px">${l.t}</h2><div class="hint" style="margin:0 0 12px">${l.min} мин · от участника ${person(l.by)}</div>${l.b.map(p=>`<p style="margin-bottom:10px">${p}</p>`).join('')}<div class="hint">Пример наполнения.</div><button class="btn o" data-act="close" style="margin-top:14px">Закрыть</button>`)}break;
+   case 'goal':{sheet(`<h2 style="font:var(--h2);font-size:22px">Главное на этой неделе</h2><div class="hint" style="margin-bottom:12px">Одно действие к твоей цели. Конкретно и проверяемо.</div><textarea class="field" id="gl" maxlength="120" placeholder="Например: отправить 5 предложений клиентам"></textarea><div class="chips" style="margin:10px 0 0;padding:0;flex-wrap:wrap">${['Записаться на Gewerbe-термин','Провести 2 созвона','Сделать первый экран сайта'].map(x=>`<button class="chip" data-v="${x}">${x}</button>`).join('')}</div><button class="btn" id="glok" style="margin-top:16px" disabled>Зафиксировать</button>`);
+    const t=$('#gl',ph),b=$('#glok',ph);t.oninput=()=>b.disabled=t.value.trim().length<8;$$('.chip',$('.sheet',ph)).forEach(c=>c.onclick=()=>{t.value=c.dataset.v;t.oninput()});
+    b.onclick=()=>{S.goal=t.value.trim();S.done.goal=1;S.pulse=Math.min(100,S.pulse+3);closeS();render();toast('Цель недели зафиксирована · Пульс +3')}}break;
+   case 'pause':sheet(`<h2 style="font:var(--h2);font-size:22px">Пауза</h2><div class="hint" style="margin-bottom:14px">Болезнь, ребёнок, экзамены, большое событие. До трёх месяцев раз в год. Пульс не тает, статус сохраняется.</div><button class="btn" data-act="pauseok">Включить паузу на 1 месяц</button>`);break;
+   case 'pauseok':closeS();toast('Пауза включена до 11 ноября');break;
+   case 'laws':{const L=['Каждую неделю — шаг к своей цели','Каждый месяц — новая связь','Каждый месяц — помощь другому участнику','Сначала отдаёшь, потом просишь','Что сказано в клубе, остаётся в клубе','Правила одни для всех, включая создателя','Статус не покупается, его можно только заработать','Политика остаётся за дверью','Обман участника — выход навсегда','Кто остановился — уходит. Клуб никого не выгоняет'];sheet(`<h2 style="font:var(--h2);font-size:22px;margin-bottom:6px">Десять законов</h2>${L.map((l,i)=>`<div class="li" style="cursor:default"><div class="ic">${i+1}</div><div class="tx">${l}</div></div>`).join('')}`)}break;
+   case 'leave':sheet(`<h2 style="font:var(--h2);font-size:22px">Выйти из клуба?</h2><p style="margin:8px 0 16px;color:var(--mut)">Уйти можно в любой момент, без объяснений. Личные данные удаляются. Вернуться можно через обычный отбор.</p><button class="btn o" data-act="close">Остаться</button><button class="btn o" style="margin-top:8px;color:var(--warn)" data-act="close">Выйти (в прототипе отключено)</button>`);break;
+   case 'event':S.event=!S.event;render();toast(S.event?'Записал. Напомним за день':'Запись отменена');break;
+  }
+ });
+ render();
+}
+
+/* =============== главные экраны разных версий =============== */
+const taskList=(S)=>[
+ {k:'goal',t:'Задать цель на неделю',s:'Одно главное действие',act:'goal',icon:'target'},
+ {k:'meet',t:'Ответить на запрос встречи',s:'№18 · осталось 12 дней',go:'meet',icon:'cal'},
+ {k:'help',t:'Выбрать помощника',s:'На твой запрос откликнулись трое',go:'req',icon:'chat'}
+];
+const HOME={
+ T1:(S,h)=>{
+  const T=taskList(S);
+  return `<div class="eb">Добрый вечер</div><h1>Алексей</h1>
+  <div class="key"><div class="r1"><span>КЛЮЧ-КАРТА КЛУБА</span><span>ОСНОВАТЕЛЬ</span></div><div class="num"><small>№</small>07</div><div class="r2"><b>Алексей М.</b><button class="qr" data-act="qr">${h.ic('qr','i s')}Показать QR</button></div></div>
+  <div class="sec"><span>Что сделать сегодня</span><small>${h.doneN()} из 3</small></div>
+  ${T.map(x=>`<div class="task ${S.done[x.k]?'d':''}" ${x.act?`data-act="${x.act}"`:`data-go="${x.go}"`}><div class="cb">${h.ic('check','i s')}</div><div class="tx">${x.t}<span>${S.done[x.k]?'Готово':x.s}</span></div>${S.done[x.k]?'':h.ic('chev','i s')}</div>`).join('')}
+  <div class="sec"><span>Быстрые действия</span></div>
+  <div class="grid4"><button data-go="req">${h.ic('hand','i')}Попросить помощь<span>создать запрос</span></button><button data-go="req">${h.ic('users','i')}Помочь другому<span>открытые запросы</span></button><button data-go="meet">${h.ic('cal','i')}Встречи<span>QR и записи</span></button><button data-go="lib">${h.ic('book','i')}Читать<span>библиотека клуба</span></button></div>`;
+ },
+ T2:(S,h)=>{
+  const first=S.mine==='open'?`<div class="fi"><span class="when">Сейчас · Запросы</span><div class="card hl"><h4>На твой запрос откликнулись 3 человека</h4><div class="mt">Договор аренды: перевод и проверка</div><button class="btn" data-go="req">Выбрать помощника</button></div></div>`:S.mine==='work'?`<div class="fi read"><span class="when">Сейчас · Запросы</span><div class="card"><h4>Задача у ${h.person(S.helper)}</h4><div class="mt">Когда помощь будет готова, подтверди её.</div><button class="btn o" data-go="req">Открыть запрос</button></div></div>`:`<div class="fi read"><span class="when">Сейчас · Запросы</span><div class="card"><h4>Запрос закрыт, помощь подтверждена</h4></div></div>`;
+  const meet=S.slot?`<div class="fi read"><span class="when">Сегодня · Встречи</span><div class="card"><h4>Встреча с ${h.person(18)} назначена</h4><div class="mt">${S.slot}</div></div></div>`:`<div class="fi"><span class="when">Сегодня · Встречи</span><div class="card"><h4>${h.person(18)} просит встречу</h4><div class="mt">«Выход на рынок Австрии» · осталось 12 дней</div><button class="btn" data-go="meet">Выбрать время</button></div></div>`;
+  const goal=S.done.goal?`<div class="fi read"><span class="when">Эта неделя · Цель</span><div class="card"><h4>Цель недели зафиксирована</h4><div class="mt">${h.esc(S.goal)}</div></div></div>`:`<div class="fi"><span class="when">Эта неделя · Цель</span><div class="card"><h4>Цель на неделю не задана</h4><div class="mt">Одно главное действие, закон №1</div><button class="btn o" data-act="goal">Задать цель</button></div></div>`;
+  return `<div class="top2"><div class="av">07</div><div class="nm"><b>Алексей М.</b><span>Основатель · Фрайбург</span></div><button class="qrb" data-act="qr">${h.ic('qr','i s')}QR</button></div>
+  <div class="pulse"><div><b>${S.pulse}</b><span>Пульс · активность</span></div><div><b>${S.mon}/4</b><span>встреч в октябре</span></div></div>
+  <div class="sec"><span>Что нового в клубе</span></div>
+  <div class="feed">${first}${meet}${goal}
+   <div class="fi read"><span class="when">Вчера · Совет</span><div class="card"><h4>Принят новый участник №19</h4><div class="mt">Причина: конкретный пример помощи за последний месяц.</div></div></div>
+   <div class="fi"><span class="when">Сб 18 окт · Событие</span><div class="card"><h4>Живая встреча клуба · Фрайбург</h4><div class="mt">17:00 · спорт и «круг запросов»</div><button class="btn ${S.event?'on':'o'}" data-act="event">${S.event?'Вы записаны ✓':'Записаться'}</button></div></div>
+  </div>`;
+ },
+ T3:(S,h)=>{
+  const T=taskList(S),n=h.doneN(),c=2*Math.PI*38;
+  const cols=['c1','c2','c3'];
+  return `<h1>Привет, Алексей!</h1><p class="lead">Три коротких дела на сегодня</p>
+  <div class="hero3"><div class="rg"><svg viewBox="0 0 92 92"><circle cx="46" cy="46" r="38" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="9"/><circle cx="46" cy="46" r="38" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-n/3)}" transform="rotate(-90 46 46)" style="transition:stroke-dashoffset .6s"/></svg><b>${n}/3</b></div><div class="tx"><b>${n===3?'Всё сделано!':'Ты в движении'}</b><span>6 недель подряд<br>№07 · Основатель</span><br><button class="qr" data-act="qr">${h.ic('qr','i s')}Мой QR</button></div></div>
+  <div class="sec" style="margin-top:22px"><span>Дела на сегодня</span></div>
+  ${T.map((x,i)=>`<div class="task ${S.done[x.k]?'d':cols[i]}" ${x.act?`data-act="${x.act}"`:`data-go="${x.go}"`}><div class="ic">${h.ic(S.done[x.k]?'check':x.icon,'i')}</div><div class="tx">${x.t}<span>${S.done[x.k]?'Сделано':x.s}</span></div>${S.done[x.k]?'':`<div class="go">${h.ic('chev','i s')}</div>`}</div>`).join('')}
+  <div class="sec"><span>Ещё в клубе</span></div>
+  <div class="row2"><button data-go="req">${h.ic('hand','i')}Попросить помощь</button><button data-go="lib">${h.ic('book','i')}Библиотека</button></div>`;
+ }
+};
+
+/* =============== страница =============== */
+const V=[
+ {k:'T1',n:'1',name:'Тёплый',cfg:{home:HOME.T1,qrfg:'#2a2118'},
+  what:'Светлый, спокойный и очень крупный. Сверху твоя ключ-карта с номером, под ней три понятных дела на сегодня с галочками и четыре крупные кнопки.',
+  diff:'Тёплые кремовые тона и терракотовая карта. Всё читается без усилий, ничего лишнего. Самый «домашний» вариант.',
+  boost:'Человек сразу видит, кто он в клубе (номер), что сделать сегодня и куда нажать, если хочет попросить помощь или помочь.',
+  try:'Нажми дело «Задать цель на неделю», затем вкладку «Запросы» и «Выбрать помощника». «Показать QR» на карте.'},
+ {k:'T2',n:'2',name:'Лента',cfg:{home:HOME.T2,qrfg:'#0d1a14'},
+  what:'Главная — это лента «что нового в клубе»: отклики на твой запрос, просьбы о встрече, новые участники, события. У каждого события своя кнопка.',
+  diff:'Тёмный и премиальный: тёмно-зелёный и золото. Знакомый формат ленты, как в мессенджерах и соцсетях, поэтому никого не надо учить.',
+  boost:'Клуб ощущается живым: каждый раз, открывая приложение, видишь, что произошло. Главное всегда наверху.',
+  try:'Нажми «Выбрать помощника» в ленте и сделай пару шагов. Вернись на «Главную»: карточка в ленте изменится.'},
+ {k:'T3',n:'3',name:'Дела на сегодня',cfg:{home:HOME.T3,qrfg:'#1a1b3a'},
+  what:'Главный экран — прогресс дня: кольцо «0 из 3» и три цветные карточки-дела. Сделал дело, кольцо заполняется.',
+  diff:'Яркий и дружелюбный, крупные кнопки с объёмными тенями, нижнее меню «плавает». Современный и понятный даже в первый раз.',
+  boost:'Превращает законы клуба в привычку: каждый день три простых шага, видно прогресс и серию недель.',
+  try:'Нажми любую цветную карточку, выполни дело и вернись на главную: кольцо заполнится. Вкладка «Встречи» показывает живой QR.'}
+];
+V.forEach(c=>{
+ const o=document.createElement('div');o.className='opt';o.dataset.k=c.k;
+ o.innerHTML=`<div class="ph ${c.k}"></div><div class="cap"><div class="n">ВЕРСИЯ ${c.n}</div><h2>${c.name}</h2>
+ <div class="row"><b>Что это</b><span>${c.what}</span></div>
+ <div class="row"><b>Чем отличается</b><span>${c.diff}</span></div>
+ <div class="row"><b>Чем полезно</b><span>${c.boost}</span></div>
+ <div class="try"><b style="color:#c9c5ba">Что нажать:</b> ${c.try}</div>
+ <button class="pickbtn">Беру эту версию</button></div>`;
+ $('#grid').appendChild(o);
+ makeApp($('.ph',o),c.cfg);
+ $('.pickbtn',o).onclick=()=>choose(c.k);
+});
+let chosen=null;
+function choose(k){
+ chosen=chosen===k?null:k;
+ $$('.opt').forEach(o=>{o.classList.toggle('chosen',o.dataset.k===chosen);$('.pickbtn',o).textContent=o.dataset.k===chosen?'✓ Выбрано':'Беру эту версию'});
+ const c=V.find(x=>x.k===chosen);
+ $('#cur').innerHTML=c?`Версия ${c.n}: «${c.name}»<small>Можно дописать комментарий и скопировать</small>`:'Пока не выбрано<small>Нажми «Беру эту версию» под телефоном</small>';
+ $('#go').disabled=!c;
+}
+function gtoast(m){const t=$('#gt');t.textContent=m;t.classList.add('on');clearTimeout(gtoast.t);gtoast.t=setTimeout(()=>t.classList.remove('on'),2200)}
+$('#go').onclick=async()=>{
+ const c=V.find(x=>x.k===chosen);if(!c)return;
+ const n=$('#note').value.trim();
+ const t=`ВЫБОР ПОНЯТНОЙ ВЕРСИИ NEXT: версия ${c.n} — «${c.name}»`+(n?`\nКомментарий: ${n}`:'');
+ try{await navigator.clipboard.writeText(t);gtoast('Скопировано. Отправь мне в чат')}
+ catch(_){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');gtoast('Скопировано. Отправь мне в чат')}catch(__){gtoast(t)}a.remove()}
+};
+</script>
+</body>
+</html>
