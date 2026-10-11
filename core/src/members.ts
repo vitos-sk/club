@@ -49,3 +49,27 @@ export async function clubSize(store: Store): Promise<number> {
 export async function listInside(store: Store): Promise<Member[]> {
   return (await store.t.members.list()).filter(isInside);
 }
+
+/**
+ * Связать Telegram-аккаунт с уже заведённым участником: по id, а если id ещё неизвестен — по @нику
+ * (так вносятся первые участники ядра: создатель знает только ник).
+ */
+export async function linkTelegram(store: Store, who: { tg_user_id: number; tg_username?: string | null }): Promise<Member | undefined> {
+  const all = await store.t.members.list();
+  const byId = all.find((m) => m.tg_user_id === who.tg_user_id);
+  if (byId) {
+    const uname = who.tg_username ? normUsername(who.tg_username) : null;
+    if (uname && byId.tg_username !== uname) return store.t.members.update(byId.id, { tg_username: uname });
+    return byId;
+  }
+  const uname = who.tg_username ? normUsername(who.tg_username) : null;
+  if (!uname) return undefined;
+  const byName = all.find((m) => m.tg_user_id == null && m.tg_username === uname);
+  return byName ? store.t.members.update(byName.id, { tg_user_id: who.tg_user_id }) : undefined;
+}
+
+/** Следующий свободный номер участника. */
+export async function nextNumber(store: Store): Promise<number> {
+  const all = await store.t.members.list();
+  return all.reduce((mx, m) => Math.max(mx, m.number ?? 0), 0) + 1;
+}

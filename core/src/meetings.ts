@@ -21,14 +21,14 @@ function nextMonthKey(key: string): string {
   return m === 12 ? `${y + 1}-01` : `${y}-${String(m + 1).padStart(2, "0")}`;
 }
 
-export interface RequestInput {
+export interface MeetingRequestInput {
   from_id: Id;
   to_id: Id;
   uses_credit: boolean;
   purpose: string;
 }
 
-export async function requestMeeting(store: Store, now: Date, input: RequestInput) {
+export async function requestMeeting(store: Store, now: Date, input: MeetingRequestInput) {
   const cfg = await store.getConfig();
   if (input.from_id === input.to_id) throw new DomainError("self", "Встречу с самим собой запросить нельзя.");
   const from = await requireMember(store, input.from_id);

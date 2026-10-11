@@ -4,7 +4,7 @@
 import { canSeeRequest, isStaff } from "./access";
 import { isInside, requireMember } from "./members";
 import type { Store } from "./store/store";
-import { addDays, monthKey } from "./time";
+import { monthKey } from "./time";
 import { AccessError, DomainError, type Id, type Offer, type Request, type Response, type ResponseMode } from "./types";
 
 const MS_DAY = 86_400_000;
@@ -192,4 +192,3 @@ export async function listBoard(store: Store, now: Date, viewerId: Id) {
   return { requests: lines, offers };
 }
 
-export { addDays };

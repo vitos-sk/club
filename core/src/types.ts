@@ -353,6 +353,18 @@ export interface BotSession {
   updated_at: Iso;
 }
 
+/** Сообщение участнику. Его доставляет транспорт: приложение показывает во «Входящих», бот — отправит в Telegram. */
+export interface Notification {
+  id: Id;
+  member_id: Id;
+  kind: string;
+  text: string;
+  /** Куда ведёт кнопка в приложении (необязательно). */
+  link: string | null;
+  created_at: Iso;
+  read_at: Iso | null;
+}
+
 export interface SentNotification {
   id: Id;
   key: string;
@@ -389,6 +401,7 @@ export interface TableMap {
   creator_hours: CreatorHours;
   bot_sessions: BotSession;
   sent_notifications: SentNotification;
+  notifications: Notification;
 }
 
 export type TableName = keyof TableMap;
@@ -421,6 +434,7 @@ export const TABLE_NAMES: TableName[] = [
   "creator_hours",
   "bot_sessions",
   "sent_notifications",
+  "notifications",
 ];
 
 /** Ошибки домена: текст — по-русски, на «ты», его можно показывать пользователю. */
