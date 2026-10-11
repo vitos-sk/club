@@ -8,6 +8,7 @@ import { MemoryStore, type Db } from "./memory";
  */
 export class JsonFileStore extends MemoryStore {
   private empty: boolean;
+  private warned = false;
 
   constructor(private file: string) {
     let initial: Db | undefined;
@@ -37,9 +38,17 @@ export class JsonFileStore extends MemoryStore {
     // super() ещё не закончил — файла в этот момент нет, писать нечего
     if (!this.file) return;
     this.empty = false;
-    mkdirSync(dirname(this.file), { recursive: true });
-    const tmp = `${this.file}.${process.pid}.tmp`;
-    writeFileSync(tmp, JSON.stringify(this.snapshot()));
-    renameSync(tmp, this.file);
+    try {
+      mkdirSync(dirname(this.file), { recursive: true });
+      const tmp = `${this.file}.${process.pid}.tmp`;
+      writeFileSync(tmp, JSON.stringify(this.snapshot()));
+      renameSync(tmp, this.file);
+    } catch (e) {
+      // диск только для чтения или недоступен: данные остаются в памяти, приложение не падает
+      if (!this.warned) {
+        this.warned = true;
+        console.warn(`Не удалось сохранить ${this.file}: ${(e as Error).message}. Работаем только в памяти.`);
+      }
+    }
   }
 }

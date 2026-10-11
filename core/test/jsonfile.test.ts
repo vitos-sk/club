@@ -51,3 +51,15 @@ describe("виртуальные часы (машина времени)", () => 
     expect(Math.abs(clockNow(b).getTime() - Date.now())).toBeLessThan(1000);
   });
 });
+
+describe("диск только для чтения (как на Vercel)", () => {
+  it("если файл записать нельзя, приложение не падает и работает в памяти", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "club-ro-"));
+    dirs.push(dir);
+    const blocker = join(dir, "file-not-dir");
+    writeFileSync(blocker, "x");
+    const s = new JsonFileStore(join(blocker, "nested", "store.json")); // «папка» — на самом деле файл
+    const row = await s.t.spheres.insert({ name: "Работа", sort: 1 });
+    expect((await s.t.spheres.get(row.id))!.name).toBe("Работа");
+  });
+});

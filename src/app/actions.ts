@@ -16,7 +16,7 @@ import { acceptCandidate, attachSponsor, chooseUsefulTask, createEvent, getAppli
 import { addDays, startOfWeek, zonedToUtc } from "@core/time";
 import { tick } from "@core/tick";
 import { ConstraintError, DomainError, type Member } from "@core/types";
-import { getViewer, resetStore, SESSION_COOKIE, type Viewer } from "@/server/club";
+import { flushStore, getViewer, resetStore, SESSION_COOKIE, type Viewer } from "@/server/club";
 import type { ActionState } from "@/components/forms/ActionForm";
 
 type FormAction = (prev: ActionState, fd: FormData) => Promise<ActionState>;
@@ -32,16 +32,18 @@ function friendly(e: unknown): string | null {
   return null;
 }
 
-/** Общая часть: перехват ошибок правил клуба, обновление экранов, переход. */
-async function execute(run: () => Promise<Outcome>): Promise<ActionState> {
+/** Общая часть: перехват ошибок правил клуба, запись данных, обновление экранов, переход. */
+async function execute(store: Parameters<typeof flushStore>[0], run: () => Promise<Outcome>): Promise<ActionState> {
   let out: Outcome;
   try {
     out = await run();
   } catch (e) {
+    await flushStore(store);
     const msg = friendly(e);
     if (msg) return { error: msg };
     throw e;
   }
+  await flushStore(store); // в облачном хранилище изменения уходят сюда, до перехода на другую страницу
   revalidatePath("/", "layout");
   if (out && typeof out === "object") redirect(out.to);
   return typeof out === "string" ? { ok: out } : { ok: "Готово." };
@@ -53,13 +55,16 @@ function make(need: "member" | "staff", fn: (v: Viewer & { member: Member }, fd:
     const v = await getViewer();
     if (!v.member || !v.inside) return { error: "Это доступно участникам клуба." };
     if (need === "staff" && !v.staff) return { error: "Это доступно создателю и Совету." };
-    return execute(() => fn(v as Viewer & { member: Member }, fd));
+    return execute(v.store, () => fn(v as Viewer & { member: Member }, fd));
   };
 }
 
 /** Действие для любого посетителя (вход кандидата, тестовая панель). */
 function makeAny(fn: (v: Viewer, fd: FormData) => Promise<Outcome>): FormAction {
-  return async (_prev, fd) => execute(async () => fn(await getViewer(), fd));
+  return async (_prev, fd) => {
+    const v = await getViewer();
+    return execute(v.store, () => fn(v, fd));
+  };
 }
 
 // ───── тестовая панель ─────

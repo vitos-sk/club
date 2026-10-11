@@ -6,7 +6,7 @@ import { Card, Eyebrow } from "@/components/ui/Card";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { fmtDayTime, STATUS_LABEL } from "@/lib/format";
 import { advanceTimeAction, resetClockAction, resetDataAction, runTickAction, switchPersonaAction } from "@/app/actions";
-import { getViewer, listPersonas } from "@/server/club";
+import { getViewer, listPersonas, storageMode } from "@/server/club";
 
 /**
  * Тестовая панель. Работает только в режиме заглушек.
@@ -16,6 +16,7 @@ export default async function DevPage({ searchParams }: { searchParams: Promise<
   const v = await getViewer();
   const sp = await searchParams;
   const personas = await listPersonas(v.store);
+  const mode = storageMode();
   const group = (title: string, pick: (p: (typeof personas)[number]) => boolean) => ({ title, items: personas.filter(pick) });
   const groups = [
     group("Создатель и Совет", (p) => !!p.member && (p.member.is_creator || p.member.status === "council")),
@@ -86,7 +87,11 @@ export default async function DevPage({ searchParams }: { searchParams: Promise<
 
       <SectionTitle>Данные</SectionTitle>
       <Card>
-        <p className="mb-4 text-[13.5px] leading-snug text-mute">Данные лежат в файле на этом компьютере и переживают перезапуск. Сброс вернёт тестовых людей, помощь, запросы и время.</p>
+        <p className="mb-2 text-[13.5px] font-bold">
+          {mode === "upstash" ? "Облачное хранилище (Upstash Redis): данные сохраняются." : mode === "tmp" ? "Временное хранилище: данные пропадут при перезапуске сервера." : "Файл .data/store.json на этом компьютере: переживает перезапуск."}
+        </p>
+        {mode === "tmp" && <p className="mb-3 rounded-xl border border-warn/50 bg-warn/10 px-3 py-2 text-[13px] leading-snug text-warn">Чтобы данные не терялись, подключи Upstash Redis в Vercel: Storage → Create → Upstash Redis, затем Redeploy. Подробно — docs/deploy_vercel.md.</p>}
+        <p className="mb-4 text-[13.5px] leading-snug text-mute">Сброс вернёт тестовых людей, помощь, запросы и время.</p>
         <ActionForm action={resetDataAction}>
           <SubmitButton variant="outline">Сбросить данные</SubmitButton>
         </ActionForm>

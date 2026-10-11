@@ -9,7 +9,7 @@
 ```bash
 npm install
 npm run dev      # http://localhost:3000
-npm test         # 232 теста ядра
+npm test         # 244 теста ядра
 npm run sim      # симуляция Пульса: числа для отчёта
 npm run build    # проверка production-сборки
 ```
@@ -26,12 +26,16 @@ npm run build    # проверка production-сборки
 
 Что куда ведёт: Холл `/` · Кабинет `/study` · Доска `/board` · Зал встреч `/meet` · Входящие `/inbox` · Люди `/people` · Совет `/council` · Штаб `/staff` · Проверка анкет `/review` · Дежурный `/duty` · Вход кандидата `/join`.
 
+## Публикация на Vercel
+
+Пошагово: `docs/deploy_vercel.md`. Коротко: загрузить в GitHub → импортировать в Vercel → задать `SITE_PASSWORD` → подключить Upstash Redis (Storage) → Redeploy. Без Upstash данные временные, без пароля сайт закрыт.
+
 ## Устройство
 
 ```
 core/      вся логика на чистом TypeScript, без Telegram и без базы
   src/       Пульс, кредиты, встречи, доска, отбор, Совет, метрики, плановые задачи, тестовые данные
-  test/      232 теста
+  test/      244 теста
 src/       приложение Next.js (экраны, серверные действия, серверное хранилище-заглушка)
 bot/       пока только README
 docs/      контекст, инструкция, планы, решения, отчёты
